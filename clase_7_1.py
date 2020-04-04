@@ -8,6 +8,7 @@ if __name__ == '__main__':
     sides = 2
     angle = 1000
     rotted = angle
+    fps = lib.frames_per_second_basics()
     window = lib.new_window("Equilateral triangle")
     while run:
         for event in pg.event.get():
@@ -31,5 +32,6 @@ if __name__ == '__main__':
                 for iterator, value in enumerate(figure):
                     figure[iterator] = lib.screen_into_cartesian(figure[iterator])
                 lib.polygons(window, figure, lib.random_color())
+        lib.frames_per_second(fps)
         lib.flip()
     pg.quit()
