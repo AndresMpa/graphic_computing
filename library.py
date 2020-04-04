@@ -110,6 +110,10 @@ def polygons(window, points, color=cts.WHITE, size=3):
     pg.draw.polygon(window, color, points, size)
 
 
+def polygons_filled(window, points, color=cts.WHITE):
+    pg.draw.polygon(window, color, points)
+
+
 # 3D figures
 
 def solids(window, figure, color):

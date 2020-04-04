@@ -1,6 +1,23 @@
 import pygame as pg
 import library as lib
 
+"""
+# Transformation: Screen point into cartesian point
+for iterator, section in enumerate(Figure_1_rotted):
+    for iteration, value in enumerate(Figure_1_rotted[iterator]):
+        print Figure_1_rotted[0]
+        Figure_1_rotted[iterator][iteration] = lib.screen_into_cartesian(
+            Figure_1_rotted[iterator][iteration])
+"""
+
+"""
+# Transformation: Cartesian point into screen point
+for iterator, section in enumerate(Figure_1_rotted):
+    for iteration, value in enumerate(Figure_1_rotted[iterator]):
+        Figure_1_rotted[iterator][iteration] = lib.cartesian_into_screen(
+            Figure_1_rotted[iterator][iteration])
+"""
+
 if __name__ == '__main__':
     pg.init()
     run = True
@@ -19,16 +36,22 @@ if __name__ == '__main__':
     one_face_1 = [[100, 100], [100, -200], [-100, -200], [-100, 100]]
     one_face_2 = [[100, 100], [100, -200], [-100, -200], [-100, 100]]
     # Sides
-    one_face_3 = [[100, 100], [100, 100], [100, -200], [100, -200]]
-    one_face_4 = [[-100, -100], [-100, -100], [-100, -200], [-100, -200]]
+    one_face_3 = [[100, 100], [100, -200], [100, -200], [100, 100]]
+    one_face_4 = [[-100, -100], [-100, -200], [-100, -200], [-100, -100]]
     # Up & Down
-    one_face_5 = [[100, -200], [100, -200], [-100, -200], [-100, -200]]
-    one_face_6 = [[100, 100], [100, 100], [-100, 100], [-100, 100]]
+    one_face_5 = [[100, -200], [-100, -200], [-100, -200], [100, -200]]
+    one_face_6 = [[100, 100], [-100, 100], [-100, 100], [100, 100]]
 
     # Big cube
     Figure_1 = [one_face_1, one_face_2, one_face_3, one_face_4, one_face_5, one_face_6]
     Figure_1_rotted = Figure_1
-    print Figure_1_rotted
+
+    # Transformation: Screen point into cartesian point
+    for iterator, section in enumerate(Figure_1_rotted):
+        for iteration, value in enumerate(Figure_1_rotted[iterator]):
+            print Figure_1_rotted[0]
+            Figure_1_rotted[iterator][iteration] = lib.screen_into_cartesian(
+                Figure_1_rotted[iterator][iteration])
 
     while run:
         for event in pg.event.get():
@@ -36,11 +59,6 @@ if __name__ == '__main__':
                 run = False
 
             if event.type == pg.MOUSEBUTTONDOWN:
-                # Transformation: Cartesian point into screen point
-                for iterator, section in enumerate(Figure_1_rotted):
-                    for iteration, value in enumerate(Figure_1_rotted[iterator]):
-                        Figure_1_rotted[iterator][iteration] = lib.cartesian_into_screen(
-                            Figure_1_rotted[iterator][iteration])
                 if event.button == 1:
                     # Change angle to positive direction
                     direction = 1
@@ -53,19 +71,18 @@ if __name__ == '__main__':
 
                     for iterator, section in enumerate(Figure_1_rotted):
                         Figure_1_rotted[iterator] = lib.rotting_with_fixed_point(
-                            Figure_1_rotted[iterator], fixed_point, angle)
+                            Figure_1[iterator], fixed_point, angle)
+
                 if event.button == 5:
                     # Rote in Y
                     pass
 
-        # Transformation: Screen point into cartesian point
-        for iterator, section in enumerate(Figure_1_rotted):
-            for iteration, value in enumerate(Figure_1_rotted[iterator]):
-                Figure_1_rotted[iterator][iteration] = lib.screen_into_cartesian(Figure_1_rotted[iterator][iteration])
-
         # Drawing issues
+
+        lib.fill(window)
+
         for iterator, section in enumerate(Figure_1_rotted):
-            lib.polygons(window, Figure_1_rotted[iterator])
+            lib.polygons_filled(window, Figure_1_rotted[iterator], lib.random_color())
 
         lib.frames_per_second(fps, 12)
     pg.quit()
