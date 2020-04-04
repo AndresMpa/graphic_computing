@@ -6,9 +6,11 @@ import constants as cts
 
 # Screen topics
 
-def new_window(title="Title"):
+def new_window(title="Title", size=None):
+    if size is None:
+        size = [cts.width, cts.height]
     pg.display.set_caption(title)
-    return pg.display.set_mode([cts.width, cts.height])
+    return pg.display.set_mode(size)
 
 
 def flip():
