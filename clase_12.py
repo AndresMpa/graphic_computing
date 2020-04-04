@@ -4,7 +4,7 @@ import library as lib
 if __name__ == '__main__':
     pg.init()
     run = True
-    window = lib.new_window("RPG")
+    window = lib.new_window("Mandala")
     fps = lib.frames_per_second_basics()
 
     radius = 1000
