@@ -51,6 +51,7 @@ def frames_per_second(clock, options=2, frames=60):
         clock.tick(1200)
     elif options == 10:
         clock.tick(1500)
+    flip()
 
 
 def create_color(r=255, g=255, b=255):
