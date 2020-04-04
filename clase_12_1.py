@@ -5,7 +5,7 @@ if __name__ == '__main__':
     pg.init()
     run = True
     fps = lib.frames_per_second_basics()
-    window = lib.new_window("Mandala", lib.cts.size)
+    window = lib.new_window("3D Figure", lib.cts.size)
 
     # Variables
     direction = 2
@@ -28,6 +28,7 @@ if __name__ == '__main__':
     # Big cube
     Figure_1 = [one_face_1, one_face_2, one_face_3, one_face_4, one_face_5, one_face_6]
     Figure_1_rotted = Figure_1
+    print Figure_1_rotted
 
     while run:
         for event in pg.event.get():
@@ -36,11 +37,10 @@ if __name__ == '__main__':
 
             if event.type == pg.MOUSEBUTTONDOWN:
                 # Transformation: Cartesian point into screen point
-                """
-                for iterator, section in enumerate(Figure_1):
-                    for iteration, value in enumerate(Figure_1[iterator]):
-                        Figure_1[iterator][iteration] = lib.cartesian_into_screen(Figure_1[iterator][iteration])
-                """
+                for iterator, section in enumerate(Figure_1_rotted):
+                    for iteration, value in enumerate(Figure_1_rotted[iterator]):
+                        Figure_1_rotted[iterator][iteration] = lib.cartesian_into_screen(
+                            Figure_1_rotted[iterator][iteration])
                 if event.button == 1:
                     # Change angle to positive direction
                     direction = 1
@@ -51,7 +51,7 @@ if __name__ == '__main__':
                     # Rote in X
                     angle += direction
 
-                    for iterator, section in enumerate(Figure_1):
+                    for iterator, section in enumerate(Figure_1_rotted):
                         Figure_1_rotted[iterator] = lib.rotting_with_fixed_point(
                             Figure_1_rotted[iterator], fixed_point, angle)
                 if event.button == 5:
