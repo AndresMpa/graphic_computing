@@ -24,6 +24,8 @@ if __name__ == '__main__':
                 if event.button == 5:
                     pass
 
+        for iterator, value in enumerate(one_face_1):
+            one_face_1[iterator] = lib.screen_into_cartesian(one_face_1)
         lib.polygons(window, one_face_1)
         lib.frames_per_second(fps, 12)
     pg.quit()
