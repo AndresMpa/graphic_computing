@@ -49,7 +49,6 @@ if __name__ == '__main__':
     # Transformation: Screen point into cartesian point
     for iterator, section in enumerate(Figure_1_rotted):
         for iteration, value in enumerate(Figure_1_rotted[iterator]):
-            print Figure_1_rotted[0]
             Figure_1_rotted[iterator][iteration] = lib.screen_into_cartesian(
                 Figure_1_rotted[iterator][iteration])
 
