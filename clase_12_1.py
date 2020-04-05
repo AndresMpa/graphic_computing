@@ -123,7 +123,7 @@ if __name__ == '__main__':
         lib.fill(window)
 
         for iterator, section in enumerate(Figure_1_rotted):
-            lib.polygons_filled(window, Figure_1_rotted[iterator], lib.random_color())
+            lib.polygons_filled(window, Figure_1_rotted[iterator], lib.cts.RED)
 
         lib.frames_per_second(fps, 12)
     pg.quit()
