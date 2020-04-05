@@ -33,18 +33,60 @@ if __name__ == '__main__':
     fixed_point = lib.screen_into_cartesian(fixed_point)
 
     # Front & Back
-    one_face_1 = [[100, 100], [100, -200], [-100, -200], [-100, 100]]
-    one_face_2 = [[100, 100], [100, -200], [-100, -200], [-100, 100]]
+
+    # Figure one
+    BigCube_Front = [[200, 200], [200, -400], [-200, -400], [-200, 200]]
+    BigCube_Back = [[200, 200], [200, -400], [-200, -400], [-200, 200]]
+
+    # Figure two
+    FaceFront_Right = [[400, 200], [400, -100], [200, -100], [200, 200]]
+    FaceBack_Right = [[400, 200], [400, -100], [200, -100], [200, 200]]
+
+    # Figure three
+    FaceFront_Left = [[-200, 200], [-200, -100], [-400, -100], [-400, 200]]
+    FaceBack_Left = [[-200, 200], [-200, -100], [-400, -100], [-400, 200]]
+
     # Sides
-    one_face_3 = [[100, 100], [100, -200], [100, -200], [100, 100]]
-    one_face_4 = [[-100, -100], [-100, -200], [-100, -200], [-100, -100]]
+
+    # Figure one
+    BigCube_Right = [[200, 200], [200, -400], [200, -400], [200, 200]]
+    BigCube_Left = [[-200, 200], [-200, -400], [-200, -400], [-200, 200]]
+
+    # Figure two
+    FaceRight_Right = [[400, 200], [400, -100], [400, -100], [400, 200]]
+    FaceLeft_Right = [[200, 200], [200, -100], [200, -100], [200, 200]]
+
+    # Figure three
+    FaceRight_Left = [[-200, 200], [-200, -100], [-200, -100], [-200, 200]]
+    FaceLeft_Left = [[-400, 200], [-400, -100], [-400, -100], [-400, 200]]
+
     # Up & Down
-    one_face_5 = [[100, -200], [-100, -200], [-100, -200], [100, -200]]
-    one_face_6 = [[100, 100], [-100, 100], [-100, 100], [100, 100]]
+
+    # Figure one
+    BigCube_Up = [[200, -400], [-200, -400], [-200, -400], [200, -400]]
+    BigCube_Down = [[200, 200], [-200, 200], [-200, 200], [200, 200]]
+
+    # Figure two
+    FacetUp_Right = [[400, -100], [200, -100], [200, -100], [400, -100]]
+    FaceDown_Right = [[400, 200], [200, 200], [200, 200], [400, 200]]
+
+    # Figure three
+    FaceUp_Left = [[-200, -100], [-400, -100], [-400, -100], [-200, -100]]
+    FaceDown_Left = [[-200, 200], [400, 200], [-400, 200], [-200, 200]]
 
     # Big cube
-    Figure_1 = [one_face_1, one_face_2, one_face_3, one_face_4, one_face_5, one_face_6]
+    Figure_1 = [BigCube_Front, BigCube_Back, BigCube_Right, BigCube_Left, BigCube_Up, BigCube_Down]
+
+    # Small right
+    Figure_2 = [FaceFront_Right, FaceBack_Right, FaceRight_Right, FaceLeft_Right, FacetUp_Right, FaceDown_Right]
+
+    # Small left
+    Figure_3 = [FaceFront_Left, FaceBack_Left, FaceRight_Left, FaceLeft_Left, FaceUp_Left, FaceDown_Left]
+
+    # Rotted figures
     Figure_1_rotted = Figure_1
+    Figure_2_rotted = Figure_2
+    Figure_3_rotted = Figure_3
 
     # Transformation: Screen point into cartesian point
     for iterator, section in enumerate(Figure_1_rotted):
