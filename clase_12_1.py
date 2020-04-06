@@ -141,12 +141,6 @@ if __name__ == '__main__':
                 run = False
 
             if event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    # Change angle to positive direction
-                    direction = direction_value
-                if event.button == 3:
-                    # Change angle to negative direction
-                    direction = -direction_value
                 if event.button == 4:
                     # Rote in X
                     Fixed_for_big_cube = cruz(Figure_1_rotted[0])
@@ -160,15 +154,18 @@ if __name__ == '__main__':
                     # Rote in Y
                     pass
 
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_w:
+                    # Change angle to positive direction
+                    direction = direction_value
+                if event.key == pg.K_s:
+                    # Change angle to negative direction
+                    direction = -direction_value
+
         # Drawing issues
 
         lib.fill(window)
-        lib.polygons_filled(window, Figure_1_rotted[0], lib.cts.RED)
-        lib.polygons_filled(window, Figure_1_rotted[1], lib.cts.WHITE)
-        lib.polygons_filled(window, Figure_1_rotted[2], lib.cts.GREEN)
-        lib.polygons_filled(window, Figure_1_rotted[3], lib.cts.GREEN)
-        lib.polygons_filled(window, Figure_1_rotted[4], lib.cts.WHITE)
-        lib.polygons_filled(window, Figure_1_rotted[5], lib.cts.WHITE)
-
+        for iterator, section in enumerate(Figure_1_rotted):
+            lib.polygons(window, Figure_1_rotted[iterator], )
         lib.frames_per_second(fps, 12)
     pg.quit()
