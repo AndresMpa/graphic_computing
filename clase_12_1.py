@@ -53,12 +53,14 @@ if __name__ == '__main__':
 
             if event.type == pg.MOUSEBUTTONDOWN:
                 angle += direction
-                aux = []
+                rotting_assistant = []
                 if event.button == 4:
                     # Rote in X
                     for iterator, value in enumerate(Figure_1_rotted):
-                        aux.append(lib.rotting_with_fixed_point(Figure_1[iterator], Figure_1[0][0], angle))
-                    Figure_1_rotted = aux
+                        rotting_assistant.append(lib.rotting_with_fixed_point(
+                            Figure_1[iterator], Figure_1[0][0], angle))
+
+                    Figure_1_rotted = rotting_assistant
 
                 if event.button == 5:
                     # Rote in Y
