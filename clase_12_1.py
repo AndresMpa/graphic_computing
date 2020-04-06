@@ -5,15 +5,17 @@ import library as lib
 
 def cross(figure):  # Debe ser de 4 lados (vector con 4 puntos)
     cont = 0
-    cross = []
+    cross_array = []
     while cont <= 3:
         if cont + 1 == 4:
-            cross.append(lib.scaling_with_fixed_point([figure[cont], figure[0]], figure[cont], [0.5]))
+            point = lib.scaling_with_fixed_point([figure[cont], figure[0]], figure[cont], [0.5, 0.5])
+            cross_array.append(point[1])
         else:
-            cross.append(lib.scaling_with_fixed_point([figure[cont], figure[cont + 1]], figure[cont], [0.5, 0.5]))
+            point = lib.scaling_with_fixed_point([figure[cont], figure[cont + 1]], figure[cont], [0.5, 0.5])
+            cross_array.append(point[1])
         cont += 1
 
-    return cross
+    return cross_array
 
 
 if __name__ == '__main__':
@@ -37,10 +39,20 @@ if __name__ == '__main__':
     Figure_3 = fig.Figure_3
 
     # Transformation: Screen point into cartesian point
-    for iterator, section in enumerate(Figure_1):
-        for iteration, value in enumerate(Figure_1[iterator]):
-            Figure_1[iterator][iteration] = lib.screen_into_cartesian(
-                Figure_1[iterator][iteration], [600, 250])
+    for stage_1, section in enumerate(Figure_1):
+        for iteration, value in enumerate(Figure_1[stage_1]):
+            Figure_1[stage_1][iteration] = lib.screen_into_cartesian(
+                Figure_1[stage_1][iteration], [600, 250])
+
+    for stage_2, section in enumerate(Figure_2):
+        for iteration, value in enumerate(Figure_2[stage_2]):
+            Figure_2[stage_2][iteration] = lib.screen_into_cartesian(
+                Figure_2[stage_2][iteration], [600, 250])
+
+    for stage_3, section in enumerate(Figure_3):
+        for iteration, value in enumerate(Figure_3[stage_3]):
+            Figure_3[stage_3][iteration] = lib.screen_into_cartesian(
+                Figure_3[stage_3][iteration], [600, 250])
 
     Figure_1_rotted = Figure_1
     Figure_2_rotted = Figure_2
@@ -56,11 +68,26 @@ if __name__ == '__main__':
                 rotting_assistant = []
                 if event.button == 4:
                     # Rote in X
-                    for iterator, value in enumerate(Figure_1_rotted):
+                    for stage_1, value in enumerate(Figure_1_rotted):
                         rotting_assistant.append(lib.rotting_with_fixed_point(
-                            Figure_1[iterator], Figure_1[0][0], angle))
+                            Figure_1[stage_1], Figure_1[0][0], angle))
 
                     Figure_1_rotted = rotting_assistant
+                    rotting_assistant = []
+
+                    for stage_2, value in enumerate(Figure_2_rotted):
+                        rotting_assistant.append(lib.rotting_with_fixed_point(
+                            Figure_2[stage_2], Figure_2[0][0], angle))
+
+                    Figure_2_rotted = rotting_assistant
+                    rotting_assistant = []
+
+                    for stage_3, value in enumerate(Figure_3_rotted):
+                        rotting_assistant.append(lib.rotting_with_fixed_point(
+                            Figure_3[stage_3], Figure_3[0][0], angle))
+
+                    Figure_3_rotted = rotting_assistant
+                    rotting_assistant = []
 
                 if event.button == 5:
                     # Rote in Y
@@ -80,7 +107,11 @@ if __name__ == '__main__':
         # Drawing issues
 
         lib.fill(window)
-        for iterator, section in enumerate(Figure_1_rotted):
-            lib.polygons_filled(window, Figure_1_rotted[iterator], lib.cts.PALETTE_2[iterator])
+        for stage_1, section in enumerate(Figure_1_rotted):
+            lib.polygons_filled(window, Figure_1_rotted[stage_1], lib.cts.PALETTE_2[stage_1])
+        for stage_2, section in enumerate(Figure_2_rotted):
+            lib.polygons_filled(window, Figure_2_rotted[stage_2], lib.cts.PALETTE_2[stage_2])
+        for stage_3, section in enumerate(Figure_3_rotted):
+            lib.polygons_filled(window, Figure_3_rotted[stage_3], lib.cts.PALETTE_2[stage_3])
         lib.frames_per_second(fps, 12)
     pg.quit()
