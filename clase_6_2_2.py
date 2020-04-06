@@ -8,6 +8,7 @@ if __name__ == '__main__':
     triangle_rotted = []
     angle = 2
     window = lib.new_window("Rotting with fixed - Point")
+    fps = lib.frames_per_second_basics()
     lib.polygons(window, triangle)
     while run:
         for event in pg.event.get():
@@ -15,8 +16,8 @@ if __name__ == '__main__':
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 triangle[2] = pg.mouse.get_pos()
-            triangle_rotted = lib.rotting_with_fixed_point(triangle, triangle[2], angle)
-            angle += 2
-            lib.polygons(window, triangle_rotted, lib.random_color())
-        lib.flip()
+        triangle_rotted = lib.rotting_with_fixed_point(triangle, triangle[2], angle)
+        angle += 2
+        lib.polygons(window, triangle_rotted, lib.random_color())
+        lib.frames_per_second(fps, 12)
     pg.quit()
