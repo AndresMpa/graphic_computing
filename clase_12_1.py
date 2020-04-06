@@ -149,9 +149,12 @@ if __name__ == '__main__':
                     direction = -direction_value
                 if event.button == 4:
                     # Rote in X
-                    Fixed = cruz(Figure_1_rotted[0])
+                    Fixed_for_big_cube = cruz(Figure_1_rotted[0])
                     angle += direction
-                    Figure_1_rotted[0] = lib.rotting_with_fixed_point(Figure_1[0], Fixed[0], angle)
+                    Figure_1_rotted[0] = lib.rotting_with_fixed_point(Figure_1[0], Fixed_for_big_cube[0], angle)
+                    Figure_1_rotted[1] = lib.rotting_with_fixed_point(Figure_1[1], Fixed_for_big_cube[0], angle)
+
+                    print Figure_1_rotted[0]
 
                 if event.button == 5:
                     # Rote in Y
