@@ -1,6 +1,46 @@
 import pygame as pg
 import library as lib
 
+
+def scal(screen_points, fixed_point, scale_value=None):
+    if scale_value is None:
+        scale_value = [0.5, 0.5]
+
+    transformation = []
+    iterator = 0
+
+    while iterator < len(screen_points):
+        transformation.append(lib.translation(screen_points[iterator], [-fixed_point[0], -fixed_point[1]]))
+        iterator += 1
+
+    iterator = 0
+
+    while iterator < len(screen_points):
+        transformation[iterator] = lib.scale(transformation[iterator], scale_value)
+        iterator += 1
+
+    iterator = 0
+
+    while iterator < len(screen_points):
+        transformation[iterator] = lib.translation(transformation[iterator], fixed_point)
+        iterator += 1
+
+    return transformation[1]
+
+
+def cruz(figura):  # Debe ser de 4 lados (vector con 4 puntos)
+    i = 0
+    ls = []
+    while i <= 3:
+        if i + 1 == 4:
+            ls.append(scal([figura[i], figura[0]], figura[i]))
+        else:
+            ls.append(scal([figura[i], figura[i + 1]], figura[i]))
+        i += 1
+
+    return ls
+
+
 """
 # Transformation: Screen point into cartesian point
 for iterator, section in enumerate(Figure_1_rotted):
@@ -25,7 +65,8 @@ if __name__ == '__main__':
     window = lib.new_window("3D Figure", lib.cts.size)
 
     # Variables
-    direction = 2
+    direction_value = 5
+    direction = direction_value
     angle = direction
 
     # Reference axis
@@ -92,7 +133,7 @@ if __name__ == '__main__':
     for iterator, section in enumerate(Figure_1_rotted):
         for iteration, value in enumerate(Figure_1_rotted[iterator]):
             Figure_1_rotted[iterator][iteration] = lib.screen_into_cartesian(
-                Figure_1_rotted[iterator][iteration])
+                Figure_1_rotted[iterator][iteration], [600, 250])
 
     while run:
         for event in pg.event.get():
@@ -102,17 +143,15 @@ if __name__ == '__main__':
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     # Change angle to positive direction
-                    direction = 1
+                    direction = direction_value
                 if event.button == 3:
                     # Change angle to negative direction
-                    direction = -1
+                    direction = -direction_value
                 if event.button == 4:
                     # Rote in X
+                    Fixed = cruz(Figure_1_rotted[0])
                     angle += direction
-
-                    for iterator, section in enumerate(Figure_1_rotted):
-                        Figure_1_rotted[iterator] = lib.rotting_with_fixed_point(
-                            Figure_1[iterator], fixed_point, angle)
+                    Figure_1_rotted[0] = lib.rotting_with_fixed_point(Figure_1[0], Fixed[0], angle)
 
                 if event.button == 5:
                     # Rote in Y
@@ -121,9 +160,12 @@ if __name__ == '__main__':
         # Drawing issues
 
         lib.fill(window)
-
-        for iterator, section in enumerate(Figure_1_rotted):
-            lib.polygons_filled(window, Figure_1_rotted[iterator], lib.cts.RED)
+        lib.polygons_filled(window, Figure_1_rotted[0], lib.cts.RED)
+        lib.polygons_filled(window, Figure_1_rotted[1], lib.cts.WHITE)
+        lib.polygons_filled(window, Figure_1_rotted[2], lib.cts.GREEN)
+        lib.polygons_filled(window, Figure_1_rotted[3], lib.cts.GREEN)
+        lib.polygons_filled(window, Figure_1_rotted[4], lib.cts.WHITE)
+        lib.polygons_filled(window, Figure_1_rotted[5], lib.cts.WHITE)
 
         lib.frames_per_second(fps, 12)
     pg.quit()
