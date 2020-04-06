@@ -189,6 +189,15 @@ def screen_into_cartesian(screen_point, origin=None):
     return [cartesian_x, cartesian_y]
 
 
+def screen_into_cartesian_for_array(screen_point, origin=None):
+    if origin is None:
+        origin = [cts.Origin[0], cts.Origin[1]]
+    for iterator, section in enumerate(screen_point):
+        for iteration, value in enumerate(screen_point[iterator]):
+            screen_point[iterator][iteration] = screen_into_cartesian(
+                screen_point[iterator][iteration], origin)
+
+
 def cartesian_into_screen(screen_point, cartesian_point=None):
     if cartesian_point is None:
         cartesian_point = [cts.Origin[0], cts.Origin[1]]
@@ -196,6 +205,15 @@ def cartesian_into_screen(screen_point, cartesian_point=None):
     screen_y = -screen_point[1] + cartesian_point[1]
 
     return [screen_x, screen_y]
+
+
+def cartesian_into_screen_for_array(screen_points, cartesian_point=None):
+    if cartesian_point is None:
+        cartesian_point = [cts.Origin[0], cts.Origin[1]]
+    for iterator, section in enumerate(screen_points):
+        for iteration, value in enumerate(screen_points[iterator]):
+            screen_points[iterator][iteration] = cartesian_into_screen(
+                screen_points[iterator][iteration], cartesian_point)
 
 
 def cartesian_into_polar(cartesian_point):

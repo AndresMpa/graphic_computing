@@ -1,4 +1,5 @@
 import pygame as pg
+import figure as fig
 import library as lib
 
 
@@ -43,19 +44,11 @@ def cruz(figura):  # Debe ser de 4 lados (vector con 4 puntos)
 
 """
 # Transformation: Screen point into cartesian point
-for iterator, section in enumerate(Figure_1_rotted):
-    for iteration, value in enumerate(Figure_1_rotted[iterator]):
-        print Figure_1_rotted[0]
-        Figure_1_rotted[iterator][iteration] = lib.screen_into_cartesian(
-            Figure_1_rotted[iterator][iteration])
+
 """
 
 """
-# Transformation: Cartesian point into screen point
-for iterator, section in enumerate(Figure_1_rotted):
-    for iteration, value in enumerate(Figure_1_rotted[iterator]):
-        Figure_1_rotted[iterator][iteration] = lib.cartesian_into_screen(
-            Figure_1_rotted[iterator][iteration])
+
 """
 
 if __name__ == '__main__':
@@ -74,9 +67,9 @@ if __name__ == '__main__':
     fixed_point = lib.screen_into_cartesian(fixed_point)
 
     # Rotted figures
-    Figure_1_rotted = Figure_1
-    Figure_2_rotted = Figure_2
-    Figure_3_rotted = Figure_3
+    Figure_1_rotted = fig.Figure_1
+    Figure_2_rotted = fig.Figure_2
+    Figure_3_rotted = fig.Figure_3
 
     # Transformation: Screen point into cartesian point
     for iterator, section in enumerate(Figure_1_rotted):
@@ -107,8 +100,8 @@ if __name__ == '__main__':
                     # Change angle to negative direction
                     direction = -direction_value
 
-        Figure_1_rotted[0] = lib.rotting_with_fixed_point(Figure_1[0], Figure_1[0][0], angle)
-        Figure_1_rotted[1] = lib.rotting_with_fixed_point(Figure_1[1], Figure_1[0][0], angle)
+        Figure_1_rotted[0] = lib.rotting_with_fixed_point(fig.Figure_1[0], fig.Figure_1[0][0], angle)
+        Figure_1_rotted[1] = lib.rotting_with_fixed_point(fig.Figure_1[1], fig.Figure_1[0][0], angle)
 
         # Drawing issues
 
