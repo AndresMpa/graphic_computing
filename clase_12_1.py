@@ -3,53 +3,18 @@ import figure as fig
 import library as lib
 
 
-def scal(screen_points, fixed_point, scale_value=None):
-    if scale_value is None:
-        scale_value = [0.5, 0.5]
-
-    transformation = []
-    iterator = 0
-
-    while iterator < len(screen_points):
-        transformation.append(lib.translation(screen_points[iterator], [-fixed_point[0], -fixed_point[1]]))
-        iterator += 1
-
-    iterator = 0
-
-    while iterator < len(screen_points):
-        transformation[iterator] = lib.scale(transformation[iterator], scale_value)
-        iterator += 1
-
-    iterator = 0
-
-    while iterator < len(screen_points):
-        transformation[iterator] = lib.translation(transformation[iterator], fixed_point)
-        iterator += 1
-
-    return transformation[1]
-
-
-def cruz(figura):  # Debe ser de 4 lados (vector con 4 puntos)
-    i = 0
-    ls = []
-    while i <= 3:
-        if i + 1 == 4:
-            ls.append(scal([figura[i], figura[0]], figura[i]))
+def cross(figure):  # Debe ser de 4 lados (vector con 4 puntos)
+    cont = 0
+    cross = []
+    while cont <= 3:
+        if cont + 1 == 4:
+            cross.append(lib.scaling_with_fixed_point([figure[cont], figure[0]], figure[cont], [0.5]))
         else:
-            ls.append(scal([figura[i], figura[i + 1]], figura[i]))
-        i += 1
+            cross.append(lib.scaling_with_fixed_point([figure[cont], figure[cont + 1]], figure[cont], [0.5, 0.5]))
+        cont += 1
 
-    return ls
+    return cross
 
-
-"""
-# Transformation: Screen point into cartesian point
-
-"""
-
-"""
-
-"""
 
 if __name__ == '__main__':
     pg.init()
@@ -67,15 +32,19 @@ if __name__ == '__main__':
     fixed_point = lib.screen_into_cartesian(fixed_point)
 
     # Rotted figures
-    Figure_1_rotted = fig.Figure_1
-    Figure_2_rotted = fig.Figure_2
-    Figure_3_rotted = fig.Figure_3
+    Figure_1 = fig.Figure_1
+    Figure_2 = fig.Figure_2
+    Figure_3 = fig.Figure_3
 
     # Transformation: Screen point into cartesian point
-    for iterator, section in enumerate(Figure_1_rotted):
-        for iteration, value in enumerate(Figure_1_rotted[iterator]):
-            Figure_1_rotted[iterator][iteration] = lib.screen_into_cartesian(
-                Figure_1_rotted[iterator][iteration], [600, 250])
+    for iterator, section in enumerate(Figure_1):
+        for iteration, value in enumerate(Figure_1[iterator]):
+            Figure_1[iterator][iteration] = lib.screen_into_cartesian(
+                Figure_1[iterator][iteration], [600, 250])
+
+    Figure_1_rotted = Figure_1
+    Figure_2_rotted = Figure_2
+    Figure_3_rotted = Figure_3
 
     while run:
         for event in pg.event.get():
@@ -84,9 +53,12 @@ if __name__ == '__main__':
 
             if event.type == pg.MOUSEBUTTONDOWN:
                 angle += direction
+                aux = []
                 if event.button == 4:
                     # Rote in X
-                    pass
+                    for iterator, value in enumerate(Figure_1_rotted):
+                        aux.append(lib.rotting_with_fixed_point(Figure_1[iterator], Figure_1[0][0], angle))
+                    Figure_1_rotted = aux
 
                 if event.button == 5:
                     # Rote in Y
@@ -99,9 +71,9 @@ if __name__ == '__main__':
                 if event.key == pg.K_s:
                     # Change angle to negative direction
                     direction = -direction_value
-
-        Figure_1_rotted[0] = lib.rotting_with_fixed_point(fig.Figure_1[0], fig.Figure_1[0][0], angle)
-        Figure_1_rotted[1] = lib.rotting_with_fixed_point(fig.Figure_1[1], fig.Figure_1[0][0], angle)
+                if event.key == pg.K_k:
+                    # Scale the figure
+                    pass
 
         # Drawing issues
 
