@@ -8,15 +8,17 @@ if __name__ == '__main__':
     window = lib.new_window("RPG")
     fps = lib.frames_per_second_basics()
 
+    # Groups
     players = pg.sprite.Group()
     enemies = pg.sprite.Group()
+    shots = pg.sprite.Group()
 
-    player = obj.Player([0, 0])
+    player = obj.PlayerShip([lib.cts.width - 35, lib.cts.height - 35])
     players.add(player)
 
     number_of_enemies = 10
     for i in range(number_of_enemies):
-        new_enemy = obj.Enemy(lib.random_position())
+        new_enemy = obj.EnemyShip(lib.random_position())
         enemies.add(new_enemy)
 
     position = [0, 0]
@@ -29,11 +31,9 @@ if __name__ == '__main__':
                 run = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_s:
-                    position[1] += speed
-                    direction = 3
+                    pass
                 if event.key == pg.K_w:
-                    position[1] -= speed
-                    direction = 1
+                    pass
                 if event.key == pg.K_d:
                     position[0] += speed
                     direction = 0
@@ -43,15 +43,19 @@ if __name__ == '__main__':
             if event.type == pg.KEYUP:
                 position = [0, 0]
 
+        # Collide
         list_objects = pg.sprite.spritecollide(player, enemies, True)
 
         lib.fill(window)
 
+        # Drawing issues
         players.update(window, position[0], position[1], direction)
         players.draw(window)
 
         enemies.update(window, position[0], position[1])
         enemies.draw(window)
+
+        shots.draw(window, position[0], position[1])
 
         lib.frames_per_second(fps)
     pg.quit()
