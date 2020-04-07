@@ -6,6 +6,7 @@ if __name__ == '__main__':
     run = True
     triangle = []
     window = lib.new_window("Scaling with fixed point - Whatever")
+    fps = lib.frames_per_second_basics()
     while run:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -15,6 +16,5 @@ if __name__ == '__main__':
             if event.type == pg.KEYDOWN:
                 triangle = lib.scaling_with_fixed_point(triangle, triangle[1], [2, 2])
                 lib.polygons(window, triangle, lib.cts.RED)
-
-        lib.flip()
+        lib.frames_per_second(fps, 12)
     pg.quit()
