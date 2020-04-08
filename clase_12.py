@@ -57,5 +57,5 @@ if __name__ == '__main__':
 
         shots.draw(window, position[0], position[1])
 
-        lib.frames_per_second(fps)
+        lib.frames_per_second(fps, 12)
     pg.quit()
