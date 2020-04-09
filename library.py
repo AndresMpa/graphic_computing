@@ -194,11 +194,12 @@ def screen_into_cartesian_for_array(screen_point, origin=None):
     if origin is None:
         origin = [cts.Origin[0], cts.Origin[1]]
     for iterator, section in enumerate(screen_point):
-        col.append(rows)
         if iterator > 0:
+            col.append(rows)
             rows = []
         for iteration, value in enumerate(screen_point[iterator]):
             rows.append(screen_into_cartesian(screen_point[iterator][iteration], origin))
+    col.append(rows)
     return col
 
 

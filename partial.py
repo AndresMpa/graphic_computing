@@ -22,17 +22,28 @@ if __name__ == '__main__':
 
             if event.type == pg.MOUSEBUTTONDOWN:
                 direction = -direction
-        print rotting_figure[0]
-        print rotting_figure[1]
+
+        iterator = 0
+        while iterator < len(rotting_figure):
+            rotting_figure[0][iterator] = lib.translation(
+                rotting_figure[0][iterator], [-lib.cts.Origin[0], -lib.cts.Origin[1]])
+            iterator += 1
+
         rotting_figure[0] = lib.rotting_with_fixed_point(rotting_figure[0], lib.cts.Origin, angle)
-        rotting_figure[1] = lib.rotting_with_fixed_point(rotting_figure[1], lib.cts.size, angle)
+        rotting_figure[1] = lib.rotting_with_fixed_point(rotting_figure[1], lib.cts.Origin, angle)
         angle += direction
+
+        iterator = 0
+        while iterator < len(rotting_figure):
+            rotting_figure[0][iterator] = lib.translation(
+                rotting_figure[0][iterator], [lib.cts.Origin[0], lib.cts.Origin[1]])
+            iterator += 1
 
         lib.fill(window)
 
         lib.cartesian_plane(window)
 
         for stage_1, section in enumerate(rotting_figure):
-            lib.polygons_filled(window, rotting_figure[stage_1], lib.random_color())
-        lib.frames_per_second(fps, 0, 2)
+            lib.polygons_filled(window, rotting_figure[0], lib.random_color())
+        lib.frames_per_second(fps, 2)
     pg.quit()
