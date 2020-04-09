@@ -9,29 +9,27 @@ if __name__ == '__main__':
     fps = lib.frames_per_second_basics()
 
     angle = 1
-    figure = fig.Model
-    print figure
-    figure = lib.screen_into_cartesian_for_array(figure, lib.cts.size)
-    print figure
-
-    rotting_figure = figure
 
     while run:
+        figure = fig.Model
+        figure = lib.screen_into_cartesian_for_array(figure, lib.cts.size)
+        rotting_figure = figure
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
 
             if event.type == pg.MOUSEBUTTONDOWN:
-                lib.fill(window)
-                rotting_figure[0] = lib.rotting_with_fixed_point(figure[0], figure[0][1], angle)
-                rotting_figure[1] = lib.rotting_with_fixed_point(figure[1], figure[1][1], angle)
-                angle += 5
+                pass
+        rotting_figure = figure
+        rotting_figure[0] = lib.rotting_with_fixed_point(rotting_figure[0], rotting_figure[0][1], angle)
+        angle += 5
 
         lib.fill(window)
 
         lib.cartesian_plane(window)
 
-        for stage_1, section in enumerate(figure):
+        for stage_1, section in enumerate(rotting_figure):
             lib.polygons_filled(window, rotting_figure[stage_1], lib.random_color())
-        lib.frames_per_second(fps, 2)
+        lib.frames_per_second(fps, 10)
     pg.quit()
