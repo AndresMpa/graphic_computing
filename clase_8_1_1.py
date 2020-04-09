@@ -28,7 +28,6 @@ if __name__ == '__main__':
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 lib.fill(window)
-                print base
                 rotting_base = lib.rotting_with_fixed_point(base, base[1], angle)
                 rotting_ceil = lib.rotting_with_fixed_point(ceil, ceil[1], angle)
                 lines = lib.lines_in_figures(rotting_base, rotting_ceil)
@@ -39,5 +38,4 @@ if __name__ == '__main__':
         for iterator, value in enumerate(lines):
             lib.polygons(window, lines[iterator], lib.random_color(), 5)
         lib.frames_per_second(fps, 0, 24)
-        lib.flip()
     pg.quit()
