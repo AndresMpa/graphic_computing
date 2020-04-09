@@ -82,5 +82,5 @@ if __name__ == '__main__':
         lib.fill(window)
         lib.polygons(window, rotted_figures, lib.random_color())
         lib.polygons(window, lines, lib.random_color())
-        lib.frames_per_second(fps, 12)
+        lib.frames_per_second(fps, 10)
     pg.quit()

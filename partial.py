@@ -8,7 +8,8 @@ if __name__ == '__main__':
     window = lib.new_window("Figure")
     fps = lib.frames_per_second_basics()
 
-    angle = 1
+    direction = 1
+    angle = direction
 
     while run:
         figure = fig.Model
@@ -20,10 +21,12 @@ if __name__ == '__main__':
                 run = False
 
             if event.type == pg.MOUSEBUTTONDOWN:
-                pass
-        rotting_figure = figure
-        rotting_figure[0] = lib.rotting_with_fixed_point(rotting_figure[0], rotting_figure[0][1], angle)
-        angle += 5
+                direction = -direction
+        print rotting_figure[0]
+        print rotting_figure[1]
+        rotting_figure[0] = lib.rotting_with_fixed_point(rotting_figure[0], lib.cts.Origin, angle)
+        rotting_figure[1] = lib.rotting_with_fixed_point(rotting_figure[1], lib.cts.size, angle)
+        angle += direction
 
         lib.fill(window)
 
@@ -31,5 +34,5 @@ if __name__ == '__main__':
 
         for stage_1, section in enumerate(rotting_figure):
             lib.polygons_filled(window, rotting_figure[stage_1], lib.random_color())
-        lib.frames_per_second(fps, 10)
+        lib.frames_per_second(fps, 0, 2)
     pg.quit()
