@@ -19,11 +19,7 @@ if __name__ == '__main__':
                 run = False
 
             if event.type == pg.MOUSEBUTTONDOWN:
-
-                for iteration, value in enumerate(figure):
-                    for iterator, score in enumerate(figure):
-                        rotted_figure[iteration][iterator] = lib.rotting_with_fixed_point(
-                            rotted_figure[iteration], lib.cts.size)
+                rotted_figure[0] = lib.rotting_with_fixed_point(rotted_figure[0], lib.cts.size)
 
         lib.fill(window)
 

@@ -241,7 +241,6 @@ def scale(scalable_point, scale_value=None):
 
 
 def translation(screen_point, transformation):
-    print screen_point
     """
     :param screen_point: x, y
     :param transformation: tx, ty
