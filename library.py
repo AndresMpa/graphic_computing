@@ -241,6 +241,7 @@ def scale(scalable_point, scale_value=None):
 
 
 def translation(screen_point, transformation):
+    print screen_point
     """
     :param screen_point: x, y
     :param transformation: tx, ty
@@ -248,6 +249,11 @@ def translation(screen_point, transformation):
     """
     translated = [screen_point[0] + transformation[0], screen_point[1] + transformation[1]]
     return translated
+
+
+"""
+It work with an array of positions
+"""
 
 
 def scaling_with_fixed_point(screen_points, fixed_point, scale_value=None):
@@ -274,6 +280,11 @@ def scaling_with_fixed_point(screen_points, fixed_point, scale_value=None):
         iterator += 1
 
     return transformation
+
+
+"""
+It work with an array of positions
+"""
 
 
 def rotting_with_fixed_point(screen_points, fixed_point, rotting_angle=5):

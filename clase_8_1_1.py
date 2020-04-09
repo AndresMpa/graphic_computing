@@ -28,6 +28,7 @@ if __name__ == '__main__':
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 lib.fill(window)
+                print base
                 rotting_base = lib.rotting_with_fixed_point(base, base[1], angle)
                 rotting_ceil = lib.rotting_with_fixed_point(ceil, ceil[1], angle)
                 lines = lib.lines_in_figures(rotting_base, rotting_ceil)
