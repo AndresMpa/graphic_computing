@@ -29,13 +29,15 @@ LOW = pg.Color(55, 55, 55)
 # ELEMENTARY
 BLACK = pg.Color(0, 0, 0)
 WHITE = pg.Color(255, 255, 255)
-# COLOR PALETTE #1
+# COLOR PALETTE DEFAULT
 PALETTE = [RED, GREEN, BLUE, HIGH, MIDDLE, LOW, WHITE]
+# COLOR PALETTE #1
+PALETTE_1 = [RED, GREEN, BLUE]
 # COLOR PALETTE #2
 PALETTE_2 = [RED, RED, GREEN, GREEN, BLUE, BLUE]
 
 # Images
-
+"""
 Luke = [
     [pg.image.load("Luke/e1.png"),
      pg.image.load("Luke/e2.png"),
@@ -55,3 +57,4 @@ Luke = [
     pg.image.load("Luke/t.png")]
 
 Snake = pg.image.load("1.png")
+"""

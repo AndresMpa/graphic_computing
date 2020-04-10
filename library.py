@@ -318,20 +318,23 @@ def rotting_with_fixed_point(screen_points, fixed_point, rotting_angle=5):
     return transformation
 
 
-def three_dimensional_rotation(rotted, fixed_point, angle):
-    rotted_figure = []
-    for iteration, section in enumerate(rotted):
-        for iterator, value in enumerate(rotted):
-            rotted_figure.append(translation(rotted[iteration][iterator], [-fixed_point[0], -fixed_point[1]]))
+def rotation_axis_x(rotted, distance, reference, angle):
+    rotted_figure, rows = [], []
+    for iteration_translation, section in enumerate(rotted):
+        rotted_figure.append(rows)
+        for iterator_translation, value in enumerate(rotted):
+            rows.append(translation(rotted[iteration_translation][iterator_translation], [-distance[0], -distance[1]]))
 
-    for iterator, section in enumerate(rotted):
-        rotted_figure[iterator] = rotting_with_fixed_point(rotted_figure[iterator], fixed_point, angle)
+    for iterator_rotting_with_fixed_point, section in enumerate(rotted):
+        rotted_figure[iterator_rotting_with_fixed_point] = rotting_with_fixed_point(
+            rotted_figure[iterator_rotting_with_fixed_point], reference, angle)
 
-    for iteration, section in enumerate(rotted):
-        for iterator, value in enumerate(rotted):
-            rotted_figure[iteration][iterator] = translation(rotted_figure[iteration][iterator], fixed_point)
+    for iteration_getting_back, section in enumerate(rotted):
+        for iterator_getting_back, value in enumerate(rotted):
+            rotted_figure[iteration_getting_back][iterator_getting_back] = translation(
+                rotted_figure[iteration_getting_back][iterator_getting_back], distance)
 
-    return rotted
+    return rotted_figure
 
 
 def regular_figures(radius, sides):

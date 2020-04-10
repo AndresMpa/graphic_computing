@@ -5,7 +5,8 @@ if __name__ == '__main__':
     pg.init()
     run = True
     radius = 150
-    angle = 5
+    direction = 5
+    angle = direction
 
     base = [lib.screen_into_cartesian(lib.polar_into_cartesian(radius, 30)),
             lib.screen_into_cartesian([0, 0]),
@@ -28,10 +29,13 @@ if __name__ == '__main__':
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 lib.fill(window)
+                if event.button == 4:
+                    angle += direction
+                if event.button == 5:
+                    angle -= direction
                 rotting_base = lib.rotting_with_fixed_point(base, base[1], angle)
                 rotting_ceil = lib.rotting_with_fixed_point(ceil, ceil[1], angle)
                 lines = lib.lines_in_figures(rotting_base, rotting_ceil)
-                angle += 5
 
         lib.solids(window, rotting_base, lib.random_color())
         lib.polygons(window, rotting_ceil, lib.random_color(), 5)
