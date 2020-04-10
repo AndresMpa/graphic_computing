@@ -318,6 +318,22 @@ def rotting_with_fixed_point(screen_points, fixed_point, rotting_angle=5):
     return transformation
 
 
+def three_dimensional_rotation(rotted, fixed_point, angle):
+    rotted_figure = []
+    for iteration, section in enumerate(rotted):
+        for iterator, value in enumerate(rotted):
+            rotted_figure.append(translation(rotted[iteration][iterator], [-fixed_point[0], -fixed_point[1]]))
+
+    for iterator, section in enumerate(rotted):
+        rotted_figure[iterator] = rotting_with_fixed_point(rotted_figure[iterator], fixed_point, angle)
+
+    for iteration, section in enumerate(rotted):
+        for iterator, value in enumerate(rotted):
+            rotted_figure[iteration][iterator] = translation(rotted_figure[iteration][iterator], fixed_point)
+
+    return rotted
+
+
 def regular_figures(radius, sides):
     figures = []
     figure_angle = 360 / sides
