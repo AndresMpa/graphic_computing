@@ -31,20 +31,21 @@ if __name__ == '__main__':
                 run = False
 
             if event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    for stage, section in enumerate(figure_object):
+                        for figure_iterated, values in enumerate(figure_object[stage]):
+                            figure_object[stage][figure_iterated] = lib.translation_for_array(
+                                figure_object[stage][figure_iterated], [-100, -100])
+
+                if event.button == 3:
+                    for stage, section in enumerate(figure_object):
+                        for figure_iterated, values in enumerate(figure_object[stage]):
+                            figure_object[stage][figure_iterated] = lib.translation_for_array(
+                                figure_object[stage][figure_iterated], [100, 100])
                 if event.button == 4:
-                    angle += -direction
+                    pass
                 if event.button == 5:
-                    angle += direction
-                for stage, section in enumerate(figure_object):
-                    for figure_iterated, values in enumerate(figure_object[stage]):
-                        for iteration, sections in enumerate(figure_object[stage][figure_iterated]):
-                            figure_object[stage][figure_iterated][iteration] = lib.translation(
-                                figure_object[stage][figure_iterated][iteration], [100, 100])
-                for stage, section in enumerate(figure_object):
-                    for figure_iterated, values in enumerate(figure_object[stage]):
-                        for iteration, sections in enumerate(figure_object[stage][figure_iterated]):
-                            figure_object[stage][figure_iterated][iteration] = lib.translation(
-                                figure_object[stage][figure_iterated][iteration], [-100, -100])
+                    pass
 
         lib.fill(window)
         for stage, section in enumerate(figure_object):

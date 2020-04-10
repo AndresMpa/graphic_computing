@@ -259,6 +259,13 @@ def translation(screen_point, transformation):
     return translated
 
 
+def translation_for_array(figure, fixed_point):
+    figure_translated = []
+    for iteration, sections in enumerate(figure):
+        figure_translated.append(translation(figure[iteration], fixed_point))
+    return figure_translated
+
+
 """
 It work with an array of positions
 """
