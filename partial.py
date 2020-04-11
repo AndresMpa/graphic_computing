@@ -9,16 +9,19 @@ if __name__ == '__main__':
     fps = lib.frames_per_second_basics()
 
     figure_object = []
-    model = fig.Left_caps
-    model = lib.screen_into_cartesian_for_array(model, lib.cts.Origin)
-    print model
 
-    print lib.cartesian_into_polar(model[0][0])
-    for iteration in enumerate(model):
-        for iterator in enumerate(model):
-            model[iteration][iterator] = lib.cartesian_into_polar(model[iteration][iterator])
-    print model
-    figure_object.append(model)
+    figure_1 = fig.Left
+    figure_1 = lib.screen_into_cartesian_for_array(figure_1)
+    figure_object.append(figure_1)
+
+    figure_2 = fig.Center
+    figure_2 = lib.screen_into_cartesian_for_array(figure_2)
+    figure_object.append(figure_2)
+
+    figure_3 = fig.Right
+    figure_3 = lib.screen_into_cartesian_for_array(figure_3)
+    figure_object.append(figure_3)
+
     figure_object_rotted = figure_object
 
     direction = 1
