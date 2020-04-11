@@ -90,7 +90,7 @@ def bubble(vector, pos=1):
 
 # Basic figures
 
-def point(window, coord, color=cts.WHITE, size=5):
+def point(window, coord, color=cts.RED, size=5):
     pg.draw.circle(window, color, coord, size)
 
 

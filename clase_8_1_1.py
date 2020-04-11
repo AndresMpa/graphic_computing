@@ -5,12 +5,13 @@ if __name__ == '__main__':
     pg.init()
     run = True
     radius = 150
-    direction = 5
+    direction = 30
     angle = direction
 
     base = [lib.screen_into_cartesian(lib.polar_into_cartesian(radius, 30)),
             lib.screen_into_cartesian([0, 0]),
-            lib.screen_into_cartesian(lib.polar_into_cartesian(radius, 180))]
+            lib.screen_into_cartesian(lib.polar_into_cartesian(radius, 180)),
+            lib.translation(lib.screen_into_cartesian(lib.polar_into_cartesian(radius, 30)), [-radius, 0])]
     rotting_base = base
 
     ceil = []
