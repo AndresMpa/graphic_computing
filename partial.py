@@ -44,12 +44,6 @@ if __name__ == '__main__':
                 run = False
 
             if event.type == pg.MOUSEBUTTONDOWN:
-                for stage, section in enumerate(figure_object):
-                    for figure_iterated, values in enumerate(figure_object[stage]):
-                        figure_object_rotted[stage][figure_iterated] = lib.translation_for_array(
-                            figure_object[stage][figure_iterated],
-                            [figure_object[stage][figure_iterated][3][0] - lib.cts.Origin[0],
-                             figure_object[stage][figure_iterated][3][1] - lib.cts.Origin[1]])
 
                 # Remaking the main figure
                 figure_object = []
@@ -69,83 +63,217 @@ if __name__ == '__main__':
 
                 if event.button == 4:
                     angle += direction
-                    figure_object_rotted[0][0] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[0][0],
-                        figure_object_rotted[0][0][3],
-                        angle)
-                    figure_object_rotted[1][0] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[1][0],
-                        figure_object_rotted[0][0][3],
-                        angle)
                     figure_object_rotted[2][0] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[2][0],
-                        figure_object_rotted[0][0][3],
-                        angle)
-
-                    figure_object_rotted[0][1] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[0][1],
-                        figure_object_rotted[0][1][3],
-                        angle)
-                    figure_object_rotted[1][1] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[1][1],
-                        figure_object_rotted[0][1][3],
+                        figure_object[2][0],
+                        figure_object[2][0][3],
                         angle)
                     figure_object_rotted[2][1] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[2][1],
-                        figure_object_rotted[0][1][3],
+                        figure_object[2][1],
+                        figure_object[2][1][3],
                         angle)
 
-                    figure_object_rotted[0][1] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[0][1],
-                        figure_object_rotted[0][1][3],
-                        angle)
-                    figure_object_rotted[0][1] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[0][1],
-                        figure_object_rotted[0][1][3],
-                        angle)
+                    # It rotes each point of the superior cap
 
-                    figure_object_rotted[1][0] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[1][0],
-                        figure_object_rotted[2][0][3],
-                        angle)
-                    figure_object_rotted[1][1] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[1][1],
-                        figure_object_rotted[1][1][3],
-                        angle)
+                    # Green figure
 
-                    figure_object_rotted[2][0] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[2][0],
-                        figure_object_rotted[2][0][3],
-                        angle)
-                    figure_object_rotted[2][1] = lib.rotting_with_fixed_point(
-                        figure_object_rotted[2][1],
-                        figure_object_rotted[2][1][3],
-                        angle)
+                    figure_object_rotted[1][0][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][0],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[1][0][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][1],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[1][0][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][2],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[1][0][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][3],
+                        figure_object[2][0][3],
+                        angle
+                    )
 
-                    """
-                    for stage, section in enumerate(figure_object):
-                        for figure_iterated, values in enumerate(figure_object[stage]):
-                            figure_object_rotted[stage][figure_iterated] = lib.rotting_with_fixed_point(
-                                figure_object_rotted[stage][figure_iterated],
-                                figure_object_rotted[stage][figure_iterated][3],
-                                angle)
-                    """
+                    # White figure
+
+                    figure_object_rotted[0][0][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][0],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[0][0][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][1],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[0][0][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][2],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[0][0][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][3],
+                        figure_object[2][0][3],
+                        angle
+                    )
+
+                    # It rotes each point of the inferior cap
+
+                    # Green figure
+
+                    figure_object_rotted[1][1][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][0],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[1][1][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][1],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[1][1][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][2],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[1][1][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][3],
+                        figure_object[2][1][3],
+                        angle
+                    )
+
+                    # White figure
+
+                    figure_object_rotted[0][1][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][0],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[0][1][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][1],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[0][1][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][2],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[0][1][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][3],
+                        figure_object[2][1][3],
+                        angle
+                    )
+
                 if event.button == 5:
                     angle -= direction
-                    for stage, section in enumerate(figure_object):
-                        for figure_iterated, values in enumerate(figure_object[stage]):
-                            figure_object_rotted[stage][figure_iterated] = lib.rotting_with_fixed_point(
-                                figure_object_rotted[stage][figure_iterated],
-                                figure_object_rotted[stage][figure_iterated][3],
-                                angle)
+                    figure_object_rotted[2][0] = lib.rotting_with_fixed_point(
+                        figure_object[2][0],
+                        figure_object[2][0][3],
+                        angle)
+                    figure_object_rotted[2][1] = lib.rotting_with_fixed_point(
+                        figure_object[2][1],
+                        figure_object[2][1][3],
+                        angle)
 
-                for stage, section in enumerate(figure_object):
-                    for figure_iterated, values in enumerate(figure_object[stage]):
-                        figure_object_rotted[stage][figure_iterated] = lib.translation_for_array(
-                            figure_object_rotted[stage][figure_iterated],
-                            [lib.cts.Origin[0] - figure_object[stage][figure_iterated][3][0],
-                             lib.cts.Origin[1] - figure_object[stage][figure_iterated][3][1]])
+                    # It rotes each point of the superior cap
 
+                    # Green figure
+
+                    figure_object_rotted[1][0][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][0],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[1][0][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][1],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[1][0][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][2],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[1][0][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][0][3],
+                        figure_object[2][0][3],
+                        angle
+                    )
+
+                    # White figure
+
+                    figure_object_rotted[0][0][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][0],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[0][0][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][1],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[0][0][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][2],
+                        figure_object[2][0][3],
+                        angle
+                    )
+                    figure_object_rotted[0][0][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][0][3],
+                        figure_object[2][0][3],
+                        angle
+                    )
+
+                    # It rotes each point of the inferior cap
+
+                    # Green figure
+
+                    figure_object_rotted[1][1][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][0],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[1][1][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][1],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[1][1][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][2],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[1][1][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[1][1][3],
+                        figure_object[2][1][3],
+                        angle
+                    )
+
+                    # White figure
+
+                    figure_object_rotted[0][1][0] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][0],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[0][1][1] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][1],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[0][1][2] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][2],
+                        figure_object[2][1][3],
+                        angle
+                    )
+                    figure_object_rotted[0][1][3] = lib.rotting_with_fixed_point_single_points(
+                        figure_object[0][1][3],
+                        figure_object[2][1][3],
+                        angle
+                    )
                 lines_1 = lib.lines_in_figures(figure_object_rotted[0][0], figure_object_rotted[0][1])
                 lines_2 = lib.lines_in_figures(figure_object_rotted[1][0], figure_object_rotted[1][1])
                 lines_3 = lib.lines_in_figures(figure_object_rotted[2][0], figure_object_rotted[2][1])

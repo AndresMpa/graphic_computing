@@ -325,6 +325,19 @@ def rotting_with_fixed_point(screen_points, fixed_point, rotting_angle=5):
     return transformation
 
 
+def rotting_with_fixed_point_single_points(screen_point, fixed_point, rotting_angle=5):
+    transformation = []
+    iterator = 0
+
+    transformation.append(translation(screen_point, [-fixed_point[0], -fixed_point[1]]))
+
+    transformation[0] = clockwise(transformation[iterator], rotting_angle)
+
+    transformation[0] = translation(transformation[iterator], fixed_point)
+
+    return transformation[0]
+
+
 def rotation_axis_x(rotted, distance, reference, angle):
     rotted_figure, rows = [], []
     for iteration_translation, section in enumerate(rotted):
