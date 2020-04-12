@@ -5,7 +5,7 @@ if __name__ == '__main__':
     pg.init()
     run = True
     radius = 150
-    direction = 30
+    direction = 1
     angle = direction
 
     base = [lib.screen_into_cartesian(lib.polar_into_cartesian(radius, 30)),
