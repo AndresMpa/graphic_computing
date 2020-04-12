@@ -61,7 +61,7 @@ if __name__ == '__main__':
                 figure_3 = lib.screen_into_cartesian_for_array(figure_3)
                 figure_object.append(figure_3)
 
-                if event.button == 4:
+                if event.button == 1:
                     angle += direction
                     figure_object_rotted[2][0] = lib.rotting_with_fixed_point(
                         figure_object[2][0],
@@ -167,7 +167,7 @@ if __name__ == '__main__':
                         figure_object[2][1][3],
                         angle
                     )
-                if event.button == 5:
+                if event.button == 3:
                     angle -= direction
                     figure_object_rotted[2][0] = lib.rotting_with_fixed_point(
                         figure_object[2][0],
@@ -291,11 +291,5 @@ if __name__ == '__main__':
         for stage, section in enumerate(figure_object):
             for figure_iterated, values in enumerate(figure_object[stage]):
                 lib.polygons(window, figure_object_rotted[stage][figure_iterated], lib.cts.PALETTE_1[stage])
-
-        lib.point(window, figure_object[2][0][3])
-        lib.point(window, figure_object[2][1][3])
-        lib.point(window, figure_object[1][0][3])
-        lib.point(window, figure_object[1][1][3])
-
         lib.frames_per_second(fps, 10)
     pg.quit()
