@@ -78,22 +78,22 @@ if __name__ == '__main__':
 
                     figure_object_rotted[1][0][0] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][0],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
                     figure_object_rotted[1][0][1] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][1],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
                     figure_object_rotted[1][0][2] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][2],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
                     figure_object_rotted[1][0][3] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][3],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
 
@@ -167,7 +167,6 @@ if __name__ == '__main__':
                         figure_object[2][1][3],
                         angle
                     )
-
                 if event.button == 5:
                     angle -= direction
                     figure_object_rotted[2][0] = lib.rotting_with_fixed_point(
@@ -185,22 +184,22 @@ if __name__ == '__main__':
 
                     figure_object_rotted[1][0][0] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][0],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
                     figure_object_rotted[1][0][1] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][1],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
                     figure_object_rotted[1][0][2] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][2],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
                     figure_object_rotted[1][0][3] = lib.rotting_with_fixed_point_single_points(
                         figure_object[1][0][3],
-                        figure_object[2][0][3],
+                        figure_object[1][0][3],
                         angle
                     )
 
@@ -282,16 +281,21 @@ if __name__ == '__main__':
         lib.fill(window)
         # Lines
         for iterator, value in enumerate(lines_1):
-            lib.polygons(window, lines_1[iterator], lib.cts.PALETTE_1[0], 5)
+            lib.polygons(window, lines_1[iterator], lib.cts.PALETTE_1[0])
         for iterator, value in enumerate(lines_2):
-            lib.polygons(window, lines_2[iterator], lib.cts.PALETTE_1[1], 5)
+            lib.polygons(window, lines_2[iterator], lib.cts.PALETTE_1[1])
         for iterator, value in enumerate(lines_3):
-            lib.polygons(window, lines_3[iterator], lib.cts.PALETTE_1[2], 5)
+            lib.polygons(window, lines_3[iterator], lib.cts.PALETTE_1[2])
 
         # Caps
         for stage, section in enumerate(figure_object):
             for figure_iterated, values in enumerate(figure_object[stage]):
-                lib.polygons(window, figure_object_rotted[stage][figure_iterated],
-                             lib.cts.PALETTE_1[stage])
+                lib.polygons(window, figure_object_rotted[stage][figure_iterated], lib.cts.PALETTE_1[stage])
+
+        lib.point(window, figure_object[2][0][3])
+        lib.point(window, figure_object[2][1][3])
+        lib.point(window, figure_object[1][0][3])
+        lib.point(window, figure_object[1][1][3])
+
         lib.frames_per_second(fps, 10)
     pg.quit()
