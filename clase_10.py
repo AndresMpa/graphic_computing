@@ -44,7 +44,6 @@ if __name__ == '__main__':
                 position = [0, 0]
 
         lib.fill(window)
-        lib.frames_per_second(fps)
 
         players.update(window, position[0], position[1], direction)
         players.draw(window)
@@ -52,5 +51,5 @@ if __name__ == '__main__':
         enemies.update(window, position[0], position[1])
         enemies.draw(window)
 
-        lib.flip()
+        lib.frames_per_second(fps)
     pg.quit()

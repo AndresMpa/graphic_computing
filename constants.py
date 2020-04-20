@@ -37,7 +37,6 @@ PALETTE_1 = [WHITE, GREEN, BLUE]
 PALETTE_2 = [RED, RED, GREEN, GREEN, BLUE, BLUE]
 
 # Images
-"""
 Luke = [
     [pg.image.load("Luke/e1.png"),
      pg.image.load("Luke/e2.png"),
@@ -57,4 +56,13 @@ Luke = [
     pg.image.load("Luke/t.png")]
 
 Snake = pg.image.load("1.png")
-"""
+
+Ship = pg.image.load("Images/ship.png")
+
+Invaders = [pg.image.load("Images/1.png"),
+            pg.image.load("Images/2.png"),
+            pg.image.load("Images/3.png"),
+            pg.image.load("Images/mother.png")]
+
+Invader_Shots = pg.image.load("Images/invader_shot.png")
+Player_Shots = pg.image.load("Images/shot.png")
