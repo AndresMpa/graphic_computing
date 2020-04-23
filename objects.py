@@ -1,4 +1,5 @@
 import pygame as pg
+import library as lib
 import constants as cts
 
 
@@ -52,6 +53,7 @@ class Enemy(pg.sprite.Sprite):
         self.rect.x += pos_x - 1
         self.rect.y += pos_y - 1
         """
+        pass
 
     def update(self, window, pos_x, pos_y):
         self.movement(pos_x, pos_y)
@@ -75,11 +77,9 @@ class PlayerShip(pg.sprite.Sprite):
     def get_position(self):
         return [self.rect.x, self.rect.y]
 
-    def movement(self, pos_x, pos_y):
-        self.rect.move_ip(pos_x, pos_y)
-
-    def update(self, window, pos_x, pos_y):
-        self.movement(pos_x, pos_y)
+    def update(self):
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
 
 
 class EnemyShip(pg.sprite.Sprite):
@@ -95,31 +95,21 @@ class EnemyShip(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
         self.velocity = [0, 0]
+        self.tmp = lib.random_range(40, 100)
 
-    def movement(self):
-        """
-        self.rect.x += self.direction
-        if self.rect.x == cts.width - 35:
-            self.direction *= -1
-            self.down += 1
-        if self.rect.x == 35:
-            self.direction *= -1
-        if self.down == 3:
-            self.rect.y += 10
-            self.down = 0
-        """
-        pass
+    def get_position(self):
+        return [self.rect.x, self.rect.y]
 
-    def update(self, window):
-        self.movement()
-        self.rect.move_ip(self.rect.x, self.rect.y)
-
-
-def shot_type(shot_class):
-    if shot_class == 0:
-        return cts.Player_Shots
-    else:
-        return cts.Invader_Shots
+    def update(self):
+        self.tmp -= 1
+        if self.rect.x > (cts.width - self.rect.width):
+            self.rect.x = cts.width - self.rect.width
+            self.velocity[0] = -5
+        if self.rect.x < 0:
+            self.rect.x = 0
+            self.velocity[0] = 5
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
 
 
 class Shot(pg.sprite.Sprite):
@@ -128,12 +118,19 @@ class Shot(pg.sprite.Sprite):
 
         # Shot images
         self.type = shot_class
-        self.image = shot_type(shot_class)
+        self.image = cts.Player_Shots
+        self.shot_type()
 
         # Position issues
-        self.velocity = 1
+        self.velocity = 5
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
+
+    def shot_type(self):
+        if self.type == 0:
+            self.image = cts.Player_Shots
+        else:
+            self.image = cts.Invader_Shots
 
     def movement(self):
         if self.type == 0:
@@ -141,7 +138,5 @@ class Shot(pg.sprite.Sprite):
         else:
             self.rect.y += self.velocity
 
-        self.rect.move_ip([self.rect.x, self.rect.y])
-
-    def update(self, window):
+    def update(self):
         self.movement()

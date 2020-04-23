@@ -67,15 +67,20 @@ def random_color():
     return create_color(r, g, b)
 
 
-def write(txt, screen, coord, selected_font=1):
-    font_1 = pg.font.SysFont("Alba super", 150)
-    font_2 = pg.font.SysFont("04b, 30", 50)
+def random_range(start, stop):
+    return rd.randrange(start, stop)
+
+
+def write(txt, size, selected_font=1):
+    pg.font.init()
+    font_1 = pg.font.SysFont("Alba super", size)
+    font_2 = pg.font.SysFont("04b, 30", size)
     if selected_font == 1:
         write_text = font_1.render(txt, 0, random_color())
-        screen.blit(write_text, coord)
+        return write_text
     if selected_font == 2:
         write_text = font_2.render(txt, 0, random_color())
-        screen.blit(write_text, coord)
+        return write_text
 
 
 def bubble(vector, pos=1):
