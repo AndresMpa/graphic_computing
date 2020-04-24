@@ -20,19 +20,18 @@ class Player(pg.sprite.Sprite):
         self.rect.x, self.rect.y = position
         self.velocity = [0, 0]
 
-    def movement(self, pos_x, pos_y, direction):
-        self.next_images(direction)
-        self.rect.move_ip(pos_x, pos_y)
-
     def next_images(self, direction):
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+
         self.current_direction = direction
         self.current_image += 1
 
         if self.current_image >= 3:
             self.current_image = 0
 
-    def update(self, window, pos_x, pos_y, direction):
-        self.movement(pos_x, pos_y, direction)
+    def update(self, direction):
+        self.next_images(direction)
         self.image = self.images[self.current_direction][self.current_image]
 
 
