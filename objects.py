@@ -20,12 +20,14 @@ class Player(pg.sprite.Sprite):
         self.rect.x, self.rect.y = position
         self.velocity = [0, 0]
 
+        # Collision
+        self.blocks = None
+
     def next_images(self, direction):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
         self.current_direction = direction
-        self.current_image += 1
 
         if self.current_image >= 3:
             self.current_image = 0
@@ -33,6 +35,23 @@ class Player(pg.sprite.Sprite):
     def update(self, direction):
         self.next_images(direction)
         self.image = self.images[self.current_direction][self.current_image]
+
+
+class Block(pg.sprite.Sprite):
+    def __init__(self, position, width, height):
+        super(Block, self).__init__()
+
+        # Player images
+        self.image = cts.Tree
+
+        # Position issues
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = position
+        self.block_velocity = [0, 0]
+
+    def update(self):
+        self.rect.x += self.block_velocity[0]
+        self.rect.y += self.block_velocity[1]
 
 
 class Enemy(pg.sprite.Sprite):
