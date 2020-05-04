@@ -20,7 +20,19 @@ if __name__ == '__main__':
     player = obj.Player([lib.cts.width / 2 - 35, lib.cts.height - 70])
     players.add(player)
 
-    block = obj.Block([1300, 300], 300, 200)
+    block = obj.Objects([1300, 300])
+    blocks.add(block)
+
+    block = obj.Objects([300, 100])
+    blocks.add(block)
+
+    block = obj.Objects([100, 1300])
+    blocks.add(block)
+
+    block = obj.Objects([1300, 800])
+    blocks.add(block)
+
+    block = obj.Objects([500, 700])
     blocks.add(block)
 
     speed = 5

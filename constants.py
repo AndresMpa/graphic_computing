@@ -67,4 +67,6 @@ Invaders = [pg.image.load("Images/1.png"),
 Invader_Shots = pg.image.load("Images/invader_shot.png")
 Player_Shots = pg.image.load("Images/shot.png")
 
-background
+background = pg.image.load("Images/f_1.png")
+
+Tree = pg.image.load("Images/tree.png")

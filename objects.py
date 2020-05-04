@@ -37,9 +37,9 @@ class Player(pg.sprite.Sprite):
         self.image = self.images[self.current_direction][self.current_image]
 
 
-class Block(pg.sprite.Sprite):
-    def __init__(self, position, width, height):
-        super(Block, self).__init__()
+class Objects(pg.sprite.Sprite):
+    def __init__(self, position):
+        super(Objects, self).__init__()
 
         # Player images
         self.image = cts.Tree
