@@ -23,7 +23,8 @@ class Player(pg.sprite.Sprite):
         self.image = self.matrix[self.direction][self.current_animation]
 
     def update(self):
-        self.animate()
+        if self.velocity != [0, 0]:
+            self.animate()
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 

@@ -13,6 +13,10 @@ def new_window(title="Title", size=None):
     return pg.display.set_mode(size)
 
 
+def change_window_name(title):
+    pg.display.set_caption(title)
+
+
 def flip():
     pg.display.flip()
 
@@ -71,15 +75,23 @@ def random_range(start, stop):
     return rd.randrange(start, stop)
 
 
-def write(txt, size, selected_font=1):
+def write(txt, size, selected_font=1, colors=cts.WHITE):
     pg.font.init()
     font_1 = pg.font.SysFont("Alba super", size)
     font_2 = pg.font.SysFont("04b, 30", size)
+    font_3 = pg.font.SysFont("Admiration Pains", size)
+    font_4 = pg.font.SysFont("Otra Mas stf", size)
     if selected_font == 1:
-        write_text = font_1.render(txt, 0, random_color())
+        write_text = font_1.render(txt, 0, colors)
         return write_text
     if selected_font == 2:
-        write_text = font_2.render(txt, 0, random_color())
+        write_text = font_2.render(txt, 0, colors)
+        return write_text
+    if selected_font == 3:
+        write_text = font_3.render(txt, 0, colors)
+        return write_text
+    if selected_font == 4:
+        write_text = font_4.render(txt, 0, colors)
         return write_text
 
 

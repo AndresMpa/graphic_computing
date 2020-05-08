@@ -55,7 +55,7 @@ Luke = [
      pg.image.load("Luke/t3.png")],
     pg.image.load("Luke/t.png")]
 
-Snake = pg.image.load("1.png")
+Snake = pg.image.load("Images/snaky.png")
 
 Ship = pg.image.load("Images/ship.png")
 
