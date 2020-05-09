@@ -62,7 +62,7 @@ if __name__ == '__main__':
     window = lib.new_window("Sprites and animations")
     fps = lib.frames_per_second_basics()
 
-    sprites = pg.image.load("ken.png")
+    sprites = pg.image.load("Images/ken.png")
 
     players = pg.sprite.Group()
     blocks = pg.sprite.Group()
