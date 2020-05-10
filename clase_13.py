@@ -7,6 +7,7 @@ if __name__ == '__main__':
     run = True
     window = lib.new_window("Environment")
     fps = lib.frames_per_second_basics()
+
     background_velocity = [0, 0]
     background_position = [0, 0]
     background_information = lib.cts.background.get_rect()

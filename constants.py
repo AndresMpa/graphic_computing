@@ -36,167 +36,223 @@ PALETTE_1 = [WHITE, GREEN, BLUE]
 # COLOR PALETTE #2
 PALETTE_2 = [RED, RED, GREEN, GREEN, BLUE, BLUE]
 
-# Images
+# IMAGES
 
-Angel = [
-    [pg.image.load("Images/Angel/e1.png"),
-     pg.image.load("Images/Angel/e2.png"),
-     pg.image.load("Images/Angel/e3.png")],
-    [pg.image.load("Images/Angel/n1.png"),
-     pg.image.load("Images/Angel/n2.png"),
-     pg.image.load("Images/Angel/n3.png")],
-    [pg.image.load("Images/Angel/o1.png"),
-     pg.image.load("Images/Angel/o2.png"),
-     pg.image.load("Images/Angel/o3.png")],
-    [pg.image.load("Images/Angel/s1.png"),
-     pg.image.load("Images/Angel/s2.png"),
-     pg.image.load("Images/Angel/s3.png")],
-    [pg.image.load("Images/Angel/t1.png"),
-     pg.image.load("Images/Angel/t2.png"),
-     pg.image.load("Images/Angel/t3.png")],
-    pg.image.load("Images/Angel/t.png")]
-
-Escanor = [
-    [pg.image.load("Images/Escanor/e1.png"),
-     pg.image.load("Images/Escanor/e2.png"),
-     pg.image.load("Images/Escanor/e3.png")],
-    [pg.image.load("Images/Escanor/n1.png"),
-     pg.image.load("Images/Escanor/n2.png"),
-     pg.image.load("Images/Escanor/n3.png")],
-    [pg.image.load("Images/Escanor/o1.png"),
-     pg.image.load("Images/Escanor/o2.png"),
-     pg.image.load("Images/Escanor/o3.png")],
-    [pg.image.load("Images/Escanor/s1.png"),
-     pg.image.load("Images/Escanor/s2.png"),
-     pg.image.load("Images/Escanor/s3.png")],
-    [pg.image.load("Images/Escanor/t1.png"),
-     pg.image.load("Images/Escanor/t2.png"),
-     pg.image.load("Images/Escanor/t3.png")],
-    pg.image.load("Images/Escanor/t.png")]
-
-Luke = [
-    [pg.image.load("Images/Luke/e1.png"),
-     pg.image.load("Images/Luke/e2.png"),
-     pg.image.load("Images/Luke/e3.png")],
-    [pg.image.load("Images/Luke/n1.png"),
-     pg.image.load("Images/Luke/n2.png"),
-     pg.image.load("Images/Luke/n3.png")],
-    [pg.image.load("Images/Luke/o1.png"),
-     pg.image.load("Images/Luke/o2.png"),
-     pg.image.load("Images/Luke/o3.png")],
-    [pg.image.load("Images/Luke/s1.png"),
-     pg.image.load("Images/Luke/s2.png"),
-     pg.image.load("Images/Luke/s3.png")],
-    [pg.image.load("Images/Luke/t1.png"),
-     pg.image.load("Images/Luke/t2.png"),
-     pg.image.load("Images/Luke/t3.png")],
-    pg.image.load("Images/Luke/t.png")]
-
-Serafin = [
-    [pg.image.load("Images/Serafin/e1.png"),
-     pg.image.load("Images/Serafin/e2.png"),
-     pg.image.load("Images/Serafin/e3.png")],
-    [pg.image.load("Images/Serafin/n1.png"),
-     pg.image.load("Images/Serafin/n2.png"),
-     pg.image.load("Images/Serafin/n3.png")],
-    [pg.image.load("Images/Serafin/o1.png"),
-     pg.image.load("Images/Serafin/o2.png"),
-     pg.image.load("Images/Serafin/o3.png")],
-    [pg.image.load("Images/Serafin/s1.png"),
-     pg.image.load("Images/Serafin/s2.png"),
-     pg.image.load("Images/Serafin/s3.png")],
-    [pg.image.load("Images/Serafin/t1.png"),
-     pg.image.load("Images/Serafin/t2.png"),
-     pg.image.load("Images/Serafin/t3.png")],
-    pg.image.load("Images/Serafin/t.png")]
-
-Sofia = [
-    [pg.image.load("Images/Sofia/e1.png"),
-     pg.image.load("Images/Sofia/e2.png"),
-     pg.image.load("Images/Sofia/e3.png")],
-    [pg.image.load("Images/Sofia/n1.png"),
-     pg.image.load("Images/Sofia/n2.png"),
-     pg.image.load("Images/Sofia/n3.png")],
-    [pg.image.load("Images/Sofia/o1.png"),
-     pg.image.load("Images/Sofia/o2.png"),
-     pg.image.load("Images/Sofia/o3.png")],
-    [pg.image.load("Images/Sofia/s1.png"),
-     pg.image.load("Images/Sofia/s2.png"),
-     pg.image.load("Images/Sofia/s3.png")],
-    [pg.image.load("Images/Sofia/t1.png"),
-     pg.image.load("Images/Sofia/t2.png"),
-     pg.image.load("Images/Sofia/t3.png")],
-    pg.image.load("Images/Sofia/t.png")]
-
-Sonia = [
-    [pg.image.load("Images/Sonia/e1.png"),
-     pg.image.load("Images/Sonia/e2.png"),
-     pg.image.load("Images/Sonia/e3.png")],
-    [pg.image.load("Images/Sonia/n1.png"),
-     pg.image.load("Images/Sonia/n2.png"),
-     pg.image.load("Images/Sonia/n3.png")],
-    [pg.image.load("Images/Sonia/o1.png"),
-     pg.image.load("Images/Sonia/o2.png"),
-     pg.image.load("Images/Sonia/o3.png")],
-    [pg.image.load("Images/Sonia/s1.png"),
-     pg.image.load("Images/Sonia/s2.png"),
-     pg.image.load("Images/Sonia/s3.png")],
-    [pg.image.load("Images/Sonia/t1.png"),
-     pg.image.load("Images/Sonia/t2.png"),
-     pg.image.load("Images/Sonia/t3.png")],
-    pg.image.load("Images/Sonia/t.png")]
-
-Taun = [
-    [pg.image.load("Images/Taun/e1.png"),
-     pg.image.load("Images/Taun/e2.png"),
-     pg.image.load("Images/Taun/e3.png")],
-    [pg.image.load("Images/Taun/n1.png"),
-     pg.image.load("Images/Taun/n2.png"),
-     pg.image.load("Images/Taun/n3.png")],
-    [pg.image.load("Images/Taun/o1.png"),
-     pg.image.load("Images/Taun/o2.png"),
-     pg.image.load("Images/Taun/o3.png")],
-    [pg.image.load("Images/Taun/s1.png"),
-     pg.image.load("Images/Taun/s2.png"),
-     pg.image.load("Images/Taun/s3.png")],
-    [pg.image.load("Images/Taun/t1.png"),
-     pg.image.load("Images/Taun/t2.png"),
-     pg.image.load("Images/Taun/t3.png")],
-    pg.image.load("Images/Taun/t.png")]
-
-Xerath = [
-    [pg.image.load("Images/Xerath/e1.png"),
-     pg.image.load("Images/Xerath/e2.png"),
-     pg.image.load("Images/Xerath/e3.png")],
-    [pg.image.load("Images/Xerath/n1.png"),
-     pg.image.load("Images/Xerath/n2.png"),
-     pg.image.load("Images/Xerath/n3.png")],
-    [pg.image.load("Images/Xerath/o1.png"),
-     pg.image.load("Images/Xerath/o2.png"),
-     pg.image.load("Images/Xerath/o3.png")],
-    [pg.image.load("Images/Xerath/s1.png"),
-     pg.image.load("Images/Xerath/s2.png"),
-     pg.image.load("Images/Xerath/s3.png")],
-    [pg.image.load("Images/Xerath/t1.png"),
-     pg.image.load("Images/Xerath/t2.png"),
-     pg.image.load("Images/Xerath/t3.png")],
-    pg.image.load("Images/Xerath/t.png")]
-
-Snake = pg.image.load("Images/snaky.png")
+# Heroes
 
 Ship = pg.image.load("Images/ship.png")
+
+Angel = [
+    [pg.image.load("Images/Heroes/Angel/e1.png"),
+     pg.image.load("Images/Heroes/Angel/e2.png"),
+     pg.image.load("Images/Heroes/Angel/e3.png")],
+    [pg.image.load("Images/Heroes/Angel/n1.png"),
+     pg.image.load("Images/Heroes/Angel/n2.png"),
+     pg.image.load("Images/Heroes/Angel/n3.png")],
+    [pg.image.load("Images/Heroes/Angel/o1.png"),
+     pg.image.load("Images/Heroes/Angel/o2.png"),
+     pg.image.load("Images/Heroes/Angel/o3.png")],
+    [pg.image.load("Images/Heroes/Angel/s1.png"),
+     pg.image.load("Images/Heroes/Angel/s2.png"),
+     pg.image.load("Images/Heroes/Angel/s3.png")],
+    [pg.image.load("Images/Heroes/Angel/t1.png"),
+     pg.image.load("Images/Heroes/Angel/t2.png"),
+     pg.image.load("Images/Heroes/Angel/t3.png")],
+    pg.image.load("Images/Heroes/Angel/t.png")]
+
+Escanor = [
+    [pg.image.load("Images/Heroes/Escanor/e1.png"),
+     pg.image.load("Images/Heroes/Escanor/e2.png"),
+     pg.image.load("Images/Heroes/Escanor/e3.png")],
+    [pg.image.load("Images/Heroes/Escanor/n1.png"),
+     pg.image.load("Images/Heroes/Escanor/n2.png"),
+     pg.image.load("Images/Heroes/Escanor/n3.png")],
+    [pg.image.load("Images/Heroes/Escanor/o1.png"),
+     pg.image.load("Images/Heroes/Escanor/o2.png"),
+     pg.image.load("Images/Heroes/Escanor/o3.png")],
+    [pg.image.load("Images/Heroes/Escanor/s1.png"),
+     pg.image.load("Images/Heroes/Escanor/s2.png"),
+     pg.image.load("Images/Heroes/Escanor/s3.png")],
+    [pg.image.load("Images/Heroes/Escanor/t1.png"),
+     pg.image.load("Images/Heroes/Escanor/t2.png"),
+     pg.image.load("Images/Heroes/Escanor/t3.png")],
+    pg.image.load("Images/Heroes/Escanor/t.png")]
+
+Luke = [
+    [pg.image.load("Images/Heroes/Luke/e1.png"),
+     pg.image.load("Images/Heroes/Luke/e2.png"),
+     pg.image.load("Images/Heroes/Luke/e3.png")],
+    [pg.image.load("Images/Heroes/Luke/n1.png"),
+     pg.image.load("Images/Heroes/Luke/n2.png"),
+     pg.image.load("Images/Heroes/Luke/n3.png")],
+    [pg.image.load("Images/Heroes/Luke/o1.png"),
+     pg.image.load("Images/Heroes/Luke/o2.png"),
+     pg.image.load("Images/Heroes/Luke/o3.png")],
+    [pg.image.load("Images/Heroes/Luke/s1.png"),
+     pg.image.load("Images/Heroes/Luke/s2.png"),
+     pg.image.load("Images/Heroes/Luke/s3.png")],
+    [pg.image.load("Images/Heroes/Luke/t1.png"),
+     pg.image.load("Images/Heroes/Luke/t2.png"),
+     pg.image.load("Images/Heroes/Luke/t3.png")],
+    pg.image.load("Images/Heroes/Luke/t.png")]
+
+Serafin = [
+    [pg.image.load("Images/Heroes/Serafin/e1.png"),
+     pg.image.load("Images/Heroes/Serafin/e2.png"),
+     pg.image.load("Images/Heroes/Serafin/e3.png")],
+    [pg.image.load("Images/Heroes/Serafin/n1.png"),
+     pg.image.load("Images/Heroes/Serafin/n2.png"),
+     pg.image.load("Images/Heroes/Serafin/n3.png")],
+    [pg.image.load("Images/Heroes/Serafin/o1.png"),
+     pg.image.load("Images/Heroes/Serafin/o2.png"),
+     pg.image.load("Images/Heroes/Serafin/o3.png")],
+    [pg.image.load("Images/Heroes/Serafin/s1.png"),
+     pg.image.load("Images/Heroes/Serafin/s2.png"),
+     pg.image.load("Images/Heroes/Serafin/s3.png")],
+    [pg.image.load("Images/Heroes/Serafin/t1.png"),
+     pg.image.load("Images/Heroes/Serafin/t2.png"),
+     pg.image.load("Images/Heroes/Serafin/t3.png")],
+    pg.image.load("Images/Heroes/Serafin/t.png")]
+
+Sofia = [
+    [pg.image.load("Images/Heroes/Sofia/e1.png"),
+     pg.image.load("Images/Heroes/Sofia/e2.png"),
+     pg.image.load("Images/Heroes/Sofia/e3.png")],
+    [pg.image.load("Images/Heroes/Sofia/n1.png"),
+     pg.image.load("Images/Heroes/Sofia/n2.png"),
+     pg.image.load("Images/Heroes/Sofia/n3.png")],
+    [pg.image.load("Images/Heroes/Sofia/o1.png"),
+     pg.image.load("Images/Heroes/Sofia/o2.png"),
+     pg.image.load("Images/Heroes/Sofia/o3.png")],
+    [pg.image.load("Images/Heroes/Sofia/s1.png"),
+     pg.image.load("Images/Heroes/Sofia/s2.png"),
+     pg.image.load("Images/Heroes/Sofia/s3.png")],
+    [pg.image.load("Images/Heroes/Sofia/t1.png"),
+     pg.image.load("Images/Heroes/Sofia/t2.png"),
+     pg.image.load("Images/Heroes/Sofia/t3.png")],
+    pg.image.load("Images/Heroes/Sofia/t.png")]
+
+Sonia = [
+    [pg.image.load("Images/Heroes/Sonia/e1.png"),
+     pg.image.load("Images/Heroes/Sonia/e2.png"),
+     pg.image.load("Images/Heroes/Sonia/e3.png")],
+    [pg.image.load("Images/Heroes/Sonia/n1.png"),
+     pg.image.load("Images/Heroes/Sonia/n2.png"),
+     pg.image.load("Images/Heroes/Sonia/n3.png")],
+    [pg.image.load("Images/Heroes/Sonia/o1.png"),
+     pg.image.load("Images/Heroes/Sonia/o2.png"),
+     pg.image.load("Images/Heroes/Sonia/o3.png")],
+    [pg.image.load("Images/Heroes/Sonia/s1.png"),
+     pg.image.load("Images/Heroes/Sonia/s2.png"),
+     pg.image.load("Images/Heroes/Sonia/s3.png")],
+    [pg.image.load("Images/Heroes/Sonia/t1.png"),
+     pg.image.load("Images/Heroes/Sonia/t2.png"),
+     pg.image.load("Images/Heroes/Sonia/t3.png")],
+    pg.image.load("Images/Heroes/Sonia/t.png")]
+
+Taun = [
+    [pg.image.load("Images/Heroes/Taun/e1.png"),
+     pg.image.load("Images/Heroes/Taun/e2.png"),
+     pg.image.load("Images/Heroes/Taun/e3.png")],
+    [pg.image.load("Images/Heroes/Taun/n1.png"),
+     pg.image.load("Images/Heroes/Taun/n2.png"),
+     pg.image.load("Images/Heroes/Taun/n3.png")],
+    [pg.image.load("Images/Heroes/Taun/o1.png"),
+     pg.image.load("Images/Heroes/Taun/o2.png"),
+     pg.image.load("Images/Heroes/Taun/o3.png")],
+    [pg.image.load("Images/Heroes/Taun/s1.png"),
+     pg.image.load("Images/Heroes/Taun/s2.png"),
+     pg.image.load("Images/Heroes/Taun/s3.png")],
+    [pg.image.load("Images/Heroes/Taun/t1.png"),
+     pg.image.load("Images/Heroes/Taun/t2.png"),
+     pg.image.load("Images/Heroes/Taun/t3.png")],
+    pg.image.load("Images/Heroes/Taun/t.png")]
+
+Xerath = [
+    [pg.image.load("Images/Heroes/Xerath/e1.png"),
+     pg.image.load("Images/Heroes/Xerath/e2.png"),
+     pg.image.load("Images/Heroes/Xerath/e3.png")],
+    [pg.image.load("Images/Heroes/Xerath/n1.png"),
+     pg.image.load("Images/Heroes/Xerath/n2.png"),
+     pg.image.load("Images/Heroes/Xerath/n3.png")],
+    [pg.image.load("Images/Heroes/Xerath/o1.png"),
+     pg.image.load("Images/Heroes/Xerath/o2.png"),
+     pg.image.load("Images/Heroes/Xerath/o3.png")],
+    [pg.image.load("Images/Heroes/Xerath/s1.png"),
+     pg.image.load("Images/Heroes/Xerath/s2.png"),
+     pg.image.load("Images/Heroes/Xerath/s3.png")],
+    [pg.image.load("Images/Heroes/Xerath/t1.png"),
+     pg.image.load("Images/Heroes/Xerath/t2.png"),
+     pg.image.load("Images/Heroes/Xerath/t3.png")],
+    pg.image.load("Images/Heroes/Xerath/t.png")]
+
+# NPCs
+
+Artemis = pg.image.load("Images/Characters/Town_characters/Artemis.png")
+Balzar = pg.image.load("Images/Characters/Town_characters/Balzar.png")
+Clarissa = pg.image.load("Images/Characters/Town_characters/Clarissa.png")
+Elise = pg.image.load("Images/Characters/Town_characters/Elise.png")
+Elizabeth = pg.image.load("Images/Characters/Town_characters/Elizabeth.png")
+Goldi = pg.image.load("Images/Characters/Town_characters/Goldi.png")
+Helen = pg.image.load("Images/Characters/Town_characters/Helen.png")
+Marian = pg.image.load("Images/Characters/Town_characters/Marian.png")
+Saku = pg.image.load("Images/Characters/Town_characters/Saku.png")
+Spidy = pg.image.load("Images/Characters/Town_characters/Spidy.png")
+
+# Enemies
+
+Enemy_1 = pg.image.load("Images/Characters/Enemies/1.png")
+Enemy_2 = pg.image.load("Images/Characters/Enemies/2.png")
+Enemy_3 = pg.image.load("Images/Characters/Enemies/3.png")
+Enemy_4 = pg.image.load("Images/Characters/Enemies/4.png")
+Enemy_5 = pg.image.load("Images/Characters/Enemies/5.png")
+Enemy_6 = pg.image.load("Images/Characters/Enemies/6.png")
+Enemy_7 = pg.image.load("Images/Characters/Enemies/7.png")
+Enemy_8 = pg.image.load("Images/Characters/Enemies/8.png")
+Enemy_9 = pg.image.load("Images/Characters/Enemies/9.png")
+Enemy_10 = pg.image.load("Images/Characters/Enemies/10.png")
+Enemy_11 = pg.image.load("Images/Characters/Enemies/11.png")
+Enemy_12 = pg.image.load("Images/Characters/Enemies/12.png")
+Enemy_13 = pg.image.load("Images/Characters/Enemies/13.png")
+Enemy_14 = pg.image.load("Images/Characters/Enemies/14.png")
+Enemy_15 = pg.image.load("Images/Characters/Enemies/15.png")
+
+Snake = pg.image.load("Images/snaky.png")
 
 Invaders = [pg.image.load("Images/1.png"),
             pg.image.load("Images/2.png"),
             pg.image.load("Images/3.png"),
             pg.image.load("Images/mother.png")]
 
-Invader_Shots = pg.image.load("Images/invader_shot.png")
-Player_Shots = pg.image.load("Images/shot.png")
+# Backgrounds / Scenarios
+
+House_1 = pg.image.load("Images/Places/bedroom.png")
+House_1_position = [width / 3, height / 3]
+House_2 = pg.image.load("Images/Places/living_room.png")
+House_2_position = [width / 5, height / 5]
+Field_0 = pg.image.load("Images/Places/f_0.png")
+Field_1 = pg.image.load("Images/Places/f_1.png")
+Field_2 = pg.image.load("Images/Places/f_2.png")
+Fields_position = [0, 0]
 
 background = pg.image.load("Images/f_1.png")
 
-Tree = pg.image.load("Images/tree.png")
+# Things
+
+Tree = pg.image.load("Images/Things/tree.png")
+Bush = pg.image.load("Images/Things/bush.png")
+Flower = pg.image.load("Images/Things/pink_flower.png")
+Plant_1 = pg.image.load("Images/Things/plant_1.png")
+Plant_2 = pg.image.load("Images/Things/plant_2.png")
+
+# Effects
+
+Explosion_1 = pg.image.load("Images/Effects/1.png")
+Explosion_2 = pg.image.load("Images/Effects/2.png")
+Explosion_3 = pg.image.load("Images/Effects/3.png")
+
+Player_Shots = pg.image.load("Images/shot.png")
+Invader_Shots = pg.image.load("Images/invader_shot.png")
 
 # Texts
 
@@ -225,3 +281,5 @@ euphoria_intro = ["Once upon a time, a lost continent; where",
                   "", ]
 
 skip = "Click to skip"
+
+dead = "You have died"

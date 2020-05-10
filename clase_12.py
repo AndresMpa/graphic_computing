@@ -20,6 +20,7 @@ if __name__ == '__main__':
         txt = "Press any key"
         write = lib.write(txt, 30, 2)
         window.blit(write, [400, 300])
+        txt = ''
 
         lib.frames_per_second(fps, 5)
         for event in pg.event.get():
