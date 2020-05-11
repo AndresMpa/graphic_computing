@@ -35,7 +35,7 @@ if __name__ == '__main__':
     window = lib.new_window("Sprites and animations")
     fps = lib.frames_per_second_basics()
 
-    sprites = pg.image.load("animals.png")
+    sprites = pg.image.load("Images/animals.png")
 
     players = pg.sprite.Group()
 

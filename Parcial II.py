@@ -96,11 +96,19 @@ class SimpleEnemy(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
         self.velocity = [0, 0]
+        self.angle = 0
 
-    def update(self, x_player, y_player):
-        self.velocity[0], self.velocity[1] = self.velocity[1] - y_player / self.velocity[0] - x_player
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
+    def get_position(self):
+        return [self.rect.x, self.rect.y]
+
+    def move_enemy(self, player_position, enemy_position):
+        position_x = player_position[0] - enemy_position[0]
+        position_y = player_position[1] - enemy_position[1]
+        return [position_x, position_y]
+
+    def update(self):
+        self.rect.x += self.velocity[0] * lib.mt.cos(self.angle)
+        self.rect.y += self.velocity[1] * lib.mt.sin(self.angle)
 
 
 class Things(pg.sprite.Sprite):
@@ -267,6 +275,14 @@ if __name__ == '__main__':
     player.speed = speed
     players_group.add(player)
 
+    angulo = 0
+    distancia = [0, 0]
+    posrival = [400,
+                300]  # Si son varios rivales use una lista y agregue las posiciones con append y debe crear un iterador luego le explico pa que jajaja
+    radio = 300  # Alcance de persecucion del rival
+    r = Rival(posrival)
+    rivales.add(r)
+
     tree = Things([1600, 500], 1)
     trees_group.add(tree)
     tree = Things([500, 500], 2)
@@ -305,7 +321,31 @@ if __name__ == '__main__':
                 key = 0
 
         # Control
-        list_collides = pg.sprite.spritecollide(player, buffs, True)
+        # list_collides = pg.sprite.spritecollide(player, buffs, True)
+
+        for r in rivales:
+            distancia = mov_rival(posrival, j.rect)
+            if math.sqrt(math.pow(distancia[0], 2) + math.pow(distancia[1], 2)) > radio:
+                distancia = mov_rival(posrival, r.rect)
+            else:
+                distancia = mov_rival(j.rect, r.rect)
+            if distancia[0] > 0:
+                r.vel = 4
+            else:
+                r.vel = -4
+
+            if (distancia[0] == 0) and (distancia[1] == 0):
+                r.vel = 0
+            else:
+                if distancia[0] == 0:
+                    r.vel = -4
+                    if distancia[1] > 0:
+                        angulo = math.radians(270)
+                    if distancia[1] < 0:
+                        angulo = math.radians(90)
+                else:
+                    angulo = math.atan(distancia[1] / distancia[0])
+                    r.ang = angulo
 
         if player.rect.x < 0:
             scenario.change_image(1)
