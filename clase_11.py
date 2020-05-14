@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
         lib.fill(window)
 
-        players.update(window, position[0], position[1], direction)
+        players.update(direction)
         players.draw(window)
 
         enemies.update(window, position[0], position[1])

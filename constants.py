@@ -233,17 +233,31 @@ House_2_position = [width / 5, height / 5]
 Field_0 = pg.image.load("Images/Places/f_0.png")
 Field_1 = pg.image.load("Images/Places/f_1.png")
 Field_2 = pg.image.load("Images/Places/f_2.png")
+Town_1 = pg.image.load("Images/Places/town1.png")
+Town_2 = pg.image.load("Images/Places/town2.png")
+Town_3 = pg.image.load("Images/Places/town3.png")
 Fields_position = [0, 0]
 
 background = pg.image.load("Images/f_1.png")
 
 # Things
 
+Bed = pg.image.load("Images/Things/bed.png")
 Tree = pg.image.load("Images/Things/tree.png")
 Bush = pg.image.load("Images/Things/bush.png")
-Flower = pg.image.load("Images/Things/pink_flower.png")
 Plant_1 = pg.image.load("Images/Things/plant_1.png")
 Plant_2 = pg.image.load("Images/Things/plant_2.png")
+Limit_1 = pg.image.load("Images/Things/limit_1.png")
+Limit_2 = pg.image.load("Images/Things/limit_2.png")
+Flower = pg.image.load("Images/Things/pink_flower.png")
+Nightstand_1 = pg.image.load("Images/Things/nightstand1.png")
+Nightstand_2 = pg.image.load("Images/Things/nightstand2.png")
+Nightstand_3 = pg.image.load("Images/Things/nightstand3.png")
+Decoration_1 = pg.image.load("Images/Things/decoration1.png")
+Decoration_2 = pg.image.load("Images/Things/decoration2.png")
+Decoration_3 = pg.image.load("Images/Things/decoration3.png")
+Room_limit_1 = pg.image.load("Images/Things/room_limit_1.png")
+Room_limit_2 = pg.image.load("Images/Things/room_limit_2.png")
 
 # Effects
 
