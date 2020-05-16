@@ -11,6 +11,7 @@ if __name__ == '__main__':
     background_velocity = [0, 0]
     background_position = [0, 0]
     background_information = lib.cts.background.get_rect()
+    print background_information
     background_screen_limits = [lib.cts.width - 50, lib.cts.height - 50]
     background_limit = [(lib.cts.width - background_information[2]), (lib.cts.height - background_information[3])]
 
@@ -69,7 +70,17 @@ if __name__ == '__main__':
             else:
                 background_velocity[0] = 0
         else:
-            background_velocity[0] = 0
+            if player.rect.x < lib.cts.width - background_screen_limits[0]:
+                player.rect.x = lib.cts.width - background_screen_limits[0]
+                if background_position[0] < lib.cts.width + background_limit[0] * 2:
+                    background_velocity[0] = 5
+                else:
+                    background_velocity[0] = 0
+            else:
+                if background_position[0] > lib.cts.width + background_limit[0]:
+                    background_velocity[0] = -5
+                else:
+                    background_velocity[0] = 0
 
         if player.rect.y > background_screen_limits[1]:
             player.rect.y = background_screen_limits[1]
@@ -78,7 +89,17 @@ if __name__ == '__main__':
             else:
                 background_velocity[1] = 0
         else:
-            background_velocity[1] = 0
+            if player.rect.y < lib.cts.height - background_screen_limits[1]:
+                player.rect.y = lib.cts.height - background_screen_limits[1]
+                if background_position[1] < 0:
+                    background_velocity[1] = 5
+                else:
+                    background_velocity[1] = 0
+            else:
+                if background_position[1] > lib.cts.height + background_limit[1]:
+                    background_velocity[1] = -5
+                else:
+                    background_velocity[1] = 0
 
         for block in blocks:
             block.block_velocity[0] = background_velocity[0]

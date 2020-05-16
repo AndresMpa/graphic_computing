@@ -188,16 +188,16 @@ Xerath = [
 
 # NPCs
 
-Artemis = pg.image.load("Images/Characters/Town_characters/Artemis.png")
-Balzar = pg.image.load("Images/Characters/Town_characters/Balzar.png")
-Clarissa = pg.image.load("Images/Characters/Town_characters/Clarissa.png")
-Elise = pg.image.load("Images/Characters/Town_characters/Elise.png")
-Elizabeth = pg.image.load("Images/Characters/Town_characters/Elizabeth.png")
-Goldi = pg.image.load("Images/Characters/Town_characters/Goldi.png")
-Helen = pg.image.load("Images/Characters/Town_characters/Helen.png")
-Marian = pg.image.load("Images/Characters/Town_characters/Marian.png")
-Saku = pg.image.load("Images/Characters/Town_characters/Saku.png")
-Spidy = pg.image.load("Images/Characters/Town_characters/Spidy.png")
+Saku = pg.image.load("Images/Characters/npc/Saku.png")
+Spidy = pg.image.load("Images/Characters/npc/Spidy.png")
+Elise = pg.image.load("Images/Characters/npc/Elise.png")
+Goldi = pg.image.load("Images/Characters/npc/Goldi.png")
+Helen = pg.image.load("Images/Characters/npc/Helen.png")
+Marian = pg.image.load("Images/Characters/npc/Marian.png")
+Balzar = pg.image.load("Images/Characters/npc/Balzar.png")
+Manuela = pg.image.load("Images/Characters/npc/Manuela.png")
+Clarissa = pg.image.load("Images/Characters/npc/Clarissa.png")
+Elizabeth = pg.image.load("Images/Characters/npc/Elizabeth.png")
 
 # Enemies
 
@@ -245,19 +245,29 @@ background = pg.image.load("Images/f_1.png")
 Bed = pg.image.load("Images/Things/bed.png")
 Tree = pg.image.load("Images/Things/tree.png")
 Bush = pg.image.load("Images/Things/bush.png")
+Table = pg.image.load("Images/Things/table.png")
 Plant_1 = pg.image.load("Images/Things/plant_1.png")
 Plant_2 = pg.image.load("Images/Things/plant_2.png")
 Limit_1 = pg.image.load("Images/Things/limit_1.png")
 Limit_2 = pg.image.load("Images/Things/limit_2.png")
+Chair_e = pg.image.load("Images/Things/chair_e.png")
+Chair_n = pg.image.load("Images/Things/chair_n.png")
+Chair_s = pg.image.load("Images/Things/chair_s.png")
+Chair_w = pg.image.load("Images/Things/chair_w.png")
 Flower = pg.image.load("Images/Things/pink_flower.png")
+Hearts = pg.image.load("Images/Things/pink_flower.png")
+Extra_life = pg.image.load("Images/Things/extra_life.png")
+Drake_smash = pg.image.load("Images/Things/drake_smash.png")
 Nightstand_1 = pg.image.load("Images/Things/nightstand1.png")
 Nightstand_2 = pg.image.load("Images/Things/nightstand2.png")
-Nightstand_3 = pg.image.load("Images/Things/nightstand3.png")
 Decoration_1 = pg.image.load("Images/Things/decoration1.png")
 Decoration_2 = pg.image.load("Images/Things/decoration2.png")
 Decoration_3 = pg.image.load("Images/Things/decoration3.png")
+Decoration_4 = pg.image.load("Images/Things/decoration4.png")
+Decoration_5 = pg.image.load("Images/Things/decoration5.png")
 Room_limit_1 = pg.image.load("Images/Things/room_limit_1.png")
 Room_limit_2 = pg.image.load("Images/Things/room_limit_2.png")
+Extra_energy = pg.image.load("Images/Things/extra_energy.png")
 
 # Effects
 
@@ -295,5 +305,13 @@ euphoria_intro = ["Once upon a time, a lost continent; where",
                   "", ]
 
 skip = "Click to skip"
+
+dialogue_1 = ["* Somebody in the front door * ",
+              "* Z Z Z Z Z Z Z.... * "]
+
+dialogue_2 = ["I'll defeat... ",
+              "* Fall from his bed *",
+              "What the...?",
+              "Who's knowing knock?"]
 
 dead = "You have died"
