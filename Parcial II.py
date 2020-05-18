@@ -77,6 +77,8 @@ class Things(pg.sprite.Sprite):
             self.image = lib.cts.Plant_2
         elif self.thing == 20:
             self.image = lib.cts.Flower
+        elif self.thing == 21:
+            self.image = lib.cts.Player_house
 
     def update(self):
         self.rect.x += self.thing_velocity[0]
@@ -86,6 +88,9 @@ class Things(pg.sprite.Sprite):
 class Buffs(pg.sprite.Sprite):
     def __init__(self, position, buff):
         super(Buffs, self).__init__()
+
+        # Settings
+        self.radio = 10
 
         # Sprites
         self.image = lib.cts.Extra_life
@@ -105,33 +110,19 @@ class Buffs(pg.sprite.Sprite):
         elif self.buff == 3:
             self.image = lib.cts.Drake_smash
 
-    def update(self, key_pressed):
-        self.rect.x += self.buff_velocity[0]
-        self.rect.y += self.buff_velocity[1]
-
-
-class Gates(pg.sprite.Sprite):
-    def __init__(self, position):
-        super(Gates, self).__init__()
-
-        self.image = pg.Surface([100, 100])
-        self.image.fill(lib.cts.BLUE)
-
-        # Position issues
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = position
-        self.thing_velocity = [0, 0]
+    def get_buff(self):
+        return self.image
 
     def update(self):
-        self.rect.x += self.thing_velocity[0]
-        self.rect.y += self.thing_velocity[1]
+        self.rect.x += self.buff_velocity[0]
+        self.rect.y += self.buff_velocity[1]
 
 
 class SimpleEnemy(pg.sprite.Sprite):
     def __init__(self, position, sprite_sets):
         super(SimpleEnemy, self).__init__()
 
-        # Player images
+        # Enemy images
         self.set = sprite_sets
         self.image = lib.cts.Enemy_1
 
@@ -141,12 +132,19 @@ class SimpleEnemy(pg.sprite.Sprite):
         self.velocity = [0, 0]
         self.angle = 0
 
+        # Statistics
+        self.life = 5
+        self.enemy_attacks = lib.cts.Enemy_1_attacks
+
     def get_position(self):
         return [self.rect.x, self.rect.y]
 
-    def update(self):
-        self.rect.x += self.velocity[0] * lib.mt.cos(self.angle)
-        self.rect.y += self.velocity[1] * lib.mt.sin(self.angle)
+    def enemy_attack(self, chose):
+        return lib.write(self.enemy_attacks[chose], 30, 2)
+
+    def update(self, scenario_velocity):
+        self.rect.x += self.velocity[0] * lib.mt.cos(self.angle) - scenario_velocity[0]
+        self.rect.y += self.velocity[1] * lib.mt.sin(self.angle) + scenario_velocity[1]
 
 
 class NonPlayableCharacters(pg.sprite.Sprite):
@@ -154,23 +152,23 @@ class NonPlayableCharacters(pg.sprite.Sprite):
         super(NonPlayableCharacters, self).__init__()
 
         # Player images
-        self.image = lib.cts.Tree
+        self.image = lib.cts.Manuela
         self.change_image(npc)
 
         # Position issues
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
-        self.thing_velocity = [0, 0]
+        self.npc_velocity = [0, 0]
 
     def change_image(self, background):
         if background == 1:
-            self.image = lib.cts.Tree
+            self.image = lib.cts.Manuela
         elif background == 2:
-            self.image = lib.cts.Bush
+            self.image = lib.cts.Balzar
 
     def update(self):
-        self.rect.x += self.thing_velocity[0]
-        self.rect.y += self.thing_velocity[1]
+        self.rect.x += self.npc_velocity[0]
+        self.rect.y += self.npc_velocity[1]
 
 
 class Scenarios(pg.sprite.Sprite):
@@ -219,6 +217,13 @@ class Scenarios(pg.sprite.Sprite):
             self.background_limits = [(lib.cts.width - self.background_limits[2]),
                                       (lib.cts.height - self.background_limits[3])]
 
+    def move_enemies(self, enemy_list):
+        for iteration, value in enumerate(enemy_list):
+            enemy_list[iteration][0] -= self.background_velocity[0]
+            enemy_list[iteration][1] += self.background_velocity[1]
+
+        return enemy_list
+
     def update(self):
         self.rect.x -= self.background_velocity[0]
         self.rect.y += self.background_velocity[1]
@@ -229,7 +234,7 @@ class Player(pg.sprite.Sprite):
     def __init__(self, position, sprite_sets, collides):
         super(Player, self).__init__()
 
-        # Animation issues
+        # Animation
         self.action = 3
         self.current_animation = 1
 
@@ -237,18 +242,24 @@ class Player(pg.sprite.Sprite):
         self.set = sprite_sets
         self.image = self.set[self.action][self.current_animation]
 
-        # Position issues
+        # Position
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
         self.velocity = [0, 0]
 
-        # Collision
-        self.blocks = None
+        self.statistics = [0, 0]
 
         # Control
-        self.live = 1
         self.speed = 0
         self.collides = collides
+
+        # Statistics
+        self.lvl = 1
+        self.live = 10
+        self.energy = 10
+        self.extra_live = 0
+        self.drake_smash = 0
+        self.extra_energy = 0
 
     def animate(self, key_pressed):
         if self.current_animation < 2 and key_pressed:
@@ -259,6 +270,29 @@ class Player(pg.sprite.Sprite):
 
     def get_position(self):
         return [self.rect.x, self.rect.y]
+
+    def use_extras(self, choose):
+        if choose == 1:
+            self.extra_live -= 1
+            self.live += 5
+        if choose == 2:
+            self.extra_energy -= 1
+            self.energy += 5
+        if choose == 3:
+            self.drake_smash -= 1
+
+    def show_statistics(self, screen):
+        for _ in range(self.live):
+            screen.blit(lib.cts.Hearts, [self.statistics[0], self.statistics[1]])
+            self.statistics[0] += 15
+
+        self.statistics = [0, 25]
+
+        for _ in range(self.energy):
+            screen.blit(lib.cts.Extra_energy, [self.statistics[0], self.statistics[1]])
+            self.statistics[0] += 15
+
+        self.statistics = [0, 0]
 
     def update(self, key_pressed, screen):
         self.animate(key_pressed)
@@ -290,6 +324,8 @@ class Player(pg.sprite.Sprite):
                     self.rect.top = things.rect.bottom
                     self.velocity[1] = 0
 
+        self.show_statistics(screen)
+
 
 def move_enemy(player_position, enemy_position):
     position_x = player_position[0] - enemy_position[0]
@@ -305,6 +341,7 @@ if __name__ == '__main__':
     # Whiles
     run = True
     end = True
+    death = False
     intro = False
     room_1 = False
     room_2 = False
@@ -320,10 +357,13 @@ if __name__ == '__main__':
 
     # Groups
     # while writing
+    abilities_in_combat = pg.sprite.Group()
+    dialogue_group = pg.sprite.Group()
     title_group = pg.sprite.Group()
     text_group = pg.sprite.Group()
 
     # while playing
+    enemies_in_combat = pg.sprite.Group()
     players_group = pg.sprite.Group()
     enemies_group = pg.sprite.Group()
     flowers_group = pg.sprite.Group()
@@ -335,6 +375,8 @@ if __name__ == '__main__':
     key = 0
     cont = 0
     speed = 5
+    catchable = 0
+    enemy_ability = None
 
     # Intro issues
 
@@ -393,6 +435,9 @@ if __name__ == '__main__':
     for _ in title_group:
         title_group.remove(_)
 
+    for _ in text_group:
+        text_group.remove(_)
+
     lib.change_window_name('Euphoria')
 
     lib.fill(window)
@@ -434,12 +479,20 @@ if __name__ == '__main__':
     bottom_limit = Things([412, 462], 2)
     things_group.add(bottom_limit)
 
+    first_life = Buffs([560, 225], 1)
+    buffs_group.add(first_life)
+
     # Adding a player
 
     player = Player([scenario.rect.x + 155, scenario.rect.y + 55], lib.cts.Luke, things_group)
     player.speed = speed
 
     players_group.add(player)
+
+    # Adding text interactions
+
+    potion = Texts([300, 500], window, lib.cts.dialogue_1, 30, 2)
+    text_group.add(potion)
 
     while run and room_1:
         for event in pg.event.get():
@@ -459,6 +512,11 @@ if __name__ == '__main__':
                 if event.key == pg.K_a:
                     player.velocity[0] -= player.speed
                     player.action = 2
+                if event.key == pg.K_e and catchable:
+                    for _ in buffs_group:
+                        buffs_group.remove(_)
+                    player.live = 10
+                    catchable = 0
             if event.type == pg.KEYUP:
                 player.velocity = [0, 0]
                 key = 0
@@ -468,12 +526,28 @@ if __name__ == '__main__':
             room_1 = False
 
         # Drawing
+        lib.fill(window)
+
+        scenario.update()
+
+        if 550 < player.rect.x < 585 and 270 > player.rect.y > 230:
+            if potion.y < 490:
+                potion.velocity = [0, 0]
+
+            text_group.update()
+
+            catchable = 1
+        else:
+            text_group.rect = [300, 500]
+            catchable = 0
+
+        things_group.update()
+        things_group.draw(window)
+
+        buffs_group.update()
+        buffs_group.draw(window)
 
         players_group.update(key, window)
-        things_group.update()
-        lib.fill(window)
-        scenario.update()
-        things_group.draw(window)
         players_group.draw(window)
 
         lib.frames_per_second(fps, 1)
@@ -482,6 +556,12 @@ if __name__ == '__main__':
 
     for _ in things_group:
         things_group.remove(_)
+
+    for _ in buffs_group:
+        buffs_group.remove(_)
+
+    for _ in text_group:
+        text_group.remove(_)
 
     # Scenario settings
 
@@ -541,6 +621,24 @@ if __name__ == '__main__':
     bottom_limit = Things([682, 520], 2)
     things_group.add(bottom_limit)
 
+    # Adding buffs
+
+    energy = Buffs([705, 405], 2)
+    buffs_group.add(energy)
+
+    smash = Buffs([885, 185], 3)
+    buffs_group.add(smash)
+
+    # Adding text interactions
+
+    potion = Texts([250, 70], window, lib.cts.dialogue_2, 30, 2)
+    potion.velocity = [0, 1]
+    text_group.add(potion)
+
+    ring = Texts([250, 70], window, lib.cts.dialogue_3, 30, 2)
+    ring.velocity = [0, 1]
+    text_group.add(ring)
+
     while run and room_2:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -559,6 +657,14 @@ if __name__ == '__main__':
                 if event.key == pg.K_a:
                     player.velocity[0] -= player.speed
                     player.action = 2
+                if event.key == pg.K_e and catchable:
+                    catchable = 0
+                    player.energy = 10
+                    buffs_group.remove(energy)
+                if event.key == pg.K_q and catchable:
+                    catchable = 0
+                    player.drake_smash += 1
+                    buffs_group.remove(smash)
             if event.type == pg.KEYUP:
                 player.velocity = [0, 0]
                 key = 0
@@ -568,12 +674,38 @@ if __name__ == '__main__':
             room_2 = False
 
         # Drawing
+        lib.fill(window)
+
+        scenario.update()
+
+        if 665 < player.rect.x < 690 and 385 > player.rect.y > 360:
+            if potion.y > 80:
+                potion.velocity = [0, 0]
+
+            potion.update()
+
+            catchable = 1
+        else:
+            potion.rect = [250, 70]
+
+            if 870 < player.rect.x < 900 and player.rect.y <= 232:
+                if ring.y > 80:
+                    ring.velocity = [0, 0]
+
+                ring.update()
+
+                catchable = 1
+            else:
+                ring.rect = [250, 70]
+                catchable = 0
+
+        things_group.update()
+        things_group.draw(window)
+
+        buffs_group.update()
+        buffs_group.draw(window)
 
         players_group.update(key, window)
-        things_group.update()
-        lib.fill(window)
-        scenario.update()
-        things_group.draw(window)
         players_group.draw(window)
 
         lib.frames_per_second(fps, 1)
@@ -583,33 +715,229 @@ if __name__ == '__main__':
     for _ in things_group:
         things_group.remove(_)
 
-    # Background
+    for _ in text_group:
+        text_group.remove(_)
+
+    # Background settings
     current_scenario = 3
     scenario.background = current_scenario
 
     # Background position
     scenario.change_image()
-    scenario.rect.x, scenario.rect.y = [0, -25]
+    scenario.rect.x, scenario.rect.y = [-100, -250]
 
     # Repositioning player
-    player.rect.x = 712
-    player.rect.y = 181
+    player.rect.x = 700
+    player.rect.y = 350
 
     angle = 0
     radio = 300
     distance = [0, 0]
-    first_enemy_position = [400, 300]
+    first_enemy_position = [[1400, 600]]
 
-    enemy = SimpleEnemy(first_enemy_position, 1)
+    enemy = SimpleEnemy(first_enemy_position[0], 1)
     enemies_group.add(enemy)
 
-    while run:
+    # Adding things
+
+    flower = Things([685, 20], 20)
+    things_group.add(flower)
+
+    flower = Things([685, 35], 20)
+    things_group.add(flower)
+
+    flower = Things([705, 20], 20)
+    things_group.add(flower)
+
+    flower = Things([705, 35], 20)
+    things_group.add(flower)
+
+    flower = Things([705, 50], 20)
+    things_group.add(flower)
+
+    flower = Things([705, 65], 20)
+    things_group.add(flower)
+
+    flower = Things([725, 20], 20)
+    things_group.add(flower)
+
+    flower = Things([725, 35], 20)
+    things_group.add(flower)
+
+    flower = Things([725, 50], 20)
+    things_group.add(flower)
+
+    flower = Things([725, 65], 20)
+    things_group.add(flower)
+
+    flower = Things([725, 80], 20)
+    things_group.add(flower)
+
+    flower = Things([725, 95], 20)
+    things_group.add(flower)
+
+    flower = Things([745, 20], 20)
+    things_group.add(flower)
+
+    flower = Things([745, 35], 20)
+    things_group.add(flower)
+
+    flower = Things([745, 50], 20)
+    things_group.add(flower)
+
+    flower = Things([745, 65], 20)
+    things_group.add(flower)
+
+    flower = Things([745, 80], 20)
+    things_group.add(flower)
+
+    flower = Things([745, 95], 20)
+    things_group.add(flower)
+
+    flower = Things([765, 20], 18)
+    things_group.add(flower)
+
+    flower = Things([765, 35], 18)
+    things_group.add(flower)
+
+    flower = Things([765, 50], 18)
+    things_group.add(flower)
+
+    flower = Things([765, 65], 18)
+    things_group.add(flower)
+
+    flower = Things([765, 80], 18)
+    things_group.add(flower)
+
+    flower = Things([765, 95], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 20], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 35], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 50], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 65], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 80], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 95], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 20], 18)
+    things_group.add(flower)
+
+    flower = Things([785, 35], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 50], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 65], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 80], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 95], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 20], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 35], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 50], 18)
+    things_group.add(flower)
+
+    flower = Things([805, 65], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 80], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 95], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 20], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 35], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 50], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 65], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 80], 18)
+    things_group.add(flower)
+
+    flower = Things([825, 95], 18)
+    things_group.add(flower)
+
+    house = Things([500, 0], 21)
+    things_group.add(house)
+
+    # Adding text
+
+    new_text_position = [30, 450]
+    for _ in range(0, len(lib.cts.dialogue_4)):
+        warden = Texts(new_text_position, window, lib.cts.dialogue_4[_], 30, 2, lib.cts.BLACK)
+        warden.velocity = [0, 0]
+        new_text_position[1] += 25
+        text_group.add(warden)
+
+    new_text_position = [450, 450]
+    for _ in range(0, len(lib.cts.dialogue_5)):
+        dialogue = Texts(new_text_position, window, lib.cts.dialogue_5[_], 30, 2, lib.cts.BLACK)
+        dialogue.velocity = [0, 0]
+        new_text_position[1] += 25
+        dialogue_group.add(dialogue)
+
+    Manuela = NonPlayableCharacters([750, 300], 1)
+    NPCs_group.add(Manuela)
+
+    new_text_position = [50, 450]
+    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[0], 30, 2)
+    abilities.velocity = [0, 0]
+    abilities_in_combat.add(abilities)
+    new_text_position[1] += 100
+
+    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[1], 30, 2)
+    abilities.velocity = [0, 0]
+    abilities_in_combat.add(abilities)
+    new_text_position[1] += 50
+
+    new_text_position = [350, 450]
+
+    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[2], 30, 2)
+    abilities.velocity = [0, 0]
+    abilities_in_combat.add(abilities)
+    new_text_position[1] += 100
+
+    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[3], 30, 2)
+    abilities.velocity = [0, 0]
+    abilities_in_combat.add(abilities)
+
+    catchable = 1
+
+    while run and field_1 or in_combat:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
         while field_1:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                    in_combat = False
                     field_1 = False
                     run = False
                 if event.type == pg.KEYDOWN:
@@ -626,6 +954,9 @@ if __name__ == '__main__':
                     if event.key == pg.K_a:
                         player.velocity[0] -= player.speed
                         player.action = 2
+                    if event.key == pg.K_e and catchable:
+                        catchable = 0
+                        player.velocity = [0, 0]
                 if event.type == pg.KEYUP:
                     player.velocity = [0, 0]
                     key = 0
@@ -633,26 +964,106 @@ if __name__ == '__main__':
             # Control
 
             # Next field condition
-            if 1100 > player.rect.bottom > 1150 and 1700 > player.rect.right > 1800:
-                field_1 = False
-                in_combat = False
+            if player.rect.x == 1150 and 360 < player.rect.y < 520:
+                if scenario.rect[0] == -600 and scenario.rect[1] == -625:
+                    in_combat = False
+                    field_1 = False
 
             # Collides
 
             buff_collides = pg.sprite.spritecollide(player, buffs_group, True)
+
+            # Background
+
+            if player.rect.x > scenario.screen_limits[0]:
+                player.rect.x = scenario.screen_limits[0]
+                if scenario.rect.x > scenario.background_limits[0]:
+                    scenario.background_velocity[0] = 5
+                    for _ in things_group:
+                        _.thing_velocity[0] = -5
+                    Manuela.npc_velocity[0] = -5
+
+                else:
+                    scenario.background_velocity[0] = 0
+                    for _ in things_group:
+                        _.thing_velocity[0] = 0
+                    Manuela.npc_velocity[0] = 0
+            else:
+                if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
+                    player.rect.x = lib.cts.width - scenario.screen_limits[0]
+                    if scenario.rect.x < lib.cts.width + scenario.background_limits[0] * 2:
+                        scenario.background_velocity[0] = -5
+                        for _ in things_group:
+                            _.thing_velocity[0] = 5
+                        Manuela.npc_velocity[0] = 5
+                    else:
+                        scenario.background_velocity[0] = 0
+                        for _ in things_group:
+                            _.thing_velocity[0] = 0
+                        Manuela.npc_velocity[0] = 0
+                else:
+                    if scenario.rect.x > lib.cts.width + scenario.background_limits[0]:
+                        scenario.background_velocity[0] = 5
+                        for _ in things_group:
+                            _.thing_velocity[0] = -5
+                        Manuela.npc_velocity[0] = -5
+                    else:
+                        scenario.background_velocity[0] = 0
+                        for _ in things_group:
+                            _.thing_velocity[0] = 0
+                        Manuela.npc_velocity[0] = 0
+
+            if player.rect.y > scenario.screen_limits[1]:
+                player.rect.y = scenario.screen_limits[1]
+                if scenario.rect.y > scenario.background_limits[1]:
+                    scenario.background_velocity[1] = -5
+                    for _ in things_group:
+                        _.thing_velocity[1] = -5
+                    Manuela.npc_velocity[1] = -5
+                else:
+                    scenario.background_velocity[1] = 0
+                    for _ in things_group:
+                        _.thing_velocity[1] = 0
+                    Manuela.npc_velocity[1] = 0
+            else:
+                if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
+                    player.rect.y = lib.cts.height - scenario.screen_limits[1]
+                    if scenario.rect.y < 0:
+                        scenario.background_velocity[1] = 5
+                        for _ in things_group:
+                            _.thing_velocity[1] = 5
+                        Manuela.npc_velocity[1] = 5
+                    else:
+                        scenario.background_velocity[1] = 0
+                        for _ in things_group:
+                            _.thing_velocity[1] = 0
+                        Manuela.npc_velocity[1] = 0
+                else:
+                    if scenario.rect.y > lib.cts.height + scenario.background_limits[1]:
+                        scenario.background_velocity[1] = -5
+                        for _ in things_group:
+                            _.thing_velocity[1] = -5
+                        Manuela.npc_velocity[1] = -5
+                    else:
+                        scenario.background_velocity[1] = 0
+                        for _ in things_group:
+                            _.thing_velocity[1] = 0
+                        Manuela.npc_velocity[1] = 0
 
             # Enemies
 
             enemy_collide = pg.sprite.spritecollide(player, enemies_group, True)
 
             for enemy in enemy_collide:
+                enemies_in_combat.add(enemy)
                 in_combat = True
                 field_1 = False
 
+            i = 0
             for enemy in enemies_group:
-                distance = move_enemy(first_enemy_position, player.rect)
+                distance = move_enemy(first_enemy_position[i], player.rect)
                 if lib.mt.sqrt(lib.mt.pow(distance[0], 2) + lib.mt.pow(distance[1], 2)) > radio:
-                    distance = move_enemy(first_enemy_position, enemy.rect)
+                    distance = move_enemy(first_enemy_position[i], enemy.rect)
                 else:
                     distance = move_enemy(player.rect, enemy.rect)
                 if distance[0] > 0:
@@ -672,72 +1083,101 @@ if __name__ == '__main__':
                     else:
                         angle = lib.mt.atan(distance[1] / distance[0])
                         enemy.angle = angle
-
-            # Background
-
-            if player.rect.x > scenario.screen_limits[0]:
-                player.rect.x = scenario.screen_limits[0]
-                if scenario.rect.x > scenario.background_limits[0]:
-                    scenario.background_velocity[0] = 5
-                else:
-                    scenario.background_velocity[0] = 0
-            else:
-                if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
-                    player.rect.x = lib.cts.width - scenario.screen_limits[0]
-                    if scenario.rect.x < lib.cts.width + scenario.background_limits[0] * 2:
-                        scenario.background_velocity[0] = -5
-                    else:
-                        scenario.background_velocity[0] = 0
-                else:
-                    if scenario.rect.x > lib.cts.width + scenario.background_limits[0]:
-                        scenario.background_velocity[0] = 5
-                    else:
-                        scenario.background_velocity[0] = 0
-
-            if player.rect.y > scenario.screen_limits[1]:
-                player.rect.y = scenario.screen_limits[1]
-                if scenario.rect.y > scenario.background_limits[1]:
-                    scenario.background_velocity[1] = -5
-                else:
-                    scenario.background_velocity[1] = 0
-            else:
-                if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
-                    player.rect.y = lib.cts.height - scenario.screen_limits[1]
-                    if scenario.rect.y < 0:
-                        scenario.background_velocity[1] = 5
-                    else:
-                        scenario.background_velocity[1] = 0
-                else:
-                    if scenario.rect.y > lib.cts.height + scenario.background_limits[1]:
-                        scenario.background_velocity[1] = -5
-                    else:
-                        scenario.background_velocity[1] = 0
+                i += 1
 
             # Drawing
+            lib.fill(window)
+
+            scenario.update()
+
+            first_enemy_position = scenario.move_enemies(first_enemy_position)
+
+            things_group.update()
+            things_group.draw(window)
 
             players_group.update(key, window)
-            enemies_group.update()
-            things_group.update()
-            lib.fill(window)
-            scenario.update()
-            things_group.draw(window)
-            enemies_group.draw(window)
             players_group.draw(window)
 
+            enemies_group.update(scenario.background_velocity)
+            enemies_group.draw(window)
+
+            if 750 + scenario.rect.x < player.rect.x < 953 + scenario.rect.x and 350 + scenario.rect.y > player.rect.y > 217 + scenario.rect.y:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                text_group.update()
+
+            if 700 < player.rect.x < 750 and 330 < player.rect.y < 370 and catchable:
+                window.blit(lib.cts.Dialog_box, [400, 400])
+                dialogue_group.update()
+
+            NPCs_group.update()
+            NPCs_group.draw(window)
+
             lib.frames_per_second(fps, 1)
+
+        turn = 1
 
         while in_combat:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     in_combat = False
                     run = False
-                if event.type == pg.KEYDOWN:
-                    field_1 = True
-                    in_combat = False
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    print pg.mouse.get_pos()
+                if event.type == pg.KEYDOWN and turn == 1:
+                    if event.key == pg.K_q:
+                        print 'Sword'
+                        turn = 0
+                        player.energy -= 1
+                    if event.key == pg.K_w:
+                        print 'Hit'
+                        turn = 0
+                        player.energy -= 1
+                    if event.key == pg.K_e:
+                        print 'Transformation'
+                        turn = 0
+                        player.energy -= 1
+                    if event.key == pg.K_r:
+                        print 'Dragon fire ball'
+                        turn = 0
+                        player.energy -= 1
+                    if event.key == pg.K_SPACE:
+                        field_1 = True
+                        in_combat = False
+
+            # Control
+
+            if turn == 0 and cont == 0:
+                for enemy in enemies_in_combat:
+                    enemy_ability = enemy.enemy_attack(lib.random_range(1, 3))
+
+            for enemy in enemies_in_combat:
+                if enemy.life == 0:
+                    enemies_in_combat.remove(enemy)
+
+            if len(enemies_in_combat) == 0:
+                in_combat = False
+                field_1 = True
+
+            if player.live == 0 or player.energy == 0:
+                in_combat = False
+                field_1 = True
+                death = True
 
             lib.fill(window)
 
-            window.blit(lib.cts.Field_1, [0, 0])
+            window.blit(lib.cts.Battle_ground, [0, 0])
+
+            if turn == 1:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                player.show_statistics(window)
+                abilities_in_combat.update()
+                cont = 0
+            else:
+                window.blit(lib.cts.Dialog_box, [400, 400])
+                window.blit(enemy_ability, [450, 450])
+                if cont > 100:
+                    turn = 1
+                cont += 1
 
             lib.frames_per_second(fps, 1)
 
@@ -765,20 +1205,48 @@ if __name__ == '__main__':
     player.rect.y = 181
 
     angle = 0
-    radio = 300
+    radio = 600
     distance = [0, 0]
-    first_enemy_position = [400, 300]
+    first_enemy_position = [[400, 300], [600, 500]]
 
-    enemy = SimpleEnemy(first_enemy_position, 1)
+    enemy = SimpleEnemy(first_enemy_position[0], 1)
     enemies_group.add(enemy)
 
-    while run:
+    enemy = SimpleEnemy(first_enemy_position[1], 1)
+    enemies_group.add(enemy)
+
+    decoration4 = Things([265, 158], 7)
+    things_group.add(decoration4)
+
+    decoration3 = Things([809, 162], 6)
+    things_group.add(decoration3)
+
+    nightstand_2 = Things([585, 131], 8)
+    things_group.add(nightstand_2)
+
+    table = Things([695, 405], 15)
+    things_group.add(table)
+
+    chair_e = Things([637, 413], 11)
+    things_group.add(chair_e)
+
+    chair_n = Things([718, 483], 12)
+    things_group.add(chair_n)
+
+    chair_s = Things([716, 354], 13)
+    things_group.add(chair_s)
+
+    chair_w = Things([800, 415], 14)
+    things_group.add(chair_w)
+
+    while run and field_2 or in_combat:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
         while field_2:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                    in_combat = False
                     field_2 = False
                     run = False
                 if event.type == pg.KEYDOWN:
@@ -802,9 +1270,10 @@ if __name__ == '__main__':
             # Control
 
             # Next field condition
-            if 1100 > player.rect.bottom > 1150 and 1700 > player.rect.right > 1800:
-                field_2 = False
-                in_combat = False
+            if player.rect.x == 1150 and 360 < player.rect.y < 520:
+                if scenario.rect[0] == -600 and scenario.rect[1] == -625:
+                    in_combat = False
+                    field_2 = False
 
             # Collides
 
@@ -815,13 +1284,15 @@ if __name__ == '__main__':
             enemy_collide = pg.sprite.spritecollide(player, enemies_group, True)
 
             for enemy in enemy_collide:
+                enemies_in_combat.add(enemy)
                 in_combat = True
                 field_1 = False
 
+            i = 0
             for enemy in enemies_group:
-                distance = move_enemy(first_enemy_position, player.rect)
+                distance = move_enemy(first_enemy_position[i], player.rect)
                 if lib.mt.sqrt(lib.mt.pow(distance[0], 2) + lib.mt.pow(distance[1], 2)) > radio:
-                    distance = move_enemy(first_enemy_position, enemy.rect)
+                    distance = move_enemy(first_enemy_position[i], enemy.rect)
                 else:
                     distance = move_enemy(player.rect, enemy.rect)
                 if distance[0] > 0:
@@ -841,8 +1312,9 @@ if __name__ == '__main__':
                     else:
                         angle = lib.mt.atan(distance[1] / distance[0])
                         enemy.angle = angle
+                i += 1
 
-            # Background
+                # Background
 
             if player.rect.x > scenario.screen_limits[0]:
                 player.rect.x = scenario.screen_limits[0]
@@ -883,30 +1355,80 @@ if __name__ == '__main__':
                         scenario.background_velocity[1] = 0
 
             # Drawing
+            lib.fill(window)
+
+            scenario.update()
+
+            first_enemy_position = scenario.move_enemies(first_enemy_position)
+
+            things_group.update()
+            things_group.draw(window)
 
             players_group.update(key, window)
-            enemies_group.update()
-            things_group.update()
-            lib.fill(window)
-            scenario.update()
-            things_group.draw(window)
-            enemies_group.draw(window)
             players_group.draw(window)
 
+            enemies_group.update(scenario.background_velocity)
+            enemies_group.draw(window)
+
             lib.frames_per_second(fps, 1)
+
+        turn = 1
+
+        new_text_position = [50, 750]
+        for _ in range(0, len(lib.cts.euphoria_intro)):
+            new_text = Texts(new_text_position, window, lib.cts.euphoria_intro[_], 30, 2)
+            new_text_position[1] += 50
+            text_group.add(new_text)
 
         while in_combat:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     in_combat = False
                     run = False
-                if event.type == pg.KEYDOWN:
-                    field_1 = True
-                    in_combat = False
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    print pg.mouse.get_pos()
+                if event.type == pg.KEYDOWN and turn == 1:
+                    if event.key == pg.K_q:
+                        print 'Sword'
+                        turn = 0
+                    if event.key == pg.K_w:
+                        print 'Hit'
+                        turn = 0
+                    if event.key == pg.K_e:
+                        print 'Transformation'
+                        turn = 0
+                    if event.key == pg.K_r:
+                        print 'Dragon fire ball'
+                        turn = 0
+                    if event.key == pg.K_SPACE:
+                        in_combat = False
+                        field_2 = True
+
+            # Control
+
+            if turn == 0:
+                for enemy in enemies_in_combat:
+                    enemy.attack()
+                turn = 1
+
+            for enemy in enemies_in_combat:
+                if enemy.life == 0:
+                    enemies_in_combat.remove(enemy)
+
+            if len(enemies_in_combat) == 0:
+                in_combat = False
+                field_2 = True
+
+            if player.live == 0:
+                field_1 = True
+                in_combat = False
 
             lib.fill(window)
 
-            window.blit(lib.cts.Field_0, [0, 0])
+            window.blit(lib.cts.Battle_ground, [0, 0])
+
+            if turn == 1:
+                window.blit(lib.cts.Dialog_box, [0, 400])
 
             lib.frames_per_second(fps, 1)
 
@@ -920,7 +1442,7 @@ if __name__ == '__main__':
         buffs_group.remove(_)
 
     # Background
-    current_scenario = 4
+    current_scenario = 5
     scenario.background = current_scenario
 
     # Background position
@@ -1045,15 +1567,18 @@ if __name__ == '__main__':
                         scenario.background_velocity[1] = 0
 
             # Drawing
+            lib.fill(window)
+
+            scenario.update()
+
+            things_group.update()
+            things_group.draw(window)
 
             players_group.update(key, window)
-            enemies_group.update()
-            things_group.update()
-            lib.fill(window)
-            scenario.update()
-            things_group.draw(window)
-            enemies_group.draw(window)
             players_group.draw(window)
+
+            enemies_group.update(scenario.background_velocity)
+            enemies_group.draw(window)
 
             lib.frames_per_second(fps, 1)
 
@@ -1068,9 +1593,14 @@ if __name__ == '__main__':
 
             lib.fill(window)
 
+            window.blit(lib.cts.Dialog_box, [400, 800])
+
             window.blit(lib.cts.Field_0, [0, 0])
 
             lib.frames_per_second(fps, 1)
+
+    if not run and death:
+        run = True
 
     while run and end:
         lib.fill(window)

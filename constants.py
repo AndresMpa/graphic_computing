@@ -216,6 +216,7 @@ Enemy_12 = pg.image.load("Images/Characters/Enemies/12.png")
 Enemy_13 = pg.image.load("Images/Characters/Enemies/13.png")
 Enemy_14 = pg.image.load("Images/Characters/Enemies/14.png")
 Enemy_15 = pg.image.load("Images/Characters/Enemies/15.png")
+Enemy_1_in_combat = pg.image.load("Images/Characters/Enemies/1_in_combat.png")
 
 Snake = pg.image.load("Images/snaky.png")
 
@@ -236,6 +237,7 @@ Field_2 = pg.image.load("Images/Places/f_2.png")
 Town_1 = pg.image.load("Images/Places/town1.png")
 Town_2 = pg.image.load("Images/Places/town2.png")
 Town_3 = pg.image.load("Images/Places/town3.png")
+Battle_ground = pg.image.load("Images/Places/battle_ground.png")
 Fields_position = [0, 0]
 
 background = pg.image.load("Images/f_1.png")
@@ -255,8 +257,7 @@ Chair_n = pg.image.load("Images/Things/chair_n.png")
 Chair_s = pg.image.load("Images/Things/chair_s.png")
 Chair_w = pg.image.load("Images/Things/chair_w.png")
 Flower = pg.image.load("Images/Things/pink_flower.png")
-Hearts = pg.image.load("Images/Things/pink_flower.png")
-Extra_life = pg.image.load("Images/Things/extra_life.png")
+Dialog_box = pg.image.load("Images/Things/dialog_box.png")
 Drake_smash = pg.image.load("Images/Things/drake_smash.png")
 Nightstand_1 = pg.image.load("Images/Things/nightstand1.png")
 Nightstand_2 = pg.image.load("Images/Things/nightstand2.png")
@@ -267,6 +268,11 @@ Decoration_4 = pg.image.load("Images/Things/decoration4.png")
 Decoration_5 = pg.image.load("Images/Things/decoration5.png")
 Room_limit_1 = pg.image.load("Images/Things/room_limit_1.png")
 Room_limit_2 = pg.image.load("Images/Things/room_limit_2.png")
+Player_house = pg.image.load("Images/Things/player_house.png")
+
+# Buffs
+Hearts = pg.image.load("Images/Things/heart.png")
+Extra_life = pg.image.load("Images/Things/extra_life.png")
 Extra_energy = pg.image.load("Images/Things/extra_energy.png")
 
 # Effects
@@ -302,16 +308,95 @@ euphoria_intro = ["Once upon a time, a lost continent; where",
                   "",
                   "",
                   "",
-                  "", ]
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "Heroes...",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "Were able to safe our world, but",
+                  "each one of they have a story...",
+                  "this is one of them",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "Luke, the dragons son",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "         ( Somebody in the front door )",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "               Z Z Z Z Z Z Z.... ",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "I'll defeat... ",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "       ( Fall from his bed )",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "What the...?",
+                  "Who's knowing knock?"]
 
 skip = "Click to skip"
 
-dialogue_1 = ["* Somebody in the front door * ",
-              "* Z Z Z Z Z Z Z.... * "]
+dialogue_1 = "I should take this... (Press E)"
 
-dialogue_2 = ["I'll defeat... ",
-              "* Fall from his bed *",
-              "What the...?",
-              "Who's knowing knock?"]
+dialogue_2 = "I will need this... (Press E)"
+
+dialogue_3 = "...grandpa's ring... (Press Q)"
+
+dialogue_4 = ["I don't want to step on my",
+              "",
+              "garden"]
+
+dialogue_5 = ["LUUUUUUUUUUUKKKKEEEEEEE!!",
+              "",
+              "There are monster in the",
+              "",
+              "town... Safe us!!!", ]
+
+Player_attacks = ["Q. Hit",
+                  "W. Sword",
+                  "E. Transformation",
+                  "R. Dragon fire"]
+
+Enemy_1_attacks = ["Bite",
+                   "Poison",
+                   "Dodge"]
 
 dead = "You have died"
