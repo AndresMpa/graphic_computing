@@ -255,8 +255,8 @@ class Player(pg.sprite.Sprite):
 
         # Statistics
         self.lvl = 1
-        self.live = 10
-        self.energy = 10
+        self.live = 0
+        self.energy = 0
         self.extra_live = 0
         self.drake_smash = 0
         self.extra_energy = 0
@@ -291,6 +291,12 @@ class Player(pg.sprite.Sprite):
         for _ in range(self.energy):
             screen.blit(lib.cts.Extra_energy, [self.statistics[0], self.statistics[1]])
             self.statistics[0] += 15
+
+        self.statistics = [1170, 0]
+
+        for _ in range(self.drake_smash):
+            screen.blit(lib.cts.Drake_smash, [self.statistics[0], self.statistics[1]])
+            self.statistics[0] -= 20
 
         self.statistics = [0, 0]
 
@@ -341,11 +347,11 @@ if __name__ == '__main__':
     # Whiles
     run = True
     end = True
-    death = False
     intro = False
     room_1 = False
     room_2 = False
-    field_1 = True
+    death = False
+    field_1 = False
     field_2 = True
     field_3 = True
     in_combat = False
@@ -969,10 +975,6 @@ if __name__ == '__main__':
                     in_combat = False
                     field_1 = False
 
-            # Collides
-
-            buff_collides = pg.sprite.spritecollide(player, buffs_group, True)
-
             # Background
 
             if player.rect.x > scenario.screen_limits[0]:
@@ -1101,9 +1103,10 @@ if __name__ == '__main__':
             enemies_group.update(scenario.background_velocity)
             enemies_group.draw(window)
 
-            if 750 + scenario.rect.x < player.rect.x < 953 + scenario.rect.x and 350 + scenario.rect.y > player.rect.y > 217 + scenario.rect.y:
-                window.blit(lib.cts.Dialog_box, [0, 400])
-                text_group.update()
+            if 750 + scenario.rect.x < player.rect.x < 953 + scenario.rect.x:
+                if 350 + scenario.rect.y > player.rect.y > 217 + scenario.rect.y:
+                    window.blit(lib.cts.Dialog_box, [0, 400])
+                    text_group.update()
 
             if 700 < player.rect.x < 750 and 330 < player.rect.y < 370 and catchable:
                 window.blit(lib.cts.Dialog_box, [400, 400])
