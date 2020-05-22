@@ -390,6 +390,8 @@ dialogue_1 = "I should take this... (Press E)"
 
 dialogue_2 = "I will need this... (Press E)"
 
+dialogue_2_1 = "   This is really heavy..."
+
 dialogue_3 = "...grandpa's ring... (Press Q)"
 
 dialogue_4 = ["I don't want to step on my",

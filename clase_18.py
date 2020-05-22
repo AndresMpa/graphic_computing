@@ -22,6 +22,17 @@ if __name__ == '__main__':
     """
 
     texture = map_file.get('info', 'background')
+    image_texture = pg.image.load(texture)
+
+    matrix = []
+
+    for j in range(12):
+        line = []
+        for i in range(32):
+            piece = image_texture.subsurface(i * 32, j * 32, 32, 32)
+            line.append(piece)
+        matrix.append(line)
+
     info_map = map_file.get('info', 'map')
     map_slip = info_map.split('\n')
     print map_slip
@@ -31,6 +42,11 @@ if __name__ == '__main__':
         i = 0
         for c in f:
             print c, map_file.get(c, 'tf'), map_file.get(c, 'tc'), 32 * i, 32 * j
+            tf = int(map_file.get(c, 'tf'))
+            tc = int(map_file.get(c, 'tc'))
+            collide = int(map_file.get(c, 'collide'))
+            if collide > 0:
+                window.blit(matrix[tf][tc], [32 * i, 32 * j])
             i += 1
         j += 1
 

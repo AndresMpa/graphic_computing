@@ -160,7 +160,8 @@ class SimpleEnemy(pg.sprite.Sprite):
                 self.progressive_damage = 3
             elif chosen == 3:
                 self.dodge = 1
-            return lib.write(self.enemy_attacks[chosen], 30, 2)
+            attack = lib.write(self.enemy_attacks[chosen], 30, 2)
+            return attack
         if self.attacks_set == 2:
             chosen = lib.random_range(1, 3)
             if chosen == 1:
@@ -185,14 +186,17 @@ class SimpleEnemy(pg.sprite.Sprite):
 
     def change_images(self):
         if self.set == 1:
+            print 'Snake'
             self.life = 5
             self.set = lib.cts.Enemy_1
             self.enemy_attacks = lib.cts.Enemy_1_attacks
         elif self.set == 2:
+            print 'ogre'
             self.life = 8
             self.set = lib.cts.Enemy_4
             self.enemy_attacks = lib.cts.Enemy_4_attacks
         elif self.set == 3:
+            print 'boss'
             self.life = 12
             self.set = lib.cts.Enemy_15
             self.enemy_attacks = lib.cts.Enemy_15_attacks
@@ -280,11 +284,8 @@ class Scenarios(pg.sprite.Sprite):
         elif self.background == 5:
             self.image = lib.cts.Field_2
             self.background_limits = self.image.get_rect()
-            print self.background_limits
             self.background_limits = [(lib.cts.width - self.background_limits[2]),
                                       (lib.cts.height - self.background_limits[3])]
-
-            print self.background_limits
 
     def move_enemies(self, enemy_list):
         for iteration, value in enumerate(enemy_list):
@@ -324,11 +325,11 @@ class Player(pg.sprite.Sprite):
 
         # Statistics
         self.lvl = 1
-        self.live = 0
-        self.energy = 0
+        self.live = 10
+        self.energy = 6
         self.wings_buff = 0
         self.extra_live = 0
-        self.drake_smash = 0
+        self.drake_smash = 1
         self.extra_energy = 0
 
     def animate(self, key_pressed):
@@ -427,8 +428,8 @@ if __name__ == '__main__':
     room_1 = False
     room_2 = False
     death = False
-    field_1 = False
-    field_2 = False
+    field_1 = True
+    field_2 = True
     field_3 = True
     in_combat = False
     start_menu = True
@@ -612,7 +613,7 @@ if __name__ == '__main__':
 
         scenario.update()
 
-        if 550 < player.rect.x < 585 and 270 > player.rect.y > 230:
+        if 550 < player.rect.x < 585 and 270 > player.rect.y > 230 and len(buffs_group) == 1:
             if potion.y < 490:
                 potion.velocity = [0, 0]
 
@@ -717,6 +718,10 @@ if __name__ == '__main__':
     potion.velocity = [0, 1]
     text_group.add(potion)
 
+    ring_without_potion = Texts([250, 70], window, lib.cts.dialogue_2_1, 30, 2)
+    ring_without_potion.velocity = [0, 1]
+    text_group.add(ring_without_potion)
+
     ring = Texts([250, 70], window, lib.cts.dialogue_3, 30, 2)
     ring.velocity = [0, 1]
     text_group.add(ring)
@@ -743,7 +748,8 @@ if __name__ == '__main__':
                     catchable = 0
                     player.energy = 5
                     buffs_group.remove(energy)
-                if event.key == pg.K_q and catchable:
+                    text_group.remove(potion)
+                if event.key == pg.K_q and len(buffs_group) == 1 and catchable:
                     catchable = 0
                     player.drake_smash += 1
                     buffs_group.remove(smash)
@@ -764,7 +770,8 @@ if __name__ == '__main__':
             if potion.y > 80:
                 potion.velocity = [0, 0]
 
-            potion.update()
+            if len(buffs_group) > 1:
+                potion.update()
 
             catchable = 1
         else:
@@ -774,10 +781,17 @@ if __name__ == '__main__':
                 if ring.y > 80:
                     ring.velocity = [0, 0]
 
-                ring.update()
+                if ring_without_potion.y > 80:
+                    ring_without_potion.velocity = [0, 0]
 
-                catchable = 1
+                if len(buffs_group) == 2:
+                    ring_without_potion.update()
+                else:
+                    if len(buffs_group) == 1:
+                        ring.update()
+                        catchable = 1
             else:
+                ring_without_potion.rect = [250, 70]
                 ring.rect = [250, 70]
                 catchable = 0
 
@@ -817,9 +831,12 @@ if __name__ == '__main__':
     distance = [0, 0]
     first_enemy_position = [[1400, 600]]
 
+    ############################################################################################################################################
+
     enemy = SimpleEnemy(first_enemy_position[0], lib.cts.Enemy_1)
     enemies_group.add(enemy)
 
+    ############################################################################################################################################
     # Adding things
 
     flower = Things([685, 20], 20)
@@ -1191,7 +1208,7 @@ if __name__ == '__main__':
             NPCs_group.update()
             NPCs_group.draw(window)
 
-            lib.frames_per_second(fps, 0, 12)
+            lib.frames_per_second(fps, 1)
 
         turn = 1
 
@@ -1200,8 +1217,6 @@ if __name__ == '__main__':
                 if event.type == pg.QUIT:
                     in_combat = False
                     run = False
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    print pg.mouse.get_pos()
                 if event.type == pg.KEYDOWN and turn == 1:
                     if event.key == pg.K_q:
                         print 'Sword'
@@ -1227,17 +1242,19 @@ if __name__ == '__main__':
 
             if turn == 0 and cont == 0:
                 for enemy in enemies_in_combat:
-                    enemy_ability = enemy.enemy_attack(lib.random_range(1, 3))
+                    enemy_ability = enemy.enemy_attack()
 
             for enemy in enemies_in_combat:
                 if enemy.life == 0:
                     enemies_in_combat.remove(enemy)
 
             if len(enemies_in_combat) == 0:
+                print 'No more enemies'
                 in_combat = False
                 field_1 = True
 
             if player.live == 0 or player.energy == 0:
+                print 'Player is dead'
                 in_combat = False
                 field_1 = True
                 death = True
