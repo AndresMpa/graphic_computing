@@ -109,6 +109,8 @@ class Buffs(pg.sprite.Sprite):
             self.image = lib.cts.Extra_energy
         elif self.buff == 3:
             self.image = lib.cts.Drake_smash
+        elif self.buff == 4:
+            self.image = lib.cts.Wings
 
     def get_buff(self):
         return self.image
@@ -122,9 +124,23 @@ class SimpleEnemy(pg.sprite.Sprite):
     def __init__(self, position, sprite_sets):
         super(SimpleEnemy, self).__init__()
 
-        # Enemy images
+        # Statistics
+        self.life = 0
+        self.dodge = 0
+        self.damage = 0
+        self.lose_turn = 0
+        self.progressive_damage = 0
+
+        self.enemy_attacks = None
+
+        # Animation
+        self.current_animation = 1
+
+        # Player images
         self.set = sprite_sets
-        self.image = lib.cts.Enemy_1
+        self.attacks_set = sprite_sets
+        self.change_images()
+        self.image = self.set[self.current_animation]
 
         # Position issues
         self.rect = self.image.get_rect()
@@ -132,17 +148,67 @@ class SimpleEnemy(pg.sprite.Sprite):
         self.velocity = [0, 0]
         self.angle = 0
 
-        # Statistics
-        self.life = 5
-        self.enemy_attacks = lib.cts.Enemy_1_attacks
-
     def get_position(self):
         return [self.rect.x, self.rect.y]
 
-    def enemy_attack(self, chose):
-        return lib.write(self.enemy_attacks[chose], 30, 2)
+    def enemy_attack(self):
+        if self.attacks_set == 1:
+            chosen = lib.random_range(1, 3)
+            if chosen == 1:
+                self.damage = 2
+            elif chosen == 2:
+                self.progressive_damage = 3
+            elif chosen == 3:
+                self.dodge = 1
+            return lib.write(self.enemy_attacks[chosen], 30, 2)
+        if self.attacks_set == 2:
+            chosen = lib.random_range(1, 3)
+            if chosen == 1:
+                self.damage = 4
+            elif chosen == 2:
+                self.lose_turn = 1
+            elif chosen == 3:
+                self.life += 1
+            return lib.write(self.enemy_attacks[chosen], 30, 2)
+        if self.attacks_set == 3:
+            chosen = lib.random_range(1, 4)
+            if chosen == 1:
+                self.damage = 4
+            elif chosen == 2:
+                self.progressive_damage = 2
+            elif chosen == 3:
+                self.dodge = 1
+                self.life += 1
+            elif chosen == 4:
+                self.lose_turn = 1
+            return lib.write(self.enemy_attacks[chosen], 30, 2)
+
+    def change_images(self):
+        if self.set == 1:
+            self.life = 5
+            self.set = lib.cts.Enemy_1
+            self.enemy_attacks = lib.cts.Enemy_1_attacks
+        elif self.set == 2:
+            self.life = 8
+            self.set = lib.cts.Enemy_4
+            self.enemy_attacks = lib.cts.Enemy_4_attacks
+        elif self.set == 3:
+            self.life = 12
+            self.set = lib.cts.Enemy_15
+            self.enemy_attacks = lib.cts.Enemy_15_attacks
+
+    def animate(self):
+        if self.velocity != [0, 0]:
+            if self.current_animation < 2:
+                self.current_animation += 1
+            else:
+                self.current_animation = 0
+        else:
+            self.current_animation = 1
+        self.image = self.set[self.current_animation]
 
     def update(self, scenario_velocity):
+        self.animate()
         self.rect.x += self.velocity[0] * lib.mt.cos(self.angle) - scenario_velocity[0]
         self.rect.y += self.velocity[1] * lib.mt.sin(self.angle) + scenario_velocity[1]
 
@@ -214,8 +280,11 @@ class Scenarios(pg.sprite.Sprite):
         elif self.background == 5:
             self.image = lib.cts.Field_2
             self.background_limits = self.image.get_rect()
+            print self.background_limits
             self.background_limits = [(lib.cts.width - self.background_limits[2]),
                                       (lib.cts.height - self.background_limits[3])]
+
+            print self.background_limits
 
     def move_enemies(self, enemy_list):
         for iteration, value in enumerate(enemy_list):
@@ -257,6 +326,7 @@ class Player(pg.sprite.Sprite):
         self.lvl = 1
         self.live = 0
         self.energy = 0
+        self.wings_buff = 0
         self.extra_live = 0
         self.drake_smash = 0
         self.extra_energy = 0
@@ -296,6 +366,12 @@ class Player(pg.sprite.Sprite):
 
         for _ in range(self.drake_smash):
             screen.blit(lib.cts.Drake_smash, [self.statistics[0], self.statistics[1]])
+            self.statistics[0] -= 20
+
+        self.statistics[1] -= 20
+
+        for _ in range(self.wings_buff):
+            screen.blit(lib.cts.Wings, [self.statistics[0], self.statistics[1]])
             self.statistics[0] -= 20
 
         self.statistics = [0, 0]
@@ -352,7 +428,7 @@ if __name__ == '__main__':
     room_2 = False
     death = False
     field_1 = False
-    field_2 = True
+    field_2 = False
     field_3 = True
     in_combat = False
     start_menu = True
@@ -665,7 +741,7 @@ if __name__ == '__main__':
                     player.action = 2
                 if event.key == pg.K_e and catchable:
                     catchable = 0
-                    player.energy = 10
+                    player.energy = 5
                     buffs_group.remove(energy)
                 if event.key == pg.K_q and catchable:
                     catchable = 0
@@ -741,7 +817,7 @@ if __name__ == '__main__':
     distance = [0, 0]
     first_enemy_position = [[1400, 600]]
 
-    enemy = SimpleEnemy(first_enemy_position[0], 1)
+    enemy = SimpleEnemy(first_enemy_position[0], lib.cts.Enemy_1)
     enemies_group.add(enemy)
 
     # Adding things
@@ -1073,7 +1149,7 @@ if __name__ == '__main__':
                 else:
                     enemy.velocity = [-4, -4]
 
-                if (distance[0] == 0) and (distance[1] == 0):
+                if ((distance[0] >= -2) and (distance[0] <= 2)) and ((distance[1] >= -2) and (distance[1] <= 2)):
                     enemy.velocity = [0, 0]
                 else:
                     if distance[0] == 0:
@@ -1115,7 +1191,7 @@ if __name__ == '__main__':
             NPCs_group.update()
             NPCs_group.draw(window)
 
-            lib.frames_per_second(fps, 1)
+            lib.frames_per_second(fps, 0, 12)
 
         turn = 1
 
@@ -1204,43 +1280,23 @@ if __name__ == '__main__':
     scenario.rect.x, scenario.rect.y = [0, -25]
 
     # Repositioning player
-    player.rect.x = 712
-    player.rect.y = 181
+    player.rect.x = 40
+    player.rect.y = 40
 
     angle = 0
     radio = 600
     distance = [0, 0]
-    first_enemy_position = [[400, 300], [600, 500]]
+    first_enemy_position = [[500, 300], [800, 1000]]
 
-    enemy = SimpleEnemy(first_enemy_position[0], 1)
-    enemies_group.add(enemy)
+    for _ in range(len(first_enemy_position)):
+        enemy = SimpleEnemy(first_enemy_position[_], 2)
+        enemies_group.add(enemy)
 
-    enemy = SimpleEnemy(first_enemy_position[1], 1)
-    enemies_group.add(enemy)
+    cont = [[265, 300], [800, 500]]
 
-    decoration4 = Things([265, 158], 7)
-    things_group.add(decoration4)
-
-    decoration3 = Things([809, 162], 6)
-    things_group.add(decoration3)
-
-    nightstand_2 = Things([585, 131], 8)
-    things_group.add(nightstand_2)
-
-    table = Things([695, 405], 15)
-    things_group.add(table)
-
-    chair_e = Things([637, 413], 11)
-    things_group.add(chair_e)
-
-    chair_n = Things([718, 483], 12)
-    things_group.add(chair_n)
-
-    chair_s = Things([716, 354], 13)
-    things_group.add(chair_s)
-
-    chair_w = Things([800, 415], 14)
-    things_group.add(chair_w)
+    for _ in range(len(cont)):
+        tree = Things(cont[_], 16)
+        things_group.add(tree)
 
     while run and field_2 or in_combat:
         for event in pg.event.get():
@@ -1273,14 +1329,73 @@ if __name__ == '__main__':
             # Control
 
             # Next field condition
-            if player.rect.x == 1150 and 360 < player.rect.y < 520:
-                if scenario.rect[0] == -600 and scenario.rect[1] == -625:
+            if player.rect.x == 1150 and 360 < player.rect.y < 480:
+                if scenario.rect[0] == -620 and scenario.rect[1] == -625:
                     in_combat = False
                     field_2 = False
 
-            # Collides
+            if player.rect.x > scenario.screen_limits[0]:
+                player.rect.x = scenario.screen_limits[0]
+                if scenario.rect.x > scenario.background_limits[0]:
+                    scenario.background_velocity[0] = 5
+                    for _ in things_group:
+                        _.thing_velocity[0] = -5
 
-            buff_collides = pg.sprite.spritecollide(player, buffs_group, True)
+                else:
+                    scenario.background_velocity[0] = 0
+                    for _ in things_group:
+                        _.thing_velocity[0] = 0
+            else:
+                if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
+                    player.rect.x = lib.cts.width - scenario.screen_limits[0]
+                    if scenario.rect.x < lib.cts.width + scenario.background_limits[0] * 2:
+                        scenario.background_velocity[0] = -5
+                        for _ in things_group:
+                            _.thing_velocity[0] = 5
+                    else:
+                        scenario.background_velocity[0] = 0
+                        for _ in things_group:
+                            _.thing_velocity[0] = 0
+                else:
+                    if scenario.rect.x > lib.cts.width + scenario.background_limits[0]:
+                        scenario.background_velocity[0] = 5
+                        for _ in things_group:
+                            _.thing_velocity[0] = -5
+                    else:
+                        scenario.background_velocity[0] = 0
+                        for _ in things_group:
+                            _.thing_velocity[0] = 0
+
+            if player.rect.y > scenario.screen_limits[1]:
+                player.rect.y = scenario.screen_limits[1]
+                if scenario.rect.y > scenario.background_limits[1]:
+                    scenario.background_velocity[1] = -5
+                    for _ in things_group:
+                        _.thing_velocity[1] = -5
+                else:
+                    scenario.background_velocity[1] = 0
+                    for _ in things_group:
+                        _.thing_velocity[1] = 0
+            else:
+                if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
+                    player.rect.y = lib.cts.height - scenario.screen_limits[1]
+                    if scenario.rect.y < 0:
+                        scenario.background_velocity[1] = 5
+                        for _ in things_group:
+                            _.thing_velocity[1] = 5
+                    else:
+                        scenario.background_velocity[1] = 0
+                        for _ in things_group:
+                            _.thing_velocity[1] = 0
+                else:
+                    if scenario.rect.y > lib.cts.height + scenario.background_limits[1]:
+                        scenario.background_velocity[1] = -5
+                        for _ in things_group:
+                            _.thing_velocity[1] = -5
+                    else:
+                        scenario.background_velocity[1] = 0
+                        for _ in things_group:
+                            _.thing_velocity[1] = 0
 
             # Enemies
 
@@ -1289,7 +1404,7 @@ if __name__ == '__main__':
             for enemy in enemy_collide:
                 enemies_in_combat.add(enemy)
                 in_combat = True
-                field_1 = False
+                field_2 = False
 
             i = 0
             for enemy in enemies_group:
@@ -1303,7 +1418,7 @@ if __name__ == '__main__':
                 else:
                     enemy.velocity = [-4, -4]
 
-                if (distance[0] == 0) and (distance[1] == 0):
+                if ((distance[0] >= -2) and (distance[0] <= 2)) and ((distance[1] >= -2) and (distance[1] <= 2)):
                     enemy.velocity = [0, 0]
                 else:
                     if distance[0] == 0:
@@ -1316,46 +1431,6 @@ if __name__ == '__main__':
                         angle = lib.mt.atan(distance[1] / distance[0])
                         enemy.angle = angle
                 i += 1
-
-                # Background
-
-            if player.rect.x > scenario.screen_limits[0]:
-                player.rect.x = scenario.screen_limits[0]
-                if scenario.rect.x > scenario.background_limits[0]:
-                    scenario.background_velocity[0] = 5
-                else:
-                    scenario.background_velocity[0] = 0
-            else:
-                if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
-                    player.rect.x = lib.cts.width - scenario.screen_limits[0]
-                    if scenario.rect.x < lib.cts.width + scenario.background_limits[0] * 2:
-                        scenario.background_velocity[0] = -5
-                    else:
-                        scenario.background_velocity[0] = 0
-                else:
-                    if scenario.rect.x > lib.cts.width + scenario.background_limits[0]:
-                        scenario.background_velocity[0] = 5
-                    else:
-                        scenario.background_velocity[0] = 0
-
-            if player.rect.y > scenario.screen_limits[1]:
-                player.rect.y = scenario.screen_limits[1]
-                if scenario.rect.y > scenario.background_limits[1]:
-                    scenario.background_velocity[1] = -5
-                else:
-                    scenario.background_velocity[1] = 0
-            else:
-                if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
-                    player.rect.y = lib.cts.height - scenario.screen_limits[1]
-                    if scenario.rect.y < 0:
-                        scenario.background_velocity[1] = 5
-                    else:
-                        scenario.background_velocity[1] = 0
-                else:
-                    if scenario.rect.y > lib.cts.height + scenario.background_limits[1]:
-                        scenario.background_velocity[1] = -5
-                    else:
-                        scenario.background_velocity[1] = 0
 
             # Drawing
             lib.fill(window)
@@ -1377,12 +1452,6 @@ if __name__ == '__main__':
 
         turn = 1
 
-        new_text_position = [50, 750]
-        for _ in range(0, len(lib.cts.euphoria_intro)):
-            new_text = Texts(new_text_position, window, lib.cts.euphoria_intro[_], 30, 2)
-            new_text_position[1] += 50
-            text_group.add(new_text)
-
         while in_combat:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -1394,25 +1463,28 @@ if __name__ == '__main__':
                     if event.key == pg.K_q:
                         print 'Sword'
                         turn = 0
+                        player.energy -= 1
                     if event.key == pg.K_w:
                         print 'Hit'
                         turn = 0
+                        player.energy -= 1
                     if event.key == pg.K_e:
                         print 'Transformation'
                         turn = 0
+                        player.energy -= 1
                     if event.key == pg.K_r:
                         print 'Dragon fire ball'
                         turn = 0
+                        player.energy -= 1
                     if event.key == pg.K_SPACE:
+                        field_1 = True
                         in_combat = False
-                        field_2 = True
 
             # Control
 
-            if turn == 0:
+            if turn == 0 and cont == 0:
                 for enemy in enemies_in_combat:
-                    enemy.attack()
-                turn = 1
+                    enemy_ability = enemy.enemy_attack(lib.random_range(1, 3))
 
             for enemy in enemies_in_combat:
                 if enemy.life == 0:
@@ -1422,9 +1494,10 @@ if __name__ == '__main__':
                 in_combat = False
                 field_2 = True
 
-            if player.live == 0:
-                field_1 = True
+            if player.live == 0 or player.energy == 0:
                 in_combat = False
+                field_2 = True
+                death = True
 
             lib.fill(window)
 
@@ -1432,6 +1505,15 @@ if __name__ == '__main__':
 
             if turn == 1:
                 window.blit(lib.cts.Dialog_box, [0, 400])
+                player.show_statistics(window)
+                abilities_in_combat.update()
+                cont = 0
+            else:
+                window.blit(lib.cts.Dialog_box, [400, 400])
+                window.blit(enemy_ability, [450, 450])
+                if cont > 100:
+                    turn = 1
+                cont += 1
 
             lib.frames_per_second(fps, 1)
 
@@ -1459,9 +1541,9 @@ if __name__ == '__main__':
     angle = 0
     radio = 300
     distance = [0, 0]
-    first_enemy_position = [400, 300]
+    first_enemy_position = [[400, 300]]
 
-    enemy = SimpleEnemy(first_enemy_position, 1)
+    enemy = SimpleEnemy(first_enemy_position[0], 1)
     enemies_group.add(enemy)
 
     while run:
@@ -1471,6 +1553,7 @@ if __name__ == '__main__':
         while field_3:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                    in_combat = False
                     field_3 = False
                     run = False
                 if event.type == pg.KEYDOWN:
@@ -1493,22 +1576,86 @@ if __name__ == '__main__':
 
             # Control
 
-            # Collides
+            # Background
 
-            buff_collides = pg.sprite.spritecollide(player, buffs_group, True)
+            if player.rect.x > scenario.screen_limits[0]:
+                player.rect.x = scenario.screen_limits[0]
+                if scenario.rect.x > scenario.background_limits[0]:
+                    scenario.background_velocity[0] = 5
+                    for _ in things_group:
+                        _.thing_velocity[0] = -5
+
+                else:
+                    scenario.background_velocity[0] = 0
+                    for _ in things_group:
+                        _.thing_velocity[0] = 0
+            else:
+                if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
+                    print 'Tiene que ser aca hpt'
+                    player.rect.x = lib.cts.width - scenario.screen_limits[0]
+                    if scenario.rect.x < lib.cts.width + scenario.background_limits[0] * 2:
+                        scenario.background_velocity[0] = -5
+                        for _ in things_group:
+                            _.thing_velocity[0] = 5
+                    else:
+                        scenario.background_velocity[0] = 0
+                        for _ in things_group:
+                            _.thing_velocity[0] = 0
+                else:
+                    if scenario.rect.x > lib.cts.width - scenario.background_limits[0]:
+                        scenario.background_velocity[0] = 5
+                        for _ in things_group:
+                            _.thing_velocity[0] = -5
+                    else:
+                        scenario.background_velocity[0] = 0
+                        for _ in things_group:
+                            _.thing_velocity[0] = 0
+
+            if player.rect.y > scenario.screen_limits[1]:
+                player.rect.y = scenario.screen_limits[1]
+                if scenario.rect.y > scenario.background_limits[1]:
+                    scenario.background_velocity[1] = -5
+                    for _ in things_group:
+                        _.thing_velocity[1] = -5
+                else:
+                    scenario.background_velocity[1] = 0
+                    for _ in things_group:
+                        _.thing_velocity[1] = 0
+            else:
+                if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
+                    player.rect.y = lib.cts.height - scenario.screen_limits[1]
+                    if scenario.rect.y < 0:
+                        scenario.background_velocity[1] = 5
+                        for _ in things_group:
+                            _.thing_velocity[1] = 5
+                    else:
+                        scenario.background_velocity[1] = 0
+                        for _ in things_group:
+                            _.thing_velocity[1] = 0
+                else:
+                    if scenario.rect.y > lib.cts.height - scenario.background_limits[1]:
+                        scenario.background_velocity[1] = -5
+                        for _ in things_group:
+                            _.thing_velocity[1] = -5
+                    else:
+                        scenario.background_velocity[1] = 0
+                        for _ in things_group:
+                            _.thing_velocity[1] = 0
 
             # Enemies
 
             enemy_collide = pg.sprite.spritecollide(player, enemies_group, True)
 
             for enemy in enemy_collide:
+                enemies_in_combat.add(enemy)
                 in_combat = True
                 field_1 = False
 
+            i = 0
             for enemy in enemies_group:
-                distance = move_enemy(first_enemy_position, player.rect)
+                distance = move_enemy(first_enemy_position[i], player.rect)
                 if lib.mt.sqrt(lib.mt.pow(distance[0], 2) + lib.mt.pow(distance[1], 2)) > radio:
-                    distance = move_enemy(first_enemy_position, enemy.rect)
+                    distance = move_enemy(first_enemy_position[i], enemy.rect)
                 else:
                     distance = move_enemy(player.rect, enemy.rect)
                 if distance[0] > 0:
@@ -1516,7 +1663,7 @@ if __name__ == '__main__':
                 else:
                     enemy.velocity = [-4, -4]
 
-                if (distance[0] == 0) and (distance[1] == 0):
+                if ((distance[0] >= -2) and (distance[0] <= 2)) and ((distance[1] >= -2) and (distance[1] <= 2)):
                     enemy.velocity = [0, 0]
                 else:
                     if distance[0] == 0:
@@ -1528,51 +1675,14 @@ if __name__ == '__main__':
                     else:
                         angle = lib.mt.atan(distance[1] / distance[0])
                         enemy.angle = angle
-
-            # Background
-
-            if player.rect.x > scenario.screen_limits[0]:
-                player.rect.x = scenario.screen_limits[0]
-                if scenario.rect.x > scenario.background_limits[0]:
-                    scenario.background_velocity[0] = 5
-                else:
-                    scenario.background_velocity[0] = 0
-            else:
-                if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
-                    player.rect.x = lib.cts.width - scenario.screen_limits[0]
-                    if scenario.rect.x < lib.cts.width + scenario.background_limits[0] * 2:
-                        scenario.background_velocity[0] = -5
-                    else:
-                        scenario.background_velocity[0] = 0
-                else:
-                    if scenario.rect.x > lib.cts.width + scenario.background_limits[0]:
-                        scenario.background_velocity[0] = 5
-                    else:
-                        scenario.background_velocity[0] = 0
-
-            if player.rect.y > scenario.screen_limits[1]:
-                player.rect.y = scenario.screen_limits[1]
-                if scenario.rect.y > scenario.background_limits[1]:
-                    scenario.background_velocity[1] = -5
-                else:
-                    scenario.background_velocity[1] = 0
-            else:
-                if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
-                    player.rect.y = lib.cts.height - scenario.screen_limits[1]
-                    if scenario.rect.y < 0:
-                        scenario.background_velocity[1] = 5
-                    else:
-                        scenario.background_velocity[1] = 0
-                else:
-                    if scenario.rect.y > lib.cts.height + scenario.background_limits[1]:
-                        scenario.background_velocity[1] = -5
-                    else:
-                        scenario.background_velocity[1] = 0
+                i += 1
 
             # Drawing
             lib.fill(window)
 
             scenario.update()
+
+            first_enemy_position = scenario.move_enemies(first_enemy_position)
 
             things_group.update()
             things_group.draw(window)
@@ -1583,7 +1693,7 @@ if __name__ == '__main__':
             enemies_group.update(scenario.background_velocity)
             enemies_group.draw(window)
 
-            lib.frames_per_second(fps, 1)
+            lib.frames_per_second(fps, 2)
 
         while in_combat:
             for event in pg.event.get():
@@ -1601,9 +1711,6 @@ if __name__ == '__main__':
             window.blit(lib.cts.Field_0, [0, 0])
 
             lib.frames_per_second(fps, 1)
-
-    if not run and death:
-        run = True
 
     while run and end:
         lib.fill(window)

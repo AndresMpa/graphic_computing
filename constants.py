@@ -201,10 +201,14 @@ Elizabeth = pg.image.load("Images/Characters/npc/Elizabeth.png")
 
 # Enemies
 
-Enemy_1 = pg.image.load("Images/Characters/Enemies/1.png")
+Enemy_1 = [pg.image.load("Images/Characters/Enemies/1_1.png"),
+           pg.image.load("Images/Characters/Enemies/1_2.png"),
+           pg.image.load("Images/Characters/Enemies/1_3.png")]
 Enemy_2 = pg.image.load("Images/Characters/Enemies/2.png")
 Enemy_3 = pg.image.load("Images/Characters/Enemies/3.png")
-Enemy_4 = pg.image.load("Images/Characters/Enemies/4.png")
+Enemy_4 = [pg.image.load("Images/Characters/Enemies/4_1.png"),
+           pg.image.load("Images/Characters/Enemies/4_2.png"),
+           pg.image.load("Images/Characters/Enemies/4_3.png")]
 Enemy_5 = pg.image.load("Images/Characters/Enemies/5.png")
 Enemy_6 = pg.image.load("Images/Characters/Enemies/6.png")
 Enemy_7 = pg.image.load("Images/Characters/Enemies/7.png")
@@ -215,8 +219,15 @@ Enemy_11 = pg.image.load("Images/Characters/Enemies/11.png")
 Enemy_12 = pg.image.load("Images/Characters/Enemies/12.png")
 Enemy_13 = pg.image.load("Images/Characters/Enemies/13.png")
 Enemy_14 = pg.image.load("Images/Characters/Enemies/14.png")
-Enemy_15 = pg.image.load("Images/Characters/Enemies/15.png")
+Enemy_15 = [pg.image.load("Images/Characters/Enemies/15_1.png"),
+            pg.image.load("Images/Characters/Enemies/15_2.png"),
+            pg.image.load("Images/Characters/Enemies/15_3.png")]
+
+# In combat
+
 Enemy_1_in_combat = pg.image.load("Images/Characters/Enemies/1_in_combat.png")
+
+# Others
 
 Snake = pg.image.load("Images/snaky.png")
 
@@ -237,7 +248,7 @@ Field_2 = pg.image.load("Images/Places/f_2.png")
 Town_1 = pg.image.load("Images/Places/town1.png")
 Town_2 = pg.image.load("Images/Places/town2.png")
 Town_3 = pg.image.load("Images/Places/town3.png")
-Battle_ground = pg.image.load("Images/Places/battle_ground.png")
+Battle_ground = pg.image.load("Images/Places/battle_ground.jpg")
 Fields_position = [0, 0]
 
 background = pg.image.load("Images/f_1.png")
@@ -271,6 +282,7 @@ Room_limit_2 = pg.image.load("Images/Things/room_limit_2.png")
 Player_house = pg.image.load("Images/Things/player_house.png")
 
 # Buffs
+Wings = pg.image.load("Images/Things/wings.png")
 Hearts = pg.image.load("Images/Things/heart.png")
 Extra_life = pg.image.load("Images/Things/extra_life.png")
 Extra_energy = pg.image.load("Images/Things/extra_energy.png")
@@ -398,5 +410,14 @@ Player_attacks = ["Q. Hit",
 Enemy_1_attacks = ["Bite",
                    "Poison",
                    "Dodge"]
+
+Enemy_4_attacks = ["SMASH!",
+                   "Gurrrr!",
+                   "EAT!"]
+
+Enemy_15_attacks = ["Skull attack!",
+                    "Amaterasu",
+                    "You can't hurt me",
+                    "NEW PET!"]
 
 dead = "You have died"

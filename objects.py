@@ -4,37 +4,65 @@ import constants as cts
 
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, position):
+    def __init__(self, position, sprite_sets=lib.cts.Luke, collides=[]):
         super(Player, self).__init__()
 
-        # Animations issues
-        self.current_direction = 0
-        self.current_image = 0
+        # Animation
+        self.action = 3
+        self.current_animation = 1
 
         # Player images
-        self.images = cts.Luke
-        self.image = self.images[self.current_direction][self.current_image]
+        self.set = sprite_sets
+        self.image = self.set[self.action][self.current_animation]
 
-        # Position issues
-        self.rect = self.images[self.current_direction][self.current_image].get_rect()
+        # Position
+        self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
         self.velocity = [0, 0]
 
-        # Collision
-        self.blocks = None
+        # Control
+        self.speed = 0
+        self.collides = collides
 
-    def next_images(self, direction):
+    def animate(self, key_pressed):
+        if self.current_animation < 2 and key_pressed:
+            self.current_animation += 1
+        else:
+            self.current_animation = 1
+        self.image = self.set[self.action][self.current_animation]
+
+    def get_position(self):
+        return [self.rect.x, self.rect.y]
+
+    def update(self, key_pressed):
+        self.animate(key_pressed)
+
         self.rect.x += self.velocity[0]
+        list_collide = pg.sprite.spritecollide(self, self.collides, False)
+
+        for things in list_collide:
+            if self.velocity[0] > 0:
+                if self.rect.right > things.rect.left:
+                    self.rect.right = things.rect.left
+                    self.velocity[0] = 0
+            else:
+                if self.rect.left < things.rect.right:
+                    self.rect.left = things.rect.right
+                    self.velocity[0] = 0
+
         self.rect.y += self.velocity[1]
+        list_collide = pg.sprite.spritecollide(self, self.collides, False)
 
-        self.current_direction = direction
+        for things in list_collide:
+            if self.velocity[1] > 0:
+                if self.rect.bottom > things.rect.top:
+                    self.rect.bottom = things.rect.top
+                    self.velocity[1] = 0
 
-        if self.current_image >= 3:
-            self.current_image = 0
-
-    def update(self, direction):
-        self.next_images(direction)
-        self.image = self.images[self.current_direction][self.current_image]
+            else:
+                if self.rect.top < things.rect.bottom:
+                    self.rect.top = things.rect.bottom
+                    self.velocity[1] = 0
 
 
 class Objects(pg.sprite.Sprite):

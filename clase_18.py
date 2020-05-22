@@ -6,58 +6,38 @@ import ConfigParser as Cp
 if __name__ == '__main__':
     pg.init()
     run = True
-    window = lib.new_window("RPG")
+    window = lib.new_window("Mapping")
     fps = lib.frames_per_second_basics()
 
     map_file = Cp.ConfigParser()
     map_file.read('map.map')
-    print map_file.sections()
-    print map_file.get('info', 'background')
 
-    players = pg.sprite.Group()
-    enemies = pg.sprite.Group()
+    """
+    print 'sections ', map_file.sections()
+    print 'background ', map_file.get('info', 'background')
+    print 'map: ', map_file.get('info', 'map')
+    map_from_file = map_file.get('info', 'map').split('\n')
+    print map_file.items('.')
+    print map_from_file
+    """
 
-    player = obj.Player([0, 0])
-    players.add(player)
-
-    number_of_enemies = 10
-    for i in range(number_of_enemies):
-        new_enemy = obj.Enemy(lib.random_position())
-        enemies.add(new_enemy)
-
-    position = [0, 0]
-    direction = 0
-    speed = 3
+    texture = map_file.get('info', 'background')
+    info_map = map_file.get('info', 'map')
+    map_slip = info_map.split('\n')
+    print map_slip
+    j = 0
+    for f in map_slip:
+        print f
+        i = 0
+        for c in f:
+            print c, map_file.get(c, 'tf'), map_file.get(c, 'tc'), 32 * i, 32 * j
+            i += 1
+        j += 1
 
     while run:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_s:
-                    position[1] += speed
-                    direction = 3
-                if event.key == pg.K_w:
-                    position[1] -= speed
-                    direction = 1
-                if event.key == pg.K_d:
-                    position[0] += speed
-                    direction = 0
-                if event.key == pg.K_a:
-                    position[0] -= speed
-                    direction = 2
-            if event.type == pg.KEYUP:
-                position = [0, 0]
-
-        list_objects = pg.sprite.spritecollide(player, enemies, True)
-
-        lib.fill(window)
-
-        players.update(direction)
-        players.draw(window)
-
-        enemies.update(window, position[0], position[1])
-        enemies.draw(window)
 
         lib.frames_per_second(fps)
     pg.quit()
