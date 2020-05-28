@@ -4,8 +4,12 @@ import constants as cts
 
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, position, sprite_sets=lib.cts.Luke, collides=[]):
+    def __init__(self, position, sprite_sets=lib.cts.Luke, collides=None):
         super(Player, self).__init__()
+
+        # Collides
+        if collides is None:
+            collides = []
 
         # Animation
         self.action = 3

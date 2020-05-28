@@ -188,13 +188,13 @@ if __name__ == '__main__':
             if event.type == pg.KEYUP:
                 player.velocity = [0, 0]
 
-        list_objects = pg.sprite.coll(player, mouses_group, True)
+        list_objects = pg.sprite.spritecollide(player, mouses_group, True)
 
         for generator in generators_group:
             if generator.tmp < 0:
                 mouse_direction = lib.rd.randrange(500)
 
-                mouse = Mouse(animations, generator.rdect.center)
+                mouse = Mouse(animations, generator.rect.center)
                 mouse_number += 1
                 mouse.id = mouse_number
 

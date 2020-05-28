@@ -72,9 +72,9 @@ class Things(pg.sprite.Sprite):
         elif self.thing == 17:
             self.image = lib.cts.Bush
         elif self.thing == 18:
-            self.image = lib.cts.Plant_1
-        elif self.thing == 19:
             self.image = lib.cts.Plant_2
+        elif self.thing == 19:
+            self.image = lib.cts.Plant_1
         elif self.thing == 20:
             self.image = lib.cts.Flower
         elif self.thing == 21:
@@ -100,7 +100,7 @@ class Buffs(pg.sprite.Sprite):
         # Position
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
-        self.buff_velocity = [0, 0]
+        self.velocity = [0, 0]
 
     def change_image(self):
         if self.buff == 1:
@@ -111,13 +111,79 @@ class Buffs(pg.sprite.Sprite):
             self.image = lib.cts.Drake_smash
         elif self.buff == 4:
             self.image = lib.cts.Wings
+        elif self.buff == 5:
+            self.image = lib.cts.Coffee
 
     def get_buff(self):
         return self.image
 
     def update(self):
-        self.rect.x += self.buff_velocity[0]
-        self.rect.y += self.buff_velocity[1]
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+
+
+class Generator(pg.sprite.Sprite):
+    def __init__(self, position):
+        super(Generator, self).__init__()
+
+        self.image = lib.cts.Hole
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = position
+        self.velocity = [0, 0]
+
+        self.temp = 60
+
+    def update(self):
+        self.temp -= 1
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+
+
+class GeneratedEnemy(pg.sprite.Sprite):
+    def __init__(self, position, sprite_sets):
+        super(GeneratedEnemy, self).__init__()
+
+        # Settings
+        self.current_animation = 1
+        self.current_direction = 0
+
+        # Setting sprites sets
+        self.angle = lib.rd.randrange(360)
+        self.velocity = [6, 6]
+
+        # Images
+        self.set = sprite_sets
+        self.image = self.set[self.current_direction][self.current_animation]
+
+        # Position
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = position
+
+    def selected(self):
+        if self.angle <= 315:
+            self.current_direction = 3
+        if self.angle <= 225:
+            self.current_direction = 2
+        if self.angle <= 135:
+            self.current_direction = 1
+        if self.angle <= 45:
+            self.current_direction = 0
+
+    def animate(self):
+        self.selected()
+        if self.velocity != [0, 0]:
+            if self.current_animation < 2:
+                self.current_animation += 1
+            else:
+                self.current_animation = 0
+        self.image = self.set[self.current_direction][self.current_animation]
+
+    def update(self, scenario_velocity):
+        self.rect.x += self.velocity[0] * lib.mt.cos(lib.mt.radians(self.angle))
+        self.rect.y -= self.velocity[1] * lib.mt.sin(lib.mt.radians(self.angle))
+        self.rect.x -= scenario_velocity[0]
+        self.rect.y += scenario_velocity[1]
+        self.animate()
 
 
 class SimpleEnemy(pg.sprite.Sprite):
@@ -133,16 +199,18 @@ class SimpleEnemy(pg.sprite.Sprite):
 
         self.enemy_attacks = None
 
+        self.statistics = [1110, 0]
+
         # Animation
         self.current_animation = 1
 
-        # Player images
+        # Enemy images
         self.set = sprite_sets
         self.attacks_set = sprite_sets
         self.change_images()
         self.image = self.set[self.current_animation]
 
-        # Position issues
+        # Position
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = position
         self.velocity = [0, 0]
@@ -151,55 +219,83 @@ class SimpleEnemy(pg.sprite.Sprite):
     def get_position(self):
         return [self.rect.x, self.rect.y]
 
-    def enemy_attack(self):
+    def enemy_attack(self, damage):
         if self.attacks_set == 1:
-            chosen = lib.random_range(1, 3)
-            if chosen == 1:
+            chosen = lib.random_range(0, 3)
+            if chosen == 0:
                 self.damage = 2
-            elif chosen == 2:
-                self.progressive_damage = 3
-            elif chosen == 3:
-                self.dodge = 1
+            if chosen == 1:
+                self.progressive_damage += 3
+            if chosen == 2:
+                self.dodge = True
+
+            if self.dodge:
+                self.dodge = False
+            else:
+                self.life -= damage
+
             attack = lib.write(self.enemy_attacks[chosen], 30, 2)
             return attack
         if self.attacks_set == 2:
-            chosen = lib.random_range(1, 3)
-            if chosen == 1:
+            chosen = lib.random_range(0, 3)
+            if chosen == 0:
                 self.damage = 4
-            elif chosen == 2:
+            if chosen == 1:
                 self.lose_turn = 1
-            elif chosen == 3:
+            if chosen == 2:
                 self.life += 1
-            return lib.write(self.enemy_attacks[chosen], 30, 2)
+
+            self.life -= damage
+
+            attack = lib.write(self.enemy_attacks[chosen], 30, 2)
+            return attack
         if self.attacks_set == 3:
-            chosen = lib.random_range(1, 4)
+            chosen = lib.random_range(0, 4)
             if chosen == 1:
                 self.damage = 4
-            elif chosen == 2:
+            if chosen == 2:
                 self.progressive_damage = 2
-            elif chosen == 3:
-                self.dodge = 1
+            if chosen == 3:
+                self.dodge = True
                 self.life += 1
-            elif chosen == 4:
+            if chosen == 4:
                 self.lose_turn = 1
-            return lib.write(self.enemy_attacks[chosen], 30, 2)
+
+            if self.dodge:
+                self.dodge = False
+            else:
+                self.life -= damage
+
+            attack = lib.write(self.enemy_attacks[chosen], 30, 2)
+            return attack
 
     def change_images(self):
         if self.set == 1:
-            print 'Snake'
             self.life = 5
             self.set = lib.cts.Enemy_1
             self.enemy_attacks = lib.cts.Enemy_1_attacks
         elif self.set == 2:
-            print 'ogre'
             self.life = 8
-            self.set = lib.cts.Enemy_4
-            self.enemy_attacks = lib.cts.Enemy_4_attacks
+            self.set = lib.cts.Enemy_2
+            self.enemy_attacks = lib.cts.Enemy_2_attacks
         elif self.set == 3:
-            print 'boss'
             self.life = 12
-            self.set = lib.cts.Enemy_15
-            self.enemy_attacks = lib.cts.Enemy_15_attacks
+            self.set = lib.cts.Enemy_3
+            self.enemy_attacks = lib.cts.Enemy_3_attacks
+
+    def show_statistics(self, screen):
+        for _ in range(self.life):
+            screen.blit(lib.cts.Hearts, [self.statistics[0], self.statistics[1]])
+            self.statistics[0] -= 20
+        self.statistics = [1180, 0]
+
+    def in_combat(self, screen):
+        if self.attacks_set == 1:
+            screen.blit(lib.cts.Enemy_1_in_combat, [700, 50])
+        if self.attacks_set == 2:
+            screen.blit(lib.cts.Enemy_2_in_combat, [700, 100])
+        if self.attacks_set == 3:
+            screen.blit(lib.cts.Enemy_3_in_combat, [600, 200])
 
     def animate(self):
         if self.velocity != [0, 0]:
@@ -215,6 +311,73 @@ class SimpleEnemy(pg.sprite.Sprite):
         self.animate()
         self.rect.x += self.velocity[0] * lib.mt.cos(self.angle) - scenario_velocity[0]
         self.rect.y += self.velocity[1] * lib.mt.sin(self.angle) + scenario_velocity[1]
+
+
+class Boss(pg.sprite.Sprite):
+    def __init__(self, position):
+        super(Boss, self).__init__()
+
+        # Animation
+        self.current_animation = 1
+
+        # Boss images
+        self.set = lib.cts.Enemy_3
+        self.image = self.set[self.current_animation]
+
+        # Position
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = position
+        self.velocity = [0, 0]
+        self.angle = 0
+
+        # Setting
+        self.temp = 100
+        self.cont = 40
+
+    def get_position(self):
+        return [self.rect.x, self.rect.y]
+
+    def animate(self):
+        if self.velocity != [0, 0]:
+            if self.current_animation < 2:
+                self.current_animation += 1
+            else:
+                self.current_animation = 0
+        else:
+            self.current_animation = 1
+        self.image = self.set[self.current_animation]
+
+    def update(self, scenario_velocity):
+        self.animate()
+        self.cont -= 1
+        self.temp -= 1
+        self.rect.x += self.velocity * lib.mt.cos(self.angle)
+        self.rect.y += self.velocity * lib.mt.sin(self.angle)
+        self.rect.x -= scenario_velocity[0]
+        self.rect.y += scenario_velocity[1]
+
+
+class Attack(pg.sprite.Sprite):
+    def __init__(self, position):
+        super(Attack, self).__init__()
+
+        # Bullet creation
+        self.image = pg.Surface([10, 10])
+        self.image.fill(lib.cts.WHITE)
+
+        #
+        self.rect = self.image.get_rect()
+        self.velocity = 0
+        self.angle = 0
+
+        # Setting
+        self.rect.x, self.rect.y = position
+
+    def update(self, scenario_velocity):
+        self.rect.x += self.velocity * lib.mt.cos(self.angle)
+        self.rect.y += self.velocity * lib.mt.sin(self.angle)
+        self.rect.x -= scenario_velocity[0]
+        self.rect.y += scenario_velocity[1]
 
 
 class NonPlayableCharacters(pg.sprite.Sprite):
@@ -321,16 +484,18 @@ class Player(pg.sprite.Sprite):
 
         # Control
         self.speed = 0
+        self.damage = 0
         self.collides = collides
 
         # Statistics
         self.lvl = 1
         self.live = 10
-        self.energy = 6
+        self.energy = 0
         self.wings_buff = 0
         self.extra_live = 0
-        self.drake_smash = 1
-        self.extra_energy = 0
+        self.drake_smash = 0
+        self.extra_energy = 1
+        self.transformation = False
 
     def animate(self, key_pressed):
         if self.current_animation < 2 and key_pressed:
@@ -352,6 +517,12 @@ class Player(pg.sprite.Sprite):
         if choose == 3:
             self.drake_smash -= 1
 
+    def in_combat(self, screen):
+        if self.transformation:
+            screen.blit(self.set[5], [50, 50])
+        else:
+            screen.blit(self.set[6], [50, 200])
+
     def show_statistics(self, screen):
         for _ in range(self.live):
             screen.blit(lib.cts.Hearts, [self.statistics[0], self.statistics[1]])
@@ -369,7 +540,19 @@ class Player(pg.sprite.Sprite):
             screen.blit(lib.cts.Drake_smash, [self.statistics[0], self.statistics[1]])
             self.statistics[0] -= 20
 
-        self.statistics[1] -= 20
+        self.statistics = [1170, 20]
+
+        for _ in range(self.extra_live):
+            screen.blit(lib.cts.Extra_life, [self.statistics[0], self.statistics[1]])
+            self.statistics[0] -= 20
+
+        self.statistics = [1170, 40]
+
+        for _ in range(self.extra_energy):
+            screen.blit(lib.cts.Extra_energy, [self.statistics[0], self.statistics[1]])
+            self.statistics[0] -= 20
+
+        self.statistics = [1170, 60]
 
         for _ in range(self.wings_buff):
             screen.blit(lib.cts.Wings, [self.statistics[0], self.statistics[1]])
@@ -380,7 +563,10 @@ class Player(pg.sprite.Sprite):
     def update(self, key_pressed, screen):
         self.animate(key_pressed)
 
-        self.rect.x += self.velocity[0]
+        if self.velocity[0] != 0 and self.wings_buff > 0:
+            self.rect.x += self.velocity[0] * self.wings_buff * 2
+        else:
+            self.rect.x += self.velocity[0]
         list_collide = pg.sprite.spritecollide(self, self.collides, False)
 
         for things in list_collide:
@@ -393,7 +579,10 @@ class Player(pg.sprite.Sprite):
                     self.rect.left = things.rect.right
                     self.velocity[0] = 0
 
-        self.rect.y += self.velocity[1]
+        if self.velocity[1] != 0 and self.wings_buff > 0:
+            self.rect.y += self.velocity[1] * self.wings_buff * 2
+        else:
+            self.rect.y += self.velocity[1]
         list_collide = pg.sprite.spritecollide(self, self.collides, False)
 
         for things in list_collide:
@@ -416,18 +605,69 @@ def move_enemy(player_position, enemy_position):
     return [position_x, position_y]
 
 
+def attack_bomb(boss_attacking):
+    direction = 0
+    while direction <= 360:
+        bullet = Attack(boss_attacking.rect.center)
+        bullet.velocity = 8
+        bullet.angle = direction
+        attack_group.add(bullet)
+
+        bullet = Attack(boss_attacking.rect.center)
+        bullet.velocity = -8
+        bullet.angle = direction
+        attack_group.add(bullet)
+        direction += 30
+
+
+def attack_angelic_bomb(boss_attacking):
+    direction = 0
+    while direction < 360:
+        bullets = Attack(boss_attacking.rect.center)
+        bullets.velocity = 7
+        bullets.angle = direction
+        attack_group.add(bullets)
+
+        bullets = Attack(boss_attacking.rect.center)
+        bullets.velocity = -7
+        bullets.angle = direction
+        attack_group.add(bullets)
+
+        bullets = Attack(boss_attacking.rect.center)
+        bullets.velocity = 7
+        bullets.angle = direction
+        attack_group.add(bullets)
+
+        bullets = Attack(boss_attacking.rect.center)
+        bullets.velocity = -7
+        bullets.angle = direction
+        attack_group.add(bullets)
+        direction += 3
+
+
+def attack_spiral(boss_attacking):
+    bullets = Attack(boss_attacking.rect.center)
+    bullets.velocity = 10
+    bullets.angle = 0
+    attack_group.add(bullets)
+    for bullets in attack_group:
+        bullets.angle += 0.2
+
+
 if __name__ == '__main__':
     # init()
+
     pg.init()
     pg.font.init()
 
     # Whiles
+
     run = True
     end = True
+    death = False
     intro = False
     room_1 = False
     room_2 = False
-    death = False
     field_1 = True
     field_2 = True
     field_3 = True
@@ -435,40 +675,69 @@ if __name__ == '__main__':
     start_menu = True
 
     # Windows constants
+
     window = lib.new_window("Intro")
     fps = lib.frames_per_second_basics()
 
     # Groups
+
     # while writing
+
+    statistics_information = pg.sprite.Group()
+    inventory_information = pg.sprite.Group()
+    attacks_information = pg.sprite.Group()
     abilities_in_combat = pg.sprite.Group()
+    enemies_in_combat = pg.sprite.Group()
+    holes_dialogue = pg.sprite.Group()
     dialogue_group = pg.sprite.Group()
     title_group = pg.sprite.Group()
     text_group = pg.sprite.Group()
+    win_group = pg.sprite.Group()
 
     # while playing
-    enemies_in_combat = pg.sprite.Group()
+
+    random_enemies_group = pg.sprite.Group()
+    generators_group = pg.sprite.Group()
     players_group = pg.sprite.Group()
     enemies_group = pg.sprite.Group()
     flowers_group = pg.sprite.Group()
+    attack_group = pg.sprite.Group()
     things_group = pg.sprite.Group()
     buffs_group = pg.sprite.Group()
+    boss_group = pg.sprite.Group()
     NPCs_group = pg.sprite.Group()
 
     # Variables
+
     key = 0
     cont = 0
     speed = 5
     catchable = 0
     enemy_ability = None
 
-    # Intro issues
+    # Enemies variables
+
+    angle = 0
+    radio = 300
+    distance = [0, 0]
+
+    # Boss variables
+
+    attack_before_pause = 4
+    temp_while_shoting = 20
+    attack_direction = 0
+    current_attack = 1
+
+    # Intro
 
     # Game title
+
     Title = Texts([300, 250], window, lib.cts.euphoria, 200)
     Title.velocity = [0, 0]
     title_group.add(Title)
 
     # Game intro
+
     new_text_position = [50, 750]
     for _ in range(0, len(lib.cts.euphoria_intro)):
         new_text = Texts(new_text_position, window, lib.cts.euphoria_intro[_], 30, 2)
@@ -476,6 +745,7 @@ if __name__ == '__main__':
         text_group.add(new_text)
 
     # Game button skip
+
     Skip = Texts([1080, 550], window, lib.cts.skip, 20)
     Skip.velocity = [0, 0]
     title_group.add(Skip)
@@ -513,7 +783,7 @@ if __name__ == '__main__':
 
         lib.frames_per_second(fps, 2)
 
-    # Cleaning
+    # Cleaning and Updating window
 
     for _ in title_group:
         title_group.remove(_)
@@ -581,6 +851,9 @@ if __name__ == '__main__':
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
+
+            # Player movement & Interactions
+
             if event.type == pg.KEYDOWN:
                 key = 1
                 if event.key == pg.K_s:
@@ -605,10 +878,12 @@ if __name__ == '__main__':
                 key = 0
 
         # Next room condition
+
         if player.rect.bottom == 462 and player.rect.left < 505 and player.rect.right > 472:
             room_1 = False
 
         # Drawing
+
         lib.fill(window)
 
         scenario.update()
@@ -649,14 +924,17 @@ if __name__ == '__main__':
     # Scenario settings
 
     # Background
+
     current_scenario = 2
     scenario.background = current_scenario
 
     # Background position
+
     scenario.change_image()
     scenario.rect.x, scenario.rect.y = [lib.cts.width / 5, lib.cts.height / 5]
 
     # Repositioning player
+
     player.rect.x = 712
     player.rect.y = 181
 
@@ -695,7 +973,7 @@ if __name__ == '__main__':
     left_limit = Things([262, 232], 1)
     things_group.add(left_limit)
 
-    right_limit = Things([920, 232], 1)
+    right_limit = Things([920, 212], 1)
     things_group.add(right_limit)
 
     bottom_limit = Things([262, 520], 2)
@@ -712,6 +990,9 @@ if __name__ == '__main__':
     smash = Buffs([885, 185], 3)
     buffs_group.add(smash)
 
+    coffee = Buffs([745, 435], 5)
+    buffs_group.add(coffee)
+
     # Adding text interactions
 
     potion = Texts([250, 70], window, lib.cts.dialogue_2, 30, 2)
@@ -726,10 +1007,17 @@ if __name__ == '__main__':
     ring.velocity = [0, 1]
     text_group.add(ring)
 
+    cup = Texts([250, 70], window, lib.cts.dialogue_3_1, 30, 2)
+    cup.velocity = [0, 1]
+    text_group.add(cup)
+
     while run and room_2:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
+
+            # Player movement & interactions
+
             if event.type == pg.KEYDOWN:
                 key = 1
                 if event.key == pg.K_s:
@@ -745,23 +1033,31 @@ if __name__ == '__main__':
                     player.velocity[0] -= player.speed
                     player.action = 2
                 if event.key == pg.K_e and catchable:
-                    catchable = 0
-                    player.energy = 5
                     buffs_group.remove(energy)
                     text_group.remove(potion)
-                if event.key == pg.K_q and len(buffs_group) == 1 and catchable:
+                    if len(buffs_group) > 1:
+                        player.energy += 5
                     catchable = 0
-                    player.drake_smash += 1
+                if event.key == pg.K_q and len(buffs_group) == 2 and catchable:
                     buffs_group.remove(smash)
+                    if len(buffs_group) > 0:
+                        player.drake_smash += 1
+                    catchable = 0
+                if event.key == pg.K_r and catchable and player.live > 1:
+                    player.energy += 1
+                    player.live -= 1
+                    catchable = 0
             if event.type == pg.KEYUP:
                 player.velocity = [0, 0]
                 key = 0
 
-        # Next room condition
+        # Next field condition
+
         if player.rect.bottom == 520 and player.rect.left < 450 and player.rect.right > 430:
             room_2 = False
 
         # Drawing
+
         lib.fill(window)
 
         scenario.update()
@@ -770,7 +1066,7 @@ if __name__ == '__main__':
             if potion.y > 80:
                 potion.velocity = [0, 0]
 
-            if len(buffs_group) > 1:
+            if len(buffs_group) > 2:
                 potion.update()
 
             catchable = 1
@@ -784,15 +1080,27 @@ if __name__ == '__main__':
                 if ring_without_potion.y > 80:
                     ring_without_potion.velocity = [0, 0]
 
-                if len(buffs_group) == 2:
+                if len(buffs_group) == 3:
                     ring_without_potion.update()
                 else:
-                    if len(buffs_group) == 1:
+                    if len(buffs_group) == 2:
                         ring.update()
                         catchable = 1
             else:
                 ring_without_potion.rect = [250, 70]
                 ring.rect = [250, 70]
+                catchable = 0
+
+        if 760 < player.rect.x < 780 and 455 > player.rect.y > 420:
+            if cup.y > 80:
+                cup.velocity = [0, 0]
+
+            if player.live > 1:
+                cup.update()
+
+            catchable = 1
+        else:
+            if len(buffs_group) == 1:
                 catchable = 0
 
         things_group.update()
@@ -814,231 +1122,157 @@ if __name__ == '__main__':
     for _ in text_group:
         text_group.remove(_)
 
+    for _ in buffs_group:
+        buffs_group.remove(_)
+
     # Background settings
+
     current_scenario = 3
     scenario.background = current_scenario
 
     # Background position
+
     scenario.change_image()
     scenario.rect.x, scenario.rect.y = [-100, -250]
 
     # Repositioning player
+
     player.rect.x = 700
     player.rect.y = 350
+
+    # Adding enemies
 
     angle = 0
     radio = 300
     distance = [0, 0]
+
     first_enemy_position = [[1400, 600]]
 
-    ############################################################################################################################################
-
-    enemy = SimpleEnemy(first_enemy_position[0], lib.cts.Enemy_1)
+    enemy = SimpleEnemy(first_enemy_position[0], 1)
     enemies_group.add(enemy)
 
-    ############################################################################################################################################
     # Adding things
 
-    flower = Things([685, 20], 20)
-    things_group.add(flower)
+    flowers = [[685, 20], [685, 35], [705, 20], [705, 35], [705, 50],
+               [705, 65], [725, 20], [725, 35], [725, 50], [725, 65],
+               [725, 80], [725, 95], [745, 20], [745, 35], [745, 50],
+               [745, 65], [745, 80], [745, 95], [765, 20], [765, 35],
+               [765, 50], [765, 65], [765, 80], [765, 95], [785, 20],
+               [785, 35], [785, 50], [785, 65], [785, 80], [785, 95],
+               [805, 50], [805, 65], [805, 80], [805, 95], [805, 20],
+               [805, 35], [825, 80], [825, 95], [825, 20], [825, 35],
+               [825, 50], [825, 65]]
 
-    flower = Things([685, 35], 20)
-    things_group.add(flower)
+    for _ in range(len(flowers)):
+        flower = Things(flowers[_], lib.rd.randrange(19, 21))
+        things_group.add(flower)
 
-    flower = Things([705, 20], 20)
-    things_group.add(flower)
+    trees = [[100, 800], [75, 80], [350, -180], [1450, 400]]
 
-    flower = Things([705, 35], 20)
-    things_group.add(flower)
-
-    flower = Things([705, 50], 20)
-    things_group.add(flower)
-
-    flower = Things([705, 65], 20)
-    things_group.add(flower)
-
-    flower = Things([725, 20], 20)
-    things_group.add(flower)
-
-    flower = Things([725, 35], 20)
-    things_group.add(flower)
-
-    flower = Things([725, 50], 20)
-    things_group.add(flower)
-
-    flower = Things([725, 65], 20)
-    things_group.add(flower)
-
-    flower = Things([725, 80], 20)
-    things_group.add(flower)
-
-    flower = Things([725, 95], 20)
-    things_group.add(flower)
-
-    flower = Things([745, 20], 20)
-    things_group.add(flower)
-
-    flower = Things([745, 35], 20)
-    things_group.add(flower)
-
-    flower = Things([745, 50], 20)
-    things_group.add(flower)
-
-    flower = Things([745, 65], 20)
-    things_group.add(flower)
-
-    flower = Things([745, 80], 20)
-    things_group.add(flower)
-
-    flower = Things([745, 95], 20)
-    things_group.add(flower)
-
-    flower = Things([765, 20], 18)
-    things_group.add(flower)
-
-    flower = Things([765, 35], 18)
-    things_group.add(flower)
-
-    flower = Things([765, 50], 18)
-    things_group.add(flower)
-
-    flower = Things([765, 65], 18)
-    things_group.add(flower)
-
-    flower = Things([765, 80], 18)
-    things_group.add(flower)
-
-    flower = Things([765, 95], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 20], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 35], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 50], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 65], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 80], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 95], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 20], 18)
-    things_group.add(flower)
-
-    flower = Things([785, 35], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 50], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 65], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 80], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 95], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 20], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 35], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 50], 18)
-    things_group.add(flower)
-
-    flower = Things([805, 65], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 80], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 95], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 20], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 35], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 50], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 65], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 80], 18)
-    things_group.add(flower)
-
-    flower = Things([825, 95], 18)
-    things_group.add(flower)
+    for _ in range(len(trees)):
+        flower = Things(trees[_], lib.rd.randrange(16, 17))
+        things_group.add(flower)
 
     house = Things([500, 0], 21)
     things_group.add(house)
 
-    # Adding text
+    # NPCs
+
+    Manuela = NonPlayableCharacters([750, 300], 1)
+    NPCs_group.add(Manuela)
+
+    # Generators
+
+    cont = [[1500, 30]]
+
+    for _ in range(len(cont)):
+        generator = Generator(cont[_])
+        generators_group.add(generator)
+
+    # Text interactions
 
     new_text_position = [30, 450]
+
     for _ in range(0, len(lib.cts.dialogue_4)):
-        warden = Texts(new_text_position, window, lib.cts.dialogue_4[_], 30, 2, lib.cts.BLACK)
+        warden = Texts(new_text_position, window, lib.cts.dialogue_4[_], 30, 2)
         warden.velocity = [0, 0]
         new_text_position[1] += 25
         text_group.add(warden)
 
     new_text_position = [450, 450]
+
     for _ in range(0, len(lib.cts.dialogue_5)):
-        dialogue = Texts(new_text_position, window, lib.cts.dialogue_5[_], 30, 2, lib.cts.BLACK)
+        dialogue = Texts(new_text_position, window, lib.cts.dialogue_5[_], 30, 2)
         dialogue.velocity = [0, 0]
         new_text_position[1] += 25
         dialogue_group.add(dialogue)
 
-    Manuela = NonPlayableCharacters([750, 300], 1)
-    NPCs_group.add(Manuela)
+    holes_dialogue = Texts([450, 450], window, lib.cts.dialogue_7_2, 30, 2)
+    holes_dialogue.velocity = [0, 0]
 
     new_text_position = [50, 450]
-    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[0], 30, 2)
-    abilities.velocity = [0, 0]
-    abilities_in_combat.add(abilities)
-    new_text_position[1] += 100
 
-    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[1], 30, 2)
-    abilities.velocity = [0, 0]
-    abilities_in_combat.add(abilities)
-    new_text_position[1] += 50
+    for _ in range(0, len(lib.cts.Player_attacks) - 2):
+        abilities = Texts(new_text_position, window, lib.cts.Player_attacks[_], 20, 2)
+        abilities.velocity = [0, 0]
+        abilities_in_combat.add(abilities)
+        new_text_position[1] += 50
 
-    new_text_position = [350, 450]
+    new_text_position = [450, 450]
 
-    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[2], 30, 2)
-    abilities.velocity = [0, 0]
-    abilities_in_combat.add(abilities)
-    new_text_position[1] += 100
+    for _ in range(3, len(lib.cts.Player_attacks)):
+        abilities = Texts(new_text_position, window, lib.cts.Player_attacks[_], 20, 2)
+        abilities.velocity = [0, 0]
+        abilities_in_combat.add(abilities)
+        new_text_position[1] += 50
 
-    abilities = Texts(new_text_position, window, lib.cts.Player_attacks[3], 30, 2)
-    abilities.velocity = [0, 0]
-    abilities_in_combat.add(abilities)
+    new_text_position = [50, 450]
 
-    catchable = 1
+    for _ in range(0, len(lib.cts.Player_inventory)):
+        inventory = Texts(new_text_position, window, lib.cts.Player_inventory[_], 20, 2)
+        inventory.velocity = [0, 0]
+        inventory_information.add(inventory)
+        new_text_position[1] += 50
+
+    new_text_position = [50, 450]
+
+    for _ in range(0, len(lib.cts.dialogue_6)):
+        attack_information = Texts(new_text_position, window, lib.cts.dialogue_6[_], 30, 2)
+        attack_information.velocity = [0, 0]
+        new_text_position[1] += 25
+        attacks_information.add(attack_information)
+
+    new_text_position = [50, 450]
+
+    for _ in range(0, len(lib.cts.dialogue_7)):
+        energy_information = Texts(new_text_position, window, lib.cts.dialogue_7[_], 30, 2)
+        energy_information.velocity = [0, 0]
+        new_text_position[1] += 25
+        statistics_information.add(energy_information)
+
+    win = Texts([400, 300], window, lib.cts.dialogue_7_1, 80, 2, lib.cts.GOLD)
+    win_group.add(win)
+
+    # Setting variables
+
+    catchable = True
+
+    # Main loop (Field 1)
 
     while run and field_1 or in_combat:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
+
         while field_1:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     in_combat = False
                     field_1 = False
                     run = False
+
+                # Player movement
+
                 if event.type == pg.KEYDOWN:
                     key = 1
                     if event.key == pg.K_s:
@@ -1053,9 +1287,8 @@ if __name__ == '__main__':
                     if event.key == pg.K_a:
                         player.velocity[0] -= player.speed
                         player.action = 2
-                    if event.key == pg.K_e and catchable:
-                        catchable = 0
-                        player.velocity = [0, 0]
+                    if event.key == pg.K_e:
+                        catchable = False
                 if event.type == pg.KEYUP:
                     player.velocity = [0, 0]
                     key = 0
@@ -1063,12 +1296,13 @@ if __name__ == '__main__':
             # Control
 
             # Next field condition
+
             if player.rect.x == 1150 and 360 < player.rect.y < 520:
                 if scenario.rect[0] == -600 and scenario.rect[1] == -625:
                     in_combat = False
                     field_1 = False
 
-            # Background
+            # Scenario movement
 
             if player.rect.x > scenario.screen_limits[0]:
                 player.rect.x = scenario.screen_limits[0]
@@ -1076,12 +1310,20 @@ if __name__ == '__main__':
                     scenario.background_velocity[0] = 5
                     for _ in things_group:
                         _.thing_velocity[0] = -5
+                    for _ in generators_group:
+                        _.velocity[0] = -5
+                    for _ in buffs_group:
+                        _.velocity[0] = -5
                     Manuela.npc_velocity[0] = -5
 
                 else:
                     scenario.background_velocity[0] = 0
                     for _ in things_group:
                         _.thing_velocity[0] = 0
+                    for _ in generators_group:
+                        _.velocity[0] = 0
+                    for _ in buffs_group:
+                        _.velocity[0] = 0
                     Manuela.npc_velocity[0] = 0
             else:
                 if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
@@ -1090,22 +1332,38 @@ if __name__ == '__main__':
                         scenario.background_velocity[0] = -5
                         for _ in things_group:
                             _.thing_velocity[0] = 5
+                        for _ in generators_group:
+                            _.velocity[0] = 5
+                        for _ in buffs_group:
+                            _.velocity[0] = 5
                         Manuela.npc_velocity[0] = 5
                     else:
                         scenario.background_velocity[0] = 0
                         for _ in things_group:
                             _.thing_velocity[0] = 0
+                        for _ in generators_group:
+                            _.velocity[0] = 0
+                        for _ in buffs_group:
+                            _.velocity[0] = 0
                         Manuela.npc_velocity[0] = 0
                 else:
                     if scenario.rect.x > lib.cts.width + scenario.background_limits[0]:
                         scenario.background_velocity[0] = 5
                         for _ in things_group:
                             _.thing_velocity[0] = -5
+                        for _ in generators_group:
+                            _.velocity[0] = -5
+                        for _ in buffs_group:
+                            _.velocity[0] = -5
                         Manuela.npc_velocity[0] = -5
                     else:
                         scenario.background_velocity[0] = 0
                         for _ in things_group:
                             _.thing_velocity[0] = 0
+                        for _ in generators_group:
+                            _.velocity[0] = 0
+                        for _ in buffs_group:
+                            _.velocity[0] = 0
                         Manuela.npc_velocity[0] = 0
 
             if player.rect.y > scenario.screen_limits[1]:
@@ -1114,11 +1372,19 @@ if __name__ == '__main__':
                     scenario.background_velocity[1] = -5
                     for _ in things_group:
                         _.thing_velocity[1] = -5
+                    for _ in generators_group:
+                        _.velocity[1] = -5
+                    for _ in buffs_group:
+                        _.velocity[1] = -5
                     Manuela.npc_velocity[1] = -5
                 else:
                     scenario.background_velocity[1] = 0
                     for _ in things_group:
                         _.thing_velocity[1] = 0
+                    for _ in generators_group:
+                        _.velocity[1] = 0
+                    for _ in buffs_group:
+                        _.velocity[1] = 0
                     Manuela.npc_velocity[1] = 0
             else:
                 if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
@@ -1127,22 +1393,38 @@ if __name__ == '__main__':
                         scenario.background_velocity[1] = 5
                         for _ in things_group:
                             _.thing_velocity[1] = 5
+                        for _ in generators_group:
+                            _.velocity[1] = 5
+                        for _ in buffs_group:
+                            _.velocity[1] = 5
                         Manuela.npc_velocity[1] = 5
                     else:
                         scenario.background_velocity[1] = 0
                         for _ in things_group:
                             _.thing_velocity[1] = 0
+                        for _ in generators_group:
+                            _.velocity[1] = 0
+                        for _ in buffs_group:
+                            _.velocity[1] = 0
                         Manuela.npc_velocity[1] = 0
                 else:
                     if scenario.rect.y > lib.cts.height + scenario.background_limits[1]:
                         scenario.background_velocity[1] = -5
                         for _ in things_group:
                             _.thing_velocity[1] = -5
+                        for _ in generators_group:
+                            _.velocity[1] = -5
+                        for _ in buffs_group:
+                            _.velocity[1] = -5
                         Manuela.npc_velocity[1] = -5
                     else:
                         scenario.background_velocity[1] = 0
                         for _ in things_group:
                             _.thing_velocity[1] = 0
+                        for _ in generators_group:
+                            _.velocity[1] = 0
+                        for _ in buffs_group:
+                            _.velocity[1] = 0
                         Manuela.npc_velocity[1] = 0
 
             # Enemies
@@ -1151,6 +1433,7 @@ if __name__ == '__main__':
 
             for enemy in enemy_collide:
                 enemies_in_combat.add(enemy)
+                player.velocity = [0, 0]
                 in_combat = True
                 field_1 = False
 
@@ -1180,12 +1463,80 @@ if __name__ == '__main__':
                         enemy.angle = angle
                 i += 1
 
-            # Drawing
+            # Generators
+
+            generator_collide = pg.sprite.spritecollide(player, generators_group, False)
+
+            for generator in generator_collide:
+                if not catchable:
+                    potion = Buffs([generator.rect.x, generator.rect.y], lib.rd.randrange(1, 4))
+                    buffs_group.add(potion)
+
+                    generators_group.remove(generator)
+
+                    catchable = False
+
+            for generator in generators_group:
+                if generator.temp < 0:
+                    raccoon = GeneratedEnemy(generator.rect.center, lib.cts.random_enemies_1)
+                    random_enemies_group.add(raccoon)
+                    generator.temp = 60
+
+            # Cleaning raccoons
+
+            for raccoon in random_enemies_group:
+                if raccoon.rect.x < -50:
+                    random_enemies_group.remove(raccoon)
+                if raccoon.rect.y < -50:
+                    random_enemies_group.remove(raccoon)
+                if raccoon.rect.x > lib.cts.width:
+                    random_enemies_group.remove(raccoon)
+                if raccoon.rect.y > lib.cts.height:
+                    random_enemies_group.remove(raccoon)
+
+            # Generated enemies
+
+            random_collide = pg.sprite.spritecollide(player, random_enemies_group, False)
+
+            for random_enemies in random_collide:
+                player.energy -= 1
+                random_enemies_group.remove(random_enemies)
+
+            # Buffs
+
+            buff_collide = pg.sprite.spritecollide(player, buffs_group, True)
+
+            for buffs in buff_collide:
+                if buffs.buff == 1:
+                    player.extra_live += 1
+                elif buffs.buff == 2:
+                    player.extra_energy += 1
+                elif buffs.buff == 3:
+                    player.drake_smash += 1
+                elif buffs.buff == 4:
+                    player.wings_buff += 1
+
+                buffs_group.remove(buffs)
+
+            # Updating & Drawing
+
             lib.fill(window)
 
             scenario.update()
 
             first_enemy_position = scenario.move_enemies(first_enemy_position)
+
+            generators_group.update()
+            generators_group.draw(window)
+
+            buffs_group.update()
+            buffs_group.draw(window)
+
+            random_enemies_group.update(scenario.background_velocity)
+            random_enemies_group.draw(window)
+
+            enemies_group.update(scenario.background_velocity)
+            enemies_group.draw(window)
 
             things_group.update()
             things_group.draw(window)
@@ -1193,24 +1544,34 @@ if __name__ == '__main__':
             players_group.update(key, window)
             players_group.draw(window)
 
-            enemies_group.update(scenario.background_velocity)
-            enemies_group.draw(window)
+            NPCs_group.update()
+            NPCs_group.draw(window)
+
+            # Text interactions
 
             if 750 + scenario.rect.x < player.rect.x < 953 + scenario.rect.x:
                 if 350 + scenario.rect.y > player.rect.y > 217 + scenario.rect.y:
                     window.blit(lib.cts.Dialog_box, [0, 400])
                     text_group.update()
 
-            if 700 < player.rect.x < 750 and 330 < player.rect.y < 370 and catchable:
-                window.blit(lib.cts.Dialog_box, [400, 400])
-                dialogue_group.update()
+            if 790 + scenario.rect.x < player.rect.x < 830 + scenario.rect.x:
+                if 650 + scenario.rect.y > player.rect.y > 300 + scenario.rect.y:
+                    window.blit(lib.cts.Dialog_box, [400, 400])
+                    dialogue_group.update()
 
-            NPCs_group.update()
-            NPCs_group.draw(window)
+            generator_collide = pg.sprite.spritecollide(player, generators_group, False)
+
+            for _ in generator_collide:
+                window.blit(lib.cts.Dialog_box, [400, 400])
+                holes_dialogue.update()
 
             lib.frames_per_second(fps, 1)
 
+        # Settings variables
+
         turn = 1
+        catchable = True
+        progressive = True
 
         while in_combat:
             for event in pg.event.get():
@@ -1218,59 +1579,178 @@ if __name__ == '__main__':
                     in_combat = False
                     run = False
                 if event.type == pg.KEYDOWN and turn == 1:
+
+                    # Player attacks
+
                     if event.key == pg.K_q:
-                        print 'Sword'
-                        turn = 0
-                        player.energy -= 1
+                        if player.energy >= 1:
+                            player.energy -= 1
+                            player.damage = 1
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
                     if event.key == pg.K_w:
-                        print 'Hit'
-                        turn = 0
-                        player.energy -= 1
+                        if player.energy >= 3:
+                            player.energy -= 3
+                            player.damage = 4
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
                     if event.key == pg.K_e:
-                        print 'Transformation'
-                        turn = 0
-                        player.energy -= 1
+                        if player.energy >= 5:
+                            player.transformation = True
+                            player.energy -= 5
+                            player.damage = 0
+                            player.live += 4
+                            turn = 0
+                            cont = 0
+                        else:
+                            turn = 2
                     if event.key == pg.K_r:
-                        print 'Dragon fire ball'
+                        if player.energy >= 3:
+                            if player.transformation:
+                                player.energy -= 3
+                                player.damage = 6
+                                turn = 0
+                                cont = 0
+                            else:
+                                catchable = False
+                                cont = 0
+                                turn = 1
+                        else:
+                            turn = 2
+
+                    # Inventory
+                    if event.key == pg.K_t:
+                        turn = 3
+                        cont = 0
+                    if event.key == pg.K_a:
+                        if player.drake_smash >= 1:
+                            player.use_extras(3)
+                            enemy.life = 0
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_s:
+                        if player.extra_live >= 1:
+                            player.use_extras(1)
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_d:
+                        if player.extra_energy >= 1:
+                            player.use_extras(2)
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+
+                    # Skip turn
+                    if event.key == pg.K_f:
+                        cont = 0
                         turn = 0
-                        player.energy -= 1
-                    if event.key == pg.K_SPACE:
-                        field_1 = True
-                        in_combat = False
 
-            # Control
+                    # Restating variables
 
-            if turn == 0 and cont == 0:
-                for enemy in enemies_in_combat:
-                    enemy_ability = enemy.enemy_attack()
+                    if turn == 0:
+                        player.energy += 2
 
-            for enemy in enemies_in_combat:
-                if enemy.life == 0:
-                    enemies_in_combat.remove(enemy)
+                    progressive = True
 
-            if len(enemies_in_combat) == 0:
-                print 'No more enemies'
-                in_combat = False
-                field_1 = True
-
-            if player.live == 0 or player.energy == 0:
-                print 'Player is dead'
-                in_combat = False
-                field_1 = True
-                death = True
+            # Drawing
 
             lib.fill(window)
 
             window.blit(lib.cts.Battle_ground, [0, 0])
 
+            # Control
+
+            # Enemies turn
+
+            if turn == 0:
+                for enemy in enemies_in_combat:
+                    if cont == 0:
+                        enemy_ability = enemy.enemy_attack(player.damage)
+                        player.damage = 0
+
+                    enemy.show_statistics(window)
+                    enemy.in_combat(window)
+
+                    if enemy.life <= 0:
+                        enemies_in_combat.remove(enemy)
+                    else:
+                        window.blit(lib.cts.Dialog_box, [400, 400])
+                        window.blit(enemy_ability, [450, 450])
+
+                if cont > 100:
+                    turn = 1
+                cont += 1
+
+            if len(enemies_in_combat) == 0:
+                win_group.update()
+
+                player.transformation = False
+
+                if cont > 100:
+                    player.velocity = [0, 0]
+                    key = 0
+
+                    in_combat = False
+                    field_1 = True
+                cont += 1
+
+            # Player turn
+
             if turn == 1:
-                window.blit(lib.cts.Dialog_box, [0, 400])
+                for enemy in enemies_in_combat:
+
+                    player.live -= enemy.damage
+
+                    if enemy.progressive_damage > 0 and progressive:
+                        enemy.progressive_damage -= 1
+                        progressive = False
+                        player.live -= 1
+
+                    enemy.damage = 0
+
+                if player.live <= 0:
+                    in_combat = False
+                    field_1 = False
+                    death = True
+
+                player.in_combat(window)
+
+                window.blit(lib.cts.Combat_box, [0, 400])
+
                 player.show_statistics(window)
-                abilities_in_combat.update()
-                cont = 0
-            else:
-                window.blit(lib.cts.Dialog_box, [400, 400])
-                window.blit(enemy_ability, [450, 450])
+
+                if catchable:
+                    abilities_in_combat.update()
+                    cont = 0
+                else:
+                    attacks_information.update()
+                    if cont > 100:
+                        catchable = True
+                        turn = 1
+                    cont += 1
+
+            # Informative turns
+
+            if turn == 2:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                statistics_information.update()
+                player.energy -= 2
+                if cont > 100:
+                    turn = 1
+                cont += 1
+
+            if turn == 3:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                inventory_information.update()
                 if cont > 100:
                     turn = 1
                 cont += 1
@@ -1279,47 +1759,90 @@ if __name__ == '__main__':
 
     # Cleaning
 
-    for _ in enemies_group:
-        enemies_group.remove(_)
-
     for _ in things_group:
         things_group.remove(_)
 
-    for _ in buffs_group:
-        buffs_group.remove(_)
+    for _ in enemies_group:
+        enemies_group.remove(_)
+
+    for _ in text_group:
+        text_group.remove(_)
+
+    for _ in dialogue_group:
+        dialogue_group.remove(_)
+
+    for _ in NPCs_group:
+        NPCs_group.remove(_)
+
+    for _ in enemies_in_combat:
+        enemies_in_combat.remove(_)
+
+    for _ in win_group:
+        win_group.remove(_)
 
     # Background
+
     current_scenario = 4
     scenario.background = current_scenario
 
     # Background position
+
     scenario.change_image()
     scenario.rect.x, scenario.rect.y = [0, -25]
 
     # Repositioning player
+
     player.rect.x = 40
     player.rect.y = 40
 
+    # Adding enemies
+
     angle = 0
-    radio = 600
+    radio = 200
     distance = [0, 0]
-    first_enemy_position = [[500, 300], [800, 1000]]
+    first_enemy_position = [[500, 500], [800, 1000]]
 
     for _ in range(len(first_enemy_position)):
         enemy = SimpleEnemy(first_enemy_position[_], 2)
         enemies_group.add(enemy)
 
-    cont = [[265, 300], [800, 500]]
+    # Adding things
+
+    trees = [[265, 300], [800, 500], [550, 80], [1250, 600]]
+
+    for _ in range(len(trees)):
+        flower = Things(trees[_], lib.rd.randrange(16, 17))
+        things_group.add(flower)
+
+    cont = [[700, 200], [300, 800]]
 
     for _ in range(len(cont)):
-        tree = Things(cont[_], 16)
-        things_group.add(tree)
+        generator = Generator(cont[_])
+        generators_group.add(generator)
+
+    # Adding text interactions
+
+    holes_dialogue = Texts([450, 450], window, lib.cts.dialogue_7_2, 30, 2)
+    holes_dialogue.velocity = [0, 0]
+    dialogue_group.add(holes_dialogue)
+
+    win = Texts([400, 300], window, lib.cts.dialogue_7_1, 80, 2, lib.cts.GOLD)
+    win_group.add(win)
+
+    # Settings variables
+
+    catchable = False
+
+    # Main loop (Field 2)
 
     while run and field_2 or in_combat:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 run = False
         while field_2:
+
+            # Player control
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     in_combat = False
@@ -1339,6 +1862,8 @@ if __name__ == '__main__':
                     if event.key == pg.K_a:
                         player.velocity[0] -= player.speed
                         player.action = 2
+                    if event.key == pg.K_e:
+                        catchable = True
                 if event.type == pg.KEYUP:
                     player.velocity = [0, 0]
                     key = 0
@@ -1346,10 +1871,13 @@ if __name__ == '__main__':
             # Control
 
             # Next field condition
+
             if player.rect.x == 1150 and 360 < player.rect.y < 480:
                 if scenario.rect[0] == -620 and scenario.rect[1] == -625:
                     in_combat = False
                     field_2 = False
+
+            # Scenario movement
 
             if player.rect.x > scenario.screen_limits[0]:
                 player.rect.x = scenario.screen_limits[0]
@@ -1357,11 +1885,15 @@ if __name__ == '__main__':
                     scenario.background_velocity[0] = 5
                     for _ in things_group:
                         _.thing_velocity[0] = -5
+                    for _ in generators_group:
+                        _.velocity[0] = -5
 
                 else:
                     scenario.background_velocity[0] = 0
                     for _ in things_group:
                         _.thing_velocity[0] = 0
+                    for _ in generators_group:
+                        _.velocity[0] = 0
             else:
                 if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
                     player.rect.x = lib.cts.width - scenario.screen_limits[0]
@@ -1369,30 +1901,41 @@ if __name__ == '__main__':
                         scenario.background_velocity[0] = -5
                         for _ in things_group:
                             _.thing_velocity[0] = 5
+                        for _ in generators_group:
+                            _.velocity[0] = 5
                     else:
                         scenario.background_velocity[0] = 0
                         for _ in things_group:
                             _.thing_velocity[0] = 0
+                        for _ in generators_group:
+                            _.velocity[0] = 0
                 else:
                     if scenario.rect.x > lib.cts.width + scenario.background_limits[0]:
                         scenario.background_velocity[0] = 5
                         for _ in things_group:
                             _.thing_velocity[0] = -5
+                        for _ in generators_group:
+                            _.velocity[0] = -5
                     else:
                         scenario.background_velocity[0] = 0
                         for _ in things_group:
                             _.thing_velocity[0] = 0
-
+                        for _ in generators_group:
+                            _.velocity[0] = 0
             if player.rect.y > scenario.screen_limits[1]:
                 player.rect.y = scenario.screen_limits[1]
                 if scenario.rect.y > scenario.background_limits[1]:
                     scenario.background_velocity[1] = -5
                     for _ in things_group:
                         _.thing_velocity[1] = -5
+                    for _ in generators_group:
+                        _.velocity[1] = -5
                 else:
                     scenario.background_velocity[1] = 0
                     for _ in things_group:
                         _.thing_velocity[1] = 0
+                    for _ in generators_group:
+                        _.velocity[1] = 0
             else:
                 if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
                     player.rect.y = lib.cts.height - scenario.screen_limits[1]
@@ -1400,19 +1943,27 @@ if __name__ == '__main__':
                         scenario.background_velocity[1] = 5
                         for _ in things_group:
                             _.thing_velocity[1] = 5
+                        for _ in generators_group:
+                            _.velocity[1] = 5
                     else:
                         scenario.background_velocity[1] = 0
                         for _ in things_group:
                             _.thing_velocity[1] = 0
+                        for _ in generators_group:
+                            _.velocity[1] = 0
                 else:
                     if scenario.rect.y > lib.cts.height + scenario.background_limits[1]:
                         scenario.background_velocity[1] = -5
                         for _ in things_group:
                             _.thing_velocity[1] = -5
+                        for _ in generators_group:
+                            _.velocity[1] = -5
                     else:
                         scenario.background_velocity[1] = 0
                         for _ in things_group:
                             _.thing_velocity[1] = 0
+                        for _ in generators_group:
+                            _.velocity[1] = 0
 
             # Enemies
 
@@ -1422,6 +1973,8 @@ if __name__ == '__main__':
                 enemies_in_combat.add(enemy)
                 in_combat = True
                 field_2 = False
+
+            # Enemies movement
 
             i = 0
             for enemy in enemies_group:
@@ -1449,6 +2002,68 @@ if __name__ == '__main__':
                         enemy.angle = angle
                 i += 1
 
+                # Generators
+
+                generator_collide = pg.sprite.spritecollide(player, generators_group, False)
+
+                for generator in generator_collide:
+                    if catchable:
+                        potion = Buffs([generator.rect.x, generator.rect.y], lib.rd.randrange(1, 4))
+                        buffs_group.add(potion)
+
+                        generators_group.remove(generator)
+                        catchable = False
+
+                for generator in generators_group:
+                    if generator.temp < 0:
+                        worm = GeneratedEnemy(generator.rect.center, lib.cts.random_enemies_2)
+                        random_enemies_group.add(worm)
+                        generator.temp = 60
+
+                # Worms cleaning
+
+                for worm in random_enemies_group:
+                    if worm.rect.x < -50:
+                        random_enemies_group.remove(worm)
+                    if worm.rect.y < -50:
+                        random_enemies_group.remove(worm)
+                    if worm.rect.x > lib.cts.width:
+                        random_enemies_group.remove(worm)
+                    if worm.rect.y > lib.cts.height:
+                        random_enemies_group.remove(worm)
+
+                # Generated enemies
+
+                random_collide = pg.sprite.spritecollide(player, random_enemies_group, False)
+
+                for random_enemies in random_collide:
+                    player.live -= 1
+                    random_enemies_group.remove(random_enemies)
+
+                # Buffs
+
+                buff_collide = pg.sprite.spritecollide(player, buffs_group, True)
+
+                for buffs in buff_collide:
+                    if buffs.buff == 1:
+                        player.extra_live += 1
+                    elif buffs.buff == 2:
+                        player.extra_energy += 1
+                    elif buffs.buff == 3:
+                        player.drake_smash += 1
+                    elif buffs.buff == 4:
+                        player.wings_buff += 1
+
+                    buffs_group.remove(buffs)
+
+                # Death by worms
+
+                if player.live <= 0:
+                    in_combat = False
+                    field_2 = False
+                    death = True
+                    run = False
+
             # Drawing
             lib.fill(window)
 
@@ -1456,78 +2071,204 @@ if __name__ == '__main__':
 
             first_enemy_position = scenario.move_enemies(first_enemy_position)
 
+            generators_group.update()
+            generators_group.draw(window)
+
+            buffs_group.update()
+            buffs_group.draw(window)
+
+            random_enemies_group.update(scenario.background_velocity)
+            random_enemies_group.draw(window)
+
+            enemies_group.update(scenario.background_velocity)
+            enemies_group.draw(window)
+
             things_group.update()
             things_group.draw(window)
 
             players_group.update(key, window)
             players_group.draw(window)
 
-            enemies_group.update(scenario.background_velocity)
-            enemies_group.draw(window)
+            generator_collide = pg.sprite.spritecollide(player, generators_group, False)
+
+            for generator in generator_collide:
+                window.blit(lib.cts.Dialog_box, [400, 400])
+                holes_dialogue.update()
 
             lib.frames_per_second(fps, 1)
 
         turn = 1
+        catchable = True
+        progressive = True
 
         while in_combat:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     in_combat = False
                     run = False
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    print pg.mouse.get_pos()
                 if event.type == pg.KEYDOWN and turn == 1:
+
+                    progressive = True
+
                     if event.key == pg.K_q:
-                        print 'Sword'
-                        turn = 0
-                        player.energy -= 1
+                        if player.energy >= 1:
+                            player.energy -= 1
+                            player.damage = 1
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
                     if event.key == pg.K_w:
-                        print 'Hit'
-                        turn = 0
-                        player.energy -= 1
+                        if player.energy >= 3:
+                            player.energy -= 3
+                            player.damage = 4
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
                     if event.key == pg.K_e:
-                        print 'Transformation'
-                        turn = 0
-                        player.energy -= 1
+                        if player.energy >= 5:
+                            player.transformation = True
+                            player.energy -= 5
+                            player.damage = 0
+                            player.live += 4
+                            turn = 0
+                            cont = 0
+                        else:
+                            turn = 2
                     if event.key == pg.K_r:
-                        print 'Dragon fire ball'
+                        if player.energy >= 3:
+                            if player.transformation:
+                                player.energy -= 3
+                                player.damage = 6
+                                turn = 0
+                                cont = 0
+                            else:
+                                catchable = False
+                                cont = 0
+                                turn = 1
+                        else:
+                            turn = 2
+
+                    # Inventory
+                    if event.key == pg.K_t:
+                        turn = 3
+                        cont = 0
+                    if event.key == pg.K_a:
+                        if player.drake_smash >= 1:
+                            player.use_extras(3)
+                            enemy.life = 0
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_s:
+                        if player.extra_live >= 1:
+                            player.use_extras(1)
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_d:
+                        if player.extra_energy >= 1:
+                            player.use_extras(2)
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+
+                    # Skip turn
+                    if event.key == pg.K_f:
+                        cont = 0
                         turn = 0
-                        player.energy -= 1
-                    if event.key == pg.K_SPACE:
-                        field_1 = True
-                        in_combat = False
 
-            # Control
+                    if turn == 0:
+                        player.energy += 2
 
-            if turn == 0 and cont == 0:
-                for enemy in enemies_in_combat:
-                    enemy_ability = enemy.enemy_attack(lib.random_range(1, 3))
-
-            for enemy in enemies_in_combat:
-                if enemy.life == 0:
-                    enemies_in_combat.remove(enemy)
-
-            if len(enemies_in_combat) == 0:
-                in_combat = False
-                field_2 = True
-
-            if player.live == 0 or player.energy == 0:
-                in_combat = False
-                field_2 = True
-                death = True
+            # Drawing
 
             lib.fill(window)
 
             window.blit(lib.cts.Battle_ground, [0, 0])
 
+            # Control
+
+            if turn == 0:
+                for enemy in enemies_in_combat:
+                    if cont == 0:
+                        enemy_ability = enemy.enemy_attack(player.damage)
+                        player.damage = 0
+
+                    enemy.show_statistics(window)
+                    enemy.in_combat(window)
+
+                    if enemy.life <= 0:
+                        enemies_in_combat.remove(enemy)
+                    else:
+                        window.blit(lib.cts.Dialog_box, [400, 400])
+                        window.blit(enemy_ability, [450, 450])
+
+                if cont > 100:
+                    turn = 1
+                cont += 1
+
+            if len(enemies_in_combat) == 0:
+                win_group.update()
+
+                player.transformation = False
+
+                if cont > 100:
+                    player.velocity = [0, 0]
+                    key = 0
+
+                    in_combat = False
+                    field_2 = True
+                cont += 1
+
             if turn == 1:
-                window.blit(lib.cts.Dialog_box, [0, 400])
+                for enemy in enemies_in_combat:
+
+                    player.live -= enemy.damage
+
+                    if enemy.progressive_damage > 0 and progressive:
+                        enemy.progressive_damage -= 1
+                        progressive = False
+                        player.live -= 1
+
+                    enemy.damage = 0
+
+                if player.live <= 0:
+                    in_combat = False
+                    field_2 = False
+                    death = True
+
+                player.in_combat(window)
+
+                window.blit(lib.cts.Combat_box, [0, 400])
+
                 player.show_statistics(window)
-                abilities_in_combat.update()
-                cont = 0
-            else:
-                window.blit(lib.cts.Dialog_box, [400, 400])
-                window.blit(enemy_ability, [450, 450])
+
+                if catchable:
+                    abilities_in_combat.update()
+                    cont = 0
+                else:
+                    attacks_information.update()
+                    if cont > 100:
+                        catchable = True
+                        turn = 1
+                    cont += 1
+
+            if turn == 2:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                statistics_information.update()
+                player.energy -= 2
+                if cont > 100:
+                    turn = 1
+                cont += 1
+
+            if turn == 3:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                inventory_information.update()
                 if cont > 100:
                     turn = 1
                 cont += 1
@@ -1540,8 +2281,20 @@ if __name__ == '__main__':
     for _ in things_group:
         things_group.remove(_)
 
-    for _ in buffs_group:
-        buffs_group.remove(_)
+    for _ in generators_group:
+        generators_group.remove(_)
+
+    for _ in enemies_in_combat:
+        enemies_in_combat.remove(_)
+
+    for _ in random_enemies_group:
+        random_enemies_group.remove(_)
+
+    for _ in dialogue_group:
+        dialogue_group.remove(_)
+
+    for _ in win_group:
+        win_group.remove(_)
 
     # Background
     current_scenario = 5
@@ -1552,16 +2305,45 @@ if __name__ == '__main__':
     scenario.rect.x, scenario.rect.y = [0, -25]
 
     # Repositioning player
-    player.rect.x = 712
-    player.rect.y = 181
+    player.rect.x = 50
+    player.rect.y = 50
 
     angle = 0
     radio = 300
     distance = [0, 0]
-    first_enemy_position = [[400, 300]]
 
-    enemy = SimpleEnemy(first_enemy_position[0], 1)
-    enemies_group.add(enemy)
+    first_enemy_position = [[250, 300], [600, 500], [550, 850]]
+
+    for _ in range(len(first_enemy_position)):
+        enemy = SimpleEnemy(first_enemy_position[_], 1)
+        enemies_group.add(enemy)
+
+    Balzar = NonPlayableCharacters([200, 80], 2)
+    NPCs_group.add(Balzar)
+    key = 0
+
+    new_text_position = [450, 430]
+    for _ in range(0, len(lib.cts.dialogue_8)):
+        new_text = Texts(new_text_position, window, lib.cts.dialogue_8[_], 25, 2)
+        new_text.velocity = [0, 0]
+        new_text_position[1] += 40
+        text_group.add(new_text)
+
+    new_text_position = [450, 430]
+    for _ in range(0, len(lib.cts.dialogue_9)):
+        new_text = Texts(new_text_position, window, lib.cts.dialogue_9[_], 25, 2)
+        new_text.velocity = [0, 0]
+        new_text_position[1] += 40
+        dialogue_group.add(new_text)
+
+    cont = 0
+
+    boss_spawn = [200, 80]
+    boss = Boss(boss_spawn)
+    boss_group.add(boss)
+
+    win = Texts([400, 300], window, lib.cts.dialogue_7_1, 80, 2, lib.cts.GOLD)
+    win_group.add(win)
 
     while run:
         for event in pg.event.get():
@@ -1601,32 +2383,37 @@ if __name__ == '__main__':
                     scenario.background_velocity[0] = 5
                     for _ in things_group:
                         _.thing_velocity[0] = -5
+                    Balzar.npc_velocity[0] = -5
 
                 else:
                     scenario.background_velocity[0] = 0
                     for _ in things_group:
                         _.thing_velocity[0] = 0
+                    Balzar.npc_velocity[0] = 0
             else:
                 if player.rect.x < lib.cts.width - scenario.screen_limits[0]:
-                    print 'Tiene que ser aca hpt'
                     player.rect.x = lib.cts.width - scenario.screen_limits[0]
-                    if scenario.rect.x < lib.cts.width + scenario.background_limits[0] * 2:
+                    if scenario.rect.x < lib.cts.width * 2 + scenario.background_limits[0]:
                         scenario.background_velocity[0] = -5
                         for _ in things_group:
                             _.thing_velocity[0] = 5
+                        Balzar.npc_velocity[0] = 5
                     else:
                         scenario.background_velocity[0] = 0
                         for _ in things_group:
                             _.thing_velocity[0] = 0
+                        Balzar.npc_velocity[0] = 0
                 else:
                     if scenario.rect.x > lib.cts.width - scenario.background_limits[0]:
                         scenario.background_velocity[0] = 5
                         for _ in things_group:
                             _.thing_velocity[0] = -5
+                        Balzar.npc_velocity[0] = -5
                     else:
                         scenario.background_velocity[0] = 0
                         for _ in things_group:
                             _.thing_velocity[0] = 0
+                        Balzar.npc_velocity[0] = 0
 
             if player.rect.y > scenario.screen_limits[1]:
                 player.rect.y = scenario.screen_limits[1]
@@ -1634,10 +2421,12 @@ if __name__ == '__main__':
                     scenario.background_velocity[1] = -5
                     for _ in things_group:
                         _.thing_velocity[1] = -5
+                    Balzar.npc_velocity[1] = -5
                 else:
                     scenario.background_velocity[1] = 0
                     for _ in things_group:
                         _.thing_velocity[1] = 0
+                    Balzar.npc_velocity[1] = 0
             else:
                 if player.rect.y < lib.cts.height - scenario.screen_limits[1]:
                     player.rect.y = lib.cts.height - scenario.screen_limits[1]
@@ -1645,19 +2434,23 @@ if __name__ == '__main__':
                         scenario.background_velocity[1] = 5
                         for _ in things_group:
                             _.thing_velocity[1] = 5
+                        Balzar.npc_velocity[1] = 5
                     else:
                         scenario.background_velocity[1] = 0
                         for _ in things_group:
                             _.thing_velocity[1] = 0
+                        Balzar.npc_velocity[1] = 0
                 else:
                     if scenario.rect.y > lib.cts.height - scenario.background_limits[1]:
                         scenario.background_velocity[1] = -5
                         for _ in things_group:
                             _.thing_velocity[1] = -5
+                        Balzar.npc_velocity[1] = -5
                     else:
                         scenario.background_velocity[1] = 0
                         for _ in things_group:
                             _.thing_velocity[1] = 0
+                        Balzar.npc_velocity[1] = 0
 
             # Enemies
 
@@ -1666,7 +2459,7 @@ if __name__ == '__main__':
             for enemy in enemy_collide:
                 enemies_in_combat.add(enemy)
                 in_combat = True
-                field_1 = False
+                field_3 = False
 
             i = 0
             for enemy in enemies_group:
@@ -1694,6 +2487,83 @@ if __name__ == '__main__':
                         enemy.angle = angle
                 i += 1
 
+            # Boss
+
+            if len(enemies_group) == 0:
+                attack_direction = 0
+                i = 0
+                for boss in boss_group:
+                    if temp_while_shoting > 0:
+                        boss.velocity = 0
+                    else:
+                        distance = move_enemy(player.rect, boss.rect)
+                        if distance[0] > 0:
+                            boss.velocity = 3
+                        else:
+                            boss.velocity = -3
+
+                        if ((distance[0] >= -2) and (distance[0] <= 2)) and (
+                                (distance[1] >= -2) and (distance[1] <= 2)):
+                            boss.velocity = 0
+                        else:
+                            if distance[0] == 0:
+                                boss.velocity = -3
+                                if distance[1] > 0:
+                                    angle = lib.mt.radians(270)
+                                if distance[1] < 0:
+                                    angle = lib.mt.radians(90)
+                            else:
+                                angle = lib.mt.atan(distance[1] / distance[0])
+                                boss.angle = angle
+                        i += 1
+
+                    if current_attack == 1:
+                        if boss.temp < 0:
+                            attack_bomb(boss)
+                            temp_while_shoting = 15
+                            if attack_before_pause == -2:
+                                boss.temp = 200
+                                attack_before_pause = 4
+                            else:
+                                boss.temp = 15
+                                attack_before_pause -= 1
+
+                    elif current_attack == 2:
+                        if boss.temp < 0:
+                            attack_angelic_bomb(boss)
+                            temp_while_shoting = 15
+                            if attack_before_pause == -50:
+                                boss.temp = 200
+                                attack_before_pause = 4
+                            else:
+                                boss.temp = 3
+                                attack_before_pause -= 1
+
+                    elif current_attack == 3:
+                        if boss.temp < 0:
+                            attack_spiral(boss)
+                            temp_while_shoting = 15
+                            if attack_before_pause == -200:
+                                boss.temp = 200
+                                attack_before_pause = 4
+                            else:
+                                boss.temp = 1
+                                attack_before_pause -= 1
+
+                temp_while_shoting -= 1
+
+            attack_collide = pg.sprite.spritecollide(player, attack_group, True)
+
+            for _ in attack_collide:
+                attack_group.remove(_)
+                player.live -= 1
+
+            if player.live <= 0:
+                in_combat = False
+                field_3 = False
+                death = True
+                run = False
+
             # Drawing
             lib.fill(window)
 
@@ -1710,40 +2580,291 @@ if __name__ == '__main__':
             enemies_group.update(scenario.background_velocity)
             enemies_group.draw(window)
 
-            lib.frames_per_second(fps, 2)
+            if len(enemies_group) > 0:
+                NPCs_group.update()
+                NPCs_group.draw(window)
+
+                if 200 + scenario.rect.x < player.rect.x < 250 + scenario.rect.x:
+                    if 170 + scenario.rect.y > player.rect.y > 100 + scenario.rect.y:
+                        window.blit(lib.cts.Dialog_box, [400, 400])
+                        text_group.update()
+            else:
+                cont += 1
+
+                if cont < 230:
+                    window.blit(lib.cts.Dialog_box, [400, 400])
+                    dialogue_group.update()
+
+                if cont == 230:
+                    NPCs_group.remove(Balzar)
+
+                if cont >= 500:
+                    current_attack = 1
+
+                if cont > 530:
+                    current_attack = 2
+
+                if cont > 550:
+                    current_attack = 3
+
+                if cont > 230:
+                    distance = [0, 0]
+                    if len(enemies_group) == 0:
+                        boss_group.update(scenario.background_velocity)
+                        boss_group.draw(window)
+
+                        attack_group.update(scenario.background_velocity)
+                        attack_group.draw(window)
+
+                        for _ in attack_group:
+                            if _.rect.x < 0:
+                                attack_group.remove(_)
+                            if _.rect.y < 0:
+                                attack_group.remove(_)
+                            if _.rect.x > lib.cts.width:
+                                attack_group.remove(_)
+                            if _.rect.y > lib.cts.height:
+                                attack_group.remove(_)
+
+            lib.frames_per_second(fps, 1)
+
+        turn = 1
+        catchable = True
+        progressive = True
 
         while in_combat:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     in_combat = False
                     run = False
-                if event.type == pg.KEYDOWN:
-                    field_1 = True
-                    in_combat = False
+                if event.type == pg.KEYDOWN and turn == 1:
+
+                    progressive = True
+
+                    if event.key == pg.K_q:
+                        if player.energy >= 1:
+                            player.energy -= 1
+                            player.damage = 1
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_w:
+                        if player.energy >= 3:
+                            player.energy -= 3
+                            player.damage = 4
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_e:
+                        if player.energy >= 5:
+                            player.transformation = True
+                            player.energy -= 5
+                            player.damage = 0
+                            player.live += 4
+                            turn = 0
+                            cont = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_r:
+                        if player.energy >= 3:
+                            if player.transformation:
+                                player.energy -= 3
+                                player.damage = 6
+                                turn = 0
+                                cont = 0
+                            else:
+                                catchable = False
+                                cont = 0
+                                turn = 1
+                        else:
+                            turn = 2
+
+                    # Inventory
+                    if event.key == pg.K_t:
+                        turn = 3
+                        cont = 0
+                    if event.key == pg.K_a:
+                        if player.drake_smash >= 1:
+                            player.use_extras(3)
+                            enemy.life = 0
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_s:
+                        if player.extra_live >= 1:
+                            player.use_extras(1)
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+                    if event.key == pg.K_d:
+                        if player.extra_energy >= 1:
+                            player.use_extras(2)
+                            cont = 0
+                            turn = 0
+                        else:
+                            turn = 2
+
+                    # Skip turn
+                    if event.key == pg.K_f:
+                        cont = 0
+                        turn = 0
+
+                    if turn == 0:
+                        player.energy += 2
+
+            # Drawing
 
             lib.fill(window)
 
-            window.blit(lib.cts.Dialog_box, [400, 800])
+            window.blit(lib.cts.Battle_ground, [0, 0])
 
-            window.blit(lib.cts.Field_0, [0, 0])
+            # Control
+
+            if turn == 0:
+                for enemy in enemies_in_combat:
+                    if cont == 0:
+                        enemy_ability = enemy.enemy_attack(player.damage)
+                        player.damage = 0
+
+                    enemy.show_statistics(window)
+                    enemy.in_combat(window)
+
+                    if enemy.life <= 0:
+                        enemies_in_combat.remove(enemy)
+                    else:
+                        window.blit(lib.cts.Dialog_box, [400, 400])
+                        window.blit(enemy_ability, [450, 450])
+
+                if cont > 100:
+                    turn = 1
+                cont += 1
+
+            if len(enemies_in_combat) == 0:
+                win_group.update()
+
+                player.transformation = False
+
+                if cont > 100:
+                    player.velocity = [0, 0]
+                    key = 0
+
+                    in_combat = False
+                    field_3 = True
+                cont += 1
+
+            if turn == 1:
+                for enemy in enemies_in_combat:
+
+                    player.live -= enemy.damage
+
+                    if enemy.progressive_damage > 0 and progressive:
+                        enemy.progressive_damage -= 1
+                        progressive = False
+                        player.live -= 1
+
+                    enemy.damage = 0
+
+                if player.live <= 0:
+                    in_combat = False
+                    field_3 = False
+                    death = True
+
+                player.in_combat(window)
+
+                window.blit(lib.cts.Combat_box, [0, 400])
+
+                player.show_statistics(window)
+
+                if catchable:
+                    abilities_in_combat.update()
+                    cont = 0
+                else:
+                    attacks_information.update()
+                    if cont > 100:
+                        catchable = True
+                        turn = 1
+                    cont += 1
+
+            if turn == 2:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                statistics_information.update()
+                player.energy -= 2
+                if cont > 100:
+                    turn = 1
+                cont += 1
+
+            if turn == 3:
+                window.blit(lib.cts.Dialog_box, [0, 400])
+                inventory_information.update()
+                if cont > 100:
+                    turn = 1
+                cont += 1
 
             lib.frames_per_second(fps, 1)
 
-    while run and end:
-        lib.fill(window)
-        pg.font.init()
-        txt = "GAME OVER"
-        write = lib.write(txt, 60, 2)
-        window.blit(write, [350, 200])
-        txt = "Press any key"
-        write = lib.write(txt, 30, 2)
-        window.blit(write, [400, 300])
+    # Death
 
-        lib.frames_per_second(fps, 5)
+    for _ in title_group:
+        title_group.remove(_)
+
+    for _ in text_group:
+        text_group.remove(_)
+
+    cont = 0
+
+    # Death title
+
+    Title = Texts([200, 250], window, lib.cts.Death, 100)
+    Title.velocity = [0, 0]
+    title_group.add(Title)
+
+    # Game end
+    new_text_position = [50, 750]
+    for _ in range(0, len(lib.cts.Death_interaction)):
+        new_text = Texts(new_text_position, window, lib.cts.Death_interaction[_], 30, 2)
+        new_text_position[1] += 50
+        text_group.add(new_text)
+
+    # Game button skip
+    Skip = Texts([1080, 550], window, lib.cts.skip, 20)
+    Skip.velocity = [0, 0]
+    title_group.add(Skip)
+
+    while not run and death:
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                run = False
-            if event.type == pg.KEYDOWN or event.type == pg.MOUSEBUTTONDOWN:
-                end = False
+                run = True
+            if event.type == pg.MOUSEBUTTONDOWN:
+                death = False
+
+        # Drawing and control
+
+        lib.fill(window)
+
+        Title.update()
+
+        if cont >= 100:
+            Title.velocity = [0, -1]
+            text_group.update()
+            Skip.update()
+
+        cont += 1
+
+        for _ in text_group:
+            if _.y < 0:
+                text_group.remove(_)
+
+        for _ in title_group:
+            if _.y <= 0:
+                title_group.remove(_)
+
+        if len(text_group) == 0:
+            death = False
+
+        lib.frames_per_second(fps, 2)
 
     pg.quit()

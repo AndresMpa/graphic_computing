@@ -29,6 +29,8 @@ LOW = pg.Color(55, 55, 55)
 # ELEMENTARY
 BLACK = pg.Color(0, 0, 0)
 WHITE = pg.Color(255, 255, 255)
+# EXTRAS
+GOLD = pg.Color(210, 175, 55)
 # COLOR PALETTE DEFAULT
 PALETTE = [RED, GREEN, BLUE, HIGH, MIDDLE, LOW, WHITE]
 # COLOR PALETTE #1
@@ -94,7 +96,8 @@ Luke = [
     [pg.image.load("Images/Heroes/Luke/t1.png"),
      pg.image.load("Images/Heroes/Luke/t2.png"),
      pg.image.load("Images/Heroes/Luke/t3.png")],
-    pg.image.load("Images/Heroes/Luke/t.png")]
+    pg.image.load("Images/Heroes/Luke/t.png"),
+    pg.image.load("Images/Heroes/Luke/in_combat.png")]
 
 Serafin = [
     [pg.image.load("Images/Heroes/Serafin/e1.png"),
@@ -204,28 +207,44 @@ Elizabeth = pg.image.load("Images/Characters/npc/Elizabeth.png")
 Enemy_1 = [pg.image.load("Images/Characters/Enemies/1_1.png"),
            pg.image.load("Images/Characters/Enemies/1_2.png"),
            pg.image.load("Images/Characters/Enemies/1_3.png")]
-Enemy_2 = pg.image.load("Images/Characters/Enemies/2.png")
-Enemy_3 = pg.image.load("Images/Characters/Enemies/3.png")
-Enemy_4 = [pg.image.load("Images/Characters/Enemies/4_1.png"),
-           pg.image.load("Images/Characters/Enemies/4_2.png"),
-           pg.image.load("Images/Characters/Enemies/4_3.png")]
-Enemy_5 = pg.image.load("Images/Characters/Enemies/5.png")
-Enemy_6 = pg.image.load("Images/Characters/Enemies/6.png")
-Enemy_7 = pg.image.load("Images/Characters/Enemies/7.png")
-Enemy_8 = pg.image.load("Images/Characters/Enemies/8.png")
-Enemy_9 = pg.image.load("Images/Characters/Enemies/9.png")
-Enemy_10 = pg.image.load("Images/Characters/Enemies/10.png")
-Enemy_11 = pg.image.load("Images/Characters/Enemies/11.png")
-Enemy_12 = pg.image.load("Images/Characters/Enemies/12.png")
-Enemy_13 = pg.image.load("Images/Characters/Enemies/13.png")
-Enemy_14 = pg.image.load("Images/Characters/Enemies/14.png")
-Enemy_15 = [pg.image.load("Images/Characters/Enemies/15_1.png"),
-            pg.image.load("Images/Characters/Enemies/15_2.png"),
-            pg.image.load("Images/Characters/Enemies/15_3.png")]
+Enemy_2 = [pg.image.load("Images/Characters/Enemies/2_1.png"),
+           pg.image.load("Images/Characters/Enemies/2_2.png"),
+           pg.image.load("Images/Characters/Enemies/2_3.png")]
+Enemy_3 = [pg.image.load("Images/Characters/Enemies/3_1.png"),
+           pg.image.load("Images/Characters/Enemies/3_2.png"),
+           pg.image.load("Images/Characters/Enemies/3_3.png")]
+
+random_enemies_1 = [[pg.image.load("Images/Things/raccoon_e_1.png"),
+                     pg.image.load("Images/Things/raccoon_e_2.png"),
+                     pg.image.load("Images/Things/raccoon_e_3.png")],
+                    [pg.image.load("Images/Things/raccoon_n_1.png"),
+                     pg.image.load("Images/Things/raccoon_n_2.png"),
+                     pg.image.load("Images/Things/raccoon_n_3.png")],
+                    [pg.image.load("Images/Things/raccoon_o_1.png"),
+                     pg.image.load("Images/Things/raccoon_o_2.png"),
+                     pg.image.load("Images/Things/raccoon_o_3.png")],
+                    [pg.image.load("Images/Things/raccoon_s_1.png"),
+                     pg.image.load("Images/Things/raccoon_s_2.png"),
+                     pg.image.load("Images/Things/raccoon_s_3.png")]]
+
+random_enemies_2 = [[pg.image.load("Images/Things/worm_e_1.png"),
+                     pg.image.load("Images/Things/worm_e_2.png"),
+                     pg.image.load("Images/Things/worm_e_3.png")],
+                    [pg.image.load("Images/Things/worm_n_1.png"),
+                     pg.image.load("Images/Things/worm_n_2.png"),
+                     pg.image.load("Images/Things/worm_n_3.png")],
+                    [pg.image.load("Images/Things/worm_o_1.png"),
+                     pg.image.load("Images/Things/worm_o_2.png"),
+                     pg.image.load("Images/Things/worm_o_3.png")],
+                    [pg.image.load("Images/Things/worm_s_1.png"),
+                     pg.image.load("Images/Things/worm_s_2.png"),
+                     pg.image.load("Images/Things/worm_s_3.png")]]
 
 # In combat
 
 Enemy_1_in_combat = pg.image.load("Images/Characters/Enemies/1_in_combat.png")
+Enemy_2_in_combat = pg.image.load("Images/Characters/Enemies/2_in_combat.png")
+Enemy_3_in_combat = pg.image.load("Images/Characters/Enemies/3_in_combat.png")
 
 # Others
 
@@ -257,8 +276,10 @@ background = pg.image.load("Images/f_1.png")
 
 Bed = pg.image.load("Images/Things/bed.png")
 Tree = pg.image.load("Images/Things/tree.png")
+Hole = pg.image.load("Images/Things/hole.png")
 Bush = pg.image.load("Images/Things/bush.png")
 Table = pg.image.load("Images/Things/table.png")
+Apple = pg.image.load("Images/Things/apple.png")
 Plant_1 = pg.image.load("Images/Things/plant_1.png")
 Plant_2 = pg.image.load("Images/Things/plant_2.png")
 Limit_1 = pg.image.load("Images/Things/limit_1.png")
@@ -268,6 +289,7 @@ Chair_n = pg.image.load("Images/Things/chair_n.png")
 Chair_s = pg.image.load("Images/Things/chair_s.png")
 Chair_w = pg.image.load("Images/Things/chair_w.png")
 Flower = pg.image.load("Images/Things/pink_flower.png")
+Combat_box = pg.image.load("Images/Things/combat_box.png")
 Dialog_box = pg.image.load("Images/Things/dialog_box.png")
 Drake_smash = pg.image.load("Images/Things/drake_smash.png")
 Nightstand_1 = pg.image.load("Images/Things/nightstand1.png")
@@ -284,6 +306,7 @@ Player_house = pg.image.load("Images/Things/player_house.png")
 # Buffs
 Wings = pg.image.load("Images/Things/wings.png")
 Hearts = pg.image.load("Images/Things/heart.png")
+Coffee = pg.image.load("Images/Things/coffee.png")
 Extra_life = pg.image.load("Images/Things/extra_life.png")
 Extra_energy = pg.image.load("Images/Things/extra_energy.png")
 
@@ -394,6 +417,8 @@ dialogue_2_1 = "   This is really heavy..."
 
 dialogue_3 = "...grandpa's ring... (Press Q)"
 
+dialogue_3_1 = "COFFEE!!! (Press R to drink)"
+
 dialogue_4 = ["I don't want to step on my",
               "",
               "garden"]
@@ -404,22 +429,65 @@ dialogue_5 = ["LUUUUUUUUUUUKKKKEEEEEEE!!",
               "",
               "town... Safe us!!!", ]
 
-Player_attacks = ["Q. Hit",
-                  "W. Sword",
-                  "E. Transformation",
-                  "R. Dragon fire"]
+dialogue_6 = ["I need to be a dragon to",
+              "",
+              "use dragon fire"]
+
+dialogue_7 = ["I don't have enough energy",
+              "",
+              "or material..."]
+
+dialogue_7_1 = "You won"
+
+dialogue_7_2 = "Fill hole (Press E)"
+
+dialogue_7_3 = "You found a potion"
+
+dialogue_8 = ["I'm Balzar the cataclysm herald",
+              "I can help, if the destroy those",
+              "monster I will tell you how to",
+              "stop the cataclysm"]
+
+dialogue_9 = ["Now, I'm free... Thank you...",
+              "Well you can die in peace. Those",
+              "Idiots wanted kidnap people...",
+              "IT BETTER KILL THEM RIGHT NOW!!!"]
+
+Player_attacks = ["Q. Hit (1/1)",
+                  "W. Sword (4/3)",
+                  "E. Transformation (5)",
+                  "R. Dragon fire (6/3)",
+                  "T. Inventory",
+                  "F. Skip turn"]
+
+Player_inventory = ["A. Dragon rings (It kills an enemy)",
+                    "S. Live potion (You recover 5 life points)",
+                    "D. Mana potion (You recover 5 energy points)"]
 
 Enemy_1_attacks = ["Bite",
                    "Poison",
                    "Dodge"]
 
-Enemy_4_attacks = ["SMASH!",
+Enemy_2_attacks = ["SMASH!",
                    "Gurrrr!",
                    "EAT!"]
 
-Enemy_15_attacks = ["Skull attack!",
-                    "Amaterasu",
-                    "You can't hurt me",
-                    "NEW PET!"]
+Enemy_3_attacks = ["Skull attack!",
+                   "Amaterasu",
+                   "You can't hurt me",
+                   "NEW PET!"]
 
-dead = "You have died"
+Death = "You have been slave"
+
+Death_interaction = ["",
+                     "",
+                     "",
+                     "",
+                     "Luke was defeat...",
+                     "",
+                     "",
+                     "",
+                     "",
+                     "He was a heroes, but no all the heroes",
+                     "",
+                     "are able to safe the world..."]
