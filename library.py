@@ -439,6 +439,17 @@ def line_origin(origin, number_of_lines=0):
     return lines
 
 
+# Music & Effects
+
+def music_play(songs_title, loop=0, start=0.0):
+    pg.mixer.music.load(songs_title)
+    pg.mixer.music.play(loop, start)
+
+
+def music_stop():
+    pg.mixer.music.stop()
+
+
 class Ball:
     def __init__(self, starting_restriction, ending_restriction, angle):
         self.direction = [-1, 1]

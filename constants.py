@@ -453,6 +453,14 @@ dialogue_9 = ["Now, I'm free... Thank you...",
               "Idiots wanted kidnap people...",
               "IT BETTER KILL THEM RIGHT NOW!!!"]
 
+lvl_info = ["Go out", "Check the front door",
+            "Talk with Manuela", "Save the town",
+            "Defeat the monsters",
+            "Talk with the weird guy",
+            "Defeat all the monster",
+            "Survive!!",
+            "Defeat Balzar"]
+
 Player_attacks = ["Q. Hit (1/1)",
                   "W. Sword (4/3)",
                   "E. Transformation (5)",

@@ -221,7 +221,7 @@ class SimpleEnemy(pg.sprite.Sprite):
 
     def enemy_attack(self, damage):
         if self.attacks_set == 1:
-            chosen = lib.random_range(0, 3)
+            chosen = lib.random_range(0, 2)
             if chosen == 0:
                 self.damage = 2
             if chosen == 1:
@@ -237,28 +237,27 @@ class SimpleEnemy(pg.sprite.Sprite):
             attack = lib.write(self.enemy_attacks[chosen], 30, 2)
             return attack
         if self.attacks_set == 2:
-            chosen = lib.random_range(0, 3)
+            chosen = lib.random_range(0, 2)
             if chosen == 0:
-                self.damage = 4
+                self.damage = 3
             if chosen == 1:
                 self.lose_turn = 1
             if chosen == 2:
                 self.life += 1
-
             self.life -= damage
 
             attack = lib.write(self.enemy_attacks[chosen], 30, 2)
             return attack
         if self.attacks_set == 3:
             chosen = lib.random_range(0, 4)
-            if chosen == 1:
+            if chosen == 0:
                 self.damage = 4
+            if chosen == 1:
+                self.progressive_damage += 2
             if chosen == 2:
-                self.progressive_damage = 2
-            if chosen == 3:
                 self.dodge = True
                 self.life += 1
-            if chosen == 4:
+            if chosen == 3:
                 self.lose_turn = 1
 
             if self.dodge:
@@ -334,6 +333,9 @@ class Boss(pg.sprite.Sprite):
         self.temp = 100
         self.cont = 40
 
+        # Statistics
+        self.live = 3
+
     def get_position(self):
         return [self.rect.x, self.rect.y]
 
@@ -346,6 +348,10 @@ class Boss(pg.sprite.Sprite):
         else:
             self.current_animation = 1
         self.image = self.set[self.current_animation]
+
+    def show_statistics(self, screen):
+        for _ in range(self.live):
+            screen.blit(lib.cts.Hearts, [self.rect.x, self.rect.y])
 
     def update(self, scenario_velocity):
         self.animate()
@@ -488,12 +494,11 @@ class Player(pg.sprite.Sprite):
         self.collides = collides
 
         # Statistics
-        self.lvl = 1
         self.live = 10
         self.energy = 0
         self.wings_buff = 0
         self.extra_live = 0
-        self.drake_smash = 0
+        self.drake_smash = 10
         self.extra_energy = 1
         self.transformation = False
 
@@ -668,8 +673,8 @@ if __name__ == '__main__':
     intro = False
     room_1 = False
     room_2 = False
-    field_1 = True
-    field_2 = True
+    field_1 = False
+    field_2 = False
     field_3 = True
     in_combat = False
     start_menu = True
@@ -687,7 +692,7 @@ if __name__ == '__main__':
     inventory_information = pg.sprite.Group()
     attacks_information = pg.sprite.Group()
     abilities_in_combat = pg.sprite.Group()
-    enemies_in_combat = pg.sprite.Group()
+    lvl_information = pg.sprite.Group()
     holes_dialogue = pg.sprite.Group()
     dialogue_group = pg.sprite.Group()
     title_group = pg.sprite.Group()
@@ -697,6 +702,7 @@ if __name__ == '__main__':
     # while playing
 
     random_enemies_group = pg.sprite.Group()
+    enemies_in_combat = pg.sprite.Group()
     generators_group = pg.sprite.Group()
     players_group = pg.sprite.Group()
     enemies_group = pg.sprite.Group()
@@ -837,7 +843,7 @@ if __name__ == '__main__':
 
     # Adding a player
 
-    player = Player([scenario.rect.x + 155, scenario.rect.y + 55], lib.cts.Luke, things_group)
+    player = Player([scenario.rect.x + 160, scenario.rect.y + 55], lib.cts.Luke, things_group)
     player.speed = speed
 
     players_group.add(player)
@@ -846,6 +852,10 @@ if __name__ == '__main__':
 
     potion = Texts([300, 500], window, lib.cts.dialogue_1, 30, 2)
     text_group.add(potion)
+
+    lvl_info = Texts([1050, 570], window, lib.cts.lvl_info[0], 25, 2)
+    lvl_info.velocity = [0, 0]
+    lvl_information.add(lvl_info)
 
     while run and room_1:
         for event in pg.event.get():
@@ -871,7 +881,7 @@ if __name__ == '__main__':
                 if event.key == pg.K_e and catchable:
                     for _ in buffs_group:
                         buffs_group.remove(_)
-                    player.live = 10
+                    player.live = 14
                     catchable = 0
             if event.type == pg.KEYUP:
                 player.velocity = [0, 0]
@@ -888,7 +898,7 @@ if __name__ == '__main__':
 
         scenario.update()
 
-        if 550 < player.rect.x < 585 and 270 > player.rect.y > 230 and len(buffs_group) == 1:
+        if 550 < player.rect.x < 580 and 270 > player.rect.y > 230 and len(buffs_group) == 1:
             if potion.y < 490:
                 potion.velocity = [0, 0]
 
@@ -905,6 +915,8 @@ if __name__ == '__main__':
         buffs_group.update()
         buffs_group.draw(window)
 
+        lvl_information.update()
+
         players_group.update(key, window)
         players_group.draw(window)
 
@@ -920,6 +932,9 @@ if __name__ == '__main__':
 
     for _ in text_group:
         text_group.remove(_)
+
+    for _ in lvl_information:
+        lvl_information.remove(_)
 
     # Scenario settings
 
@@ -1011,6 +1026,10 @@ if __name__ == '__main__':
     cup.velocity = [0, 1]
     text_group.add(cup)
 
+    lvl_info = Texts([760, 570], window, lib.cts.lvl_info[1], 25, 2)
+    lvl_info.velocity = [0, 0]
+    lvl_information.add(lvl_info)
+
     while run and room_2:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -1032,18 +1051,18 @@ if __name__ == '__main__':
                 if event.key == pg.K_a:
                     player.velocity[0] -= player.speed
                     player.action = 2
-                if event.key == pg.K_e and catchable:
+                if event.key == pg.K_e and catchable == 2:
+                    if len(buffs_group) == 3:
+                        player.energy += 5
                     buffs_group.remove(energy)
                     text_group.remove(potion)
-                    if len(buffs_group) > 1:
-                        player.energy += 5
                     catchable = 0
-                if event.key == pg.K_q and len(buffs_group) == 2 and catchable:
-                    buffs_group.remove(smash)
-                    if len(buffs_group) > 0:
+                if event.key == pg.K_q and catchable == 3:
+                    if len(buffs_group) == 2:
                         player.drake_smash += 1
+                    buffs_group.remove(smash)
                     catchable = 0
-                if event.key == pg.K_r and catchable and player.live > 1:
+                if event.key == pg.K_r and catchable == 4 and player.live > 1:
                     player.energy += 1
                     player.live -= 1
                     catchable = 0
@@ -1069,7 +1088,7 @@ if __name__ == '__main__':
             if len(buffs_group) > 2:
                 potion.update()
 
-            catchable = 1
+            catchable = 2
         else:
             potion.rect = [250, 70]
 
@@ -1085,7 +1104,7 @@ if __name__ == '__main__':
                 else:
                     if len(buffs_group) == 2:
                         ring.update()
-                        catchable = 1
+                        catchable = 3
             else:
                 ring_without_potion.rect = [250, 70]
                 ring.rect = [250, 70]
@@ -1098,7 +1117,7 @@ if __name__ == '__main__':
             if player.live > 1:
                 cup.update()
 
-            catchable = 1
+            catchable = 4
         else:
             if len(buffs_group) == 1:
                 catchable = 0
@@ -1108,6 +1127,8 @@ if __name__ == '__main__':
 
         buffs_group.update()
         buffs_group.draw(window)
+
+        lvl_information.update()
 
         players_group.update(key, window)
         players_group.draw(window)
@@ -1137,7 +1158,7 @@ if __name__ == '__main__':
 
     # Repositioning player
 
-    player.rect.x = 700
+    player.rect.x = 600
     player.rect.y = 350
 
     # Adding enemies
@@ -1249,6 +1270,10 @@ if __name__ == '__main__':
         energy_information.velocity = [0, 0]
         new_text_position[1] += 25
         statistics_information.add(energy_information)
+
+    lvl_info = Texts([820, 570], window, lib.cts.lvl_info[2], 25, 2, lib.cts.RED)
+    lvl_info.velocity = [0, 0]
+    lvl_information.add(lvl_info)
 
     win = Texts([400, 300], window, lib.cts.dialogue_7_1, 80, 2, lib.cts.GOLD)
     win_group.add(win)
@@ -1469,7 +1494,7 @@ if __name__ == '__main__':
 
             for generator in generator_collide:
                 if not catchable:
-                    potion = Buffs([generator.rect.x, generator.rect.y], lib.rd.randrange(1, 4))
+                    potion = Buffs([generator.rect.x, generator.rect.y], 2)
                     buffs_group.add(potion)
 
                     generators_group.remove(generator)
@@ -1541,6 +1566,8 @@ if __name__ == '__main__':
             things_group.update()
             things_group.draw(window)
 
+            lvl_info.update()
+
             players_group.update(key, window)
             players_group.draw(window)
 
@@ -1558,6 +1585,9 @@ if __name__ == '__main__':
                 if 650 + scenario.rect.y > player.rect.y > 300 + scenario.rect.y:
                     window.blit(lib.cts.Dialog_box, [400, 400])
                     dialogue_group.update()
+
+                    lvl_info = Texts([900, 570], window, lib.cts.lvl_info[3], 25, 2, lib.cts.RED)
+                    lvl_info.velocity = [0, 0]
 
             generator_collide = pg.sprite.spritecollide(player, generators_group, False)
 
@@ -1623,9 +1653,11 @@ if __name__ == '__main__':
                             turn = 2
 
                     # Inventory
+
                     if event.key == pg.K_t:
                         turn = 3
                         cont = 0
+
                     if event.key == pg.K_a:
                         if player.drake_smash >= 1:
                             player.use_extras(3)
@@ -1648,9 +1680,10 @@ if __name__ == '__main__':
                             turn = 0
                         else:
                             turn = 2
-
                     # Skip turn
                     if event.key == pg.K_f:
+                        player.energy += 1
+                        player.live += 1
                         cont = 0
                         turn = 0
 
@@ -1756,6 +1789,7 @@ if __name__ == '__main__':
                 cont += 1
 
             lib.frames_per_second(fps, 1)
+        win.x, win.y = [400, 300]
 
     # Cleaning
 
@@ -1776,6 +1810,9 @@ if __name__ == '__main__':
 
     for _ in enemies_in_combat:
         enemies_in_combat.remove(_)
+
+    for _ in lvl_information:
+        lvl_information.remove(_)
 
     for _ in win_group:
         win_group.remove(_)
@@ -1808,7 +1845,7 @@ if __name__ == '__main__':
 
     # Adding things
 
-    trees = [[265, 300], [800, 500], [550, 80], [1250, 600]]
+    trees = [[265, 300], [750, 500], [550, 80], [1250, 600]]
 
     for _ in range(len(trees)):
         flower = Things(trees[_], lib.rd.randrange(16, 17))
@@ -1828,6 +1865,10 @@ if __name__ == '__main__':
 
     win = Texts([400, 300], window, lib.cts.dialogue_7_1, 80, 2, lib.cts.GOLD)
     win_group.add(win)
+
+    lvl_info = Texts([800, 570], window, lib.cts.lvl_info[4], 25, 2, lib.cts.RED)
+    lvl_info.velocity = [0, 0]
+    lvl_information.add(lvl_info)
 
     # Settings variables
 
@@ -2037,8 +2078,8 @@ if __name__ == '__main__':
                 random_collide = pg.sprite.spritecollide(player, random_enemies_group, False)
 
                 for random_enemies in random_collide:
-                    player.live -= 1
                     random_enemies_group.remove(random_enemies)
+                    player.live -= 1
 
                 # Buffs
 
@@ -2085,6 +2126,8 @@ if __name__ == '__main__':
 
             things_group.update()
             things_group.draw(window)
+
+            lvl_information.update()
 
             players_group.update(key, window)
             players_group.draw(window)
@@ -2179,6 +2222,8 @@ if __name__ == '__main__':
 
                     # Skip turn
                     if event.key == pg.K_f:
+                        player.energy += 1
+                        player.live += 1
                         cont = 0
                         turn = 0
 
@@ -2274,6 +2319,7 @@ if __name__ == '__main__':
                 cont += 1
 
             lib.frames_per_second(fps, 1)
+        win.x, win.y = [400, 300]
 
     for _ in enemies_group:
         enemies_group.remove(_)
@@ -2292,6 +2338,9 @@ if __name__ == '__main__':
 
     for _ in dialogue_group:
         dialogue_group.remove(_)
+
+    for _ in lvl_information:
+        lvl_information.remove(_)
 
     for _ in win_group:
         win_group.remove(_)
@@ -2312,10 +2361,15 @@ if __name__ == '__main__':
     radio = 300
     distance = [0, 0]
 
-    first_enemy_position = [[250, 300], [600, 500], [550, 850]]
+    first_enemy_position = [[250, 300], [600, 500], [550, 850],
+                            [1800, 700], [2000, 500], [1900, 300]]
 
-    for _ in range(len(first_enemy_position)):
+    for _ in range(len(first_enemy_position) - 3):
         enemy = SimpleEnemy(first_enemy_position[_], 1)
+        enemies_group.add(enemy)
+
+    for _ in range(2, 5):
+        enemy = SimpleEnemy(first_enemy_position[_], 2)
         enemies_group.add(enemy)
 
     Balzar = NonPlayableCharacters([200, 80], 2)
@@ -2341,6 +2395,10 @@ if __name__ == '__main__':
     boss_spawn = [200, 80]
     boss = Boss(boss_spawn)
     boss_group.add(boss)
+
+    lvl_info = Texts([730, 570], window, lib.cts.lvl_info[5], 25, 2, lib.cts.RED)
+    lvl_info.velocity = [0, 0]
+    lvl_information.add(lvl_info)
 
     win = Texts([400, 300], window, lib.cts.dialogue_7_1, 80, 2, lib.cts.GOLD)
     win_group.add(win)
@@ -2498,16 +2556,16 @@ if __name__ == '__main__':
                     else:
                         distance = move_enemy(player.rect, boss.rect)
                         if distance[0] > 0:
-                            boss.velocity = 3
+                            boss.velocity = 5
                         else:
-                            boss.velocity = -3
+                            boss.velocity = -5
 
                         if ((distance[0] >= -2) and (distance[0] <= 2)) and (
                                 (distance[1] >= -2) and (distance[1] <= 2)):
                             boss.velocity = 0
                         else:
                             if distance[0] == 0:
-                                boss.velocity = -3
+                                boss.velocity = -5
                                 if distance[1] > 0:
                                     angle = lib.mt.radians(270)
                                 if distance[1] < 0:
@@ -2574,6 +2632,8 @@ if __name__ == '__main__':
             things_group.update()
             things_group.draw(window)
 
+            lvl_info.update()
+
             players_group.update(key, window)
             players_group.draw(window)
 
@@ -2588,6 +2648,9 @@ if __name__ == '__main__':
                     if 170 + scenario.rect.y > player.rect.y > 100 + scenario.rect.y:
                         window.blit(lib.cts.Dialog_box, [400, 400])
                         text_group.update()
+
+                        lvl_info = Texts([730, 570], window, lib.cts.lvl_info[6], 25, 2, lib.cts.RED)
+                        lvl_info.velocity = [0, 0]
             else:
                 cont += 1
 
@@ -2597,15 +2660,17 @@ if __name__ == '__main__':
 
                 if cont == 230:
                     NPCs_group.remove(Balzar)
+                    lvl_info = Texts([730, 570], window, lib.cts.lvl_info[7], 25, 2, lib.cts.RED)
+                    lvl_info.velocity = [0, 0]
 
-                if cont >= 500:
+                if cont >= 230:
                     current_attack = 1
 
-                if cont > 530:
-                    current_attack = 2
-
-                if cont > 550:
+                if cont > 1030:
                     current_attack = 3
+
+                if cont > 2050:
+                    current_attack = 2
 
                 if cont > 230:
                     distance = [0, 0]
@@ -2709,7 +2774,10 @@ if __name__ == '__main__':
                             turn = 2
 
                     # Skip turn
+
                     if event.key == pg.K_f:
+                        player.energy += 1
+                        player.live += 1
                         cont = 0
                         turn = 0
 
@@ -2805,6 +2873,7 @@ if __name__ == '__main__':
                 cont += 1
 
             lib.frames_per_second(fps, 1)
+        win.x, win.y = [400, 300]
 
     # Death
 
@@ -2823,13 +2892,16 @@ if __name__ == '__main__':
     title_group.add(Title)
 
     # Game end
+
     new_text_position = [50, 750]
+
     for _ in range(0, len(lib.cts.Death_interaction)):
         new_text = Texts(new_text_position, window, lib.cts.Death_interaction[_], 30, 2)
         new_text_position[1] += 50
         text_group.add(new_text)
 
-    # Game button skip
+    # End button skip
+
     Skip = Texts([1080, 550], window, lib.cts.skip, 20)
     Skip.velocity = [0, 0]
     title_group.add(Skip)
