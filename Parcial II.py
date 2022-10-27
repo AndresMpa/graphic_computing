@@ -494,12 +494,12 @@ class Player(pg.sprite.Sprite):
         self.collides = collides
 
         # Statistics
-        self.live = 10
-        self.energy = 0
+        self.live = 100
+        self.energy = 10
         self.wings_buff = 0
-        self.extra_live = 0
+        self.extra_live = 10
         self.drake_smash = 10
-        self.extra_energy = 1
+        self.extra_energy = 10
         self.transformation = False
 
     def animate(self, key_pressed):
@@ -513,13 +513,13 @@ class Player(pg.sprite.Sprite):
         return [self.rect.x, self.rect.y]
 
     def use_extras(self, choose):
-        if choose == 1:
+        if choose == 1 and self.extra_live >= 1:
             self.extra_live -= 1
             self.live += 5
-        if choose == 2:
+        if choose == 2 and self.extra_energy >= 1:
             self.extra_energy -= 1
             self.energy += 5
-        if choose == 3:
+        if choose == 3 and self.drake_smash >= 1:
             self.drake_smash -= 1
 
     def in_combat(self, screen):
@@ -677,7 +677,6 @@ if __name__ == '__main__':
     field_2 = False
     field_3 = True
     in_combat = False
-    start_menu = True
 
     # Windows constants
 
@@ -881,7 +880,7 @@ if __name__ == '__main__':
                 if event.key == pg.K_e and catchable:
                     for _ in buffs_group:
                         buffs_group.remove(_)
-                    player.live = 14
+                    player.live = 10
                     catchable = 0
             if event.type == pg.KEYUP:
                 player.velocity = [0, 0]
@@ -1053,7 +1052,7 @@ if __name__ == '__main__':
                     player.action = 2
                 if event.key == pg.K_e and catchable == 2:
                     if len(buffs_group) == 3:
-                        player.energy += 5
+                        player.energy += 6
                     buffs_group.remove(energy)
                     text_group.remove(potion)
                     catchable = 0
@@ -1494,7 +1493,7 @@ if __name__ == '__main__':
 
             for generator in generator_collide:
                 if not catchable:
-                    potion = Buffs([generator.rect.x, generator.rect.y], 2)
+                    potion = Buffs([generator.rect.x, generator.rect.y], 1)
                     buffs_group.add(potion)
 
                     generators_group.remove(generator)
@@ -2043,67 +2042,68 @@ if __name__ == '__main__':
                         enemy.angle = angle
                 i += 1
 
-                # Generators
+            # Generators
 
-                generator_collide = pg.sprite.spritecollide(player, generators_group, False)
+            generator_collide = pg.sprite.spritecollide(player, generators_group, False)
 
-                for generator in generator_collide:
-                    if catchable:
-                        potion = Buffs([generator.rect.x, generator.rect.y], lib.rd.randrange(1, 4))
-                        buffs_group.add(potion)
+            for generator in generator_collide:
+                if catchable:
+                    potion = Buffs([generator.rect.x, generator.rect.y], lib.rd.randrange(1, 4))
+                    buffs_group.add(potion)
 
-                        generators_group.remove(generator)
-                        catchable = False
+                    generators_group.remove(generator)
 
-                for generator in generators_group:
-                    if generator.temp < 0:
-                        worm = GeneratedEnemy(generator.rect.center, lib.cts.random_enemies_2)
-                        random_enemies_group.add(worm)
-                        generator.temp = 60
+            catchable = False
 
-                # Worms cleaning
+            for generator in generators_group:
+                if generator.temp < 0:
+                    worm = GeneratedEnemy(generator.rect.center, lib.cts.random_enemies_2)
+                    random_enemies_group.add(worm)
+                    generator.temp = 60
 
-                for worm in random_enemies_group:
-                    if worm.rect.x < -50:
-                        random_enemies_group.remove(worm)
-                    if worm.rect.y < -50:
-                        random_enemies_group.remove(worm)
-                    if worm.rect.x > lib.cts.width:
-                        random_enemies_group.remove(worm)
-                    if worm.rect.y > lib.cts.height:
-                        random_enemies_group.remove(worm)
+            # Worms cleaning
 
-                # Generated enemies
+            for worm in random_enemies_group:
+                if worm.rect.x < -50:
+                    random_enemies_group.remove(worm)
+                if worm.rect.y < -50:
+                    random_enemies_group.remove(worm)
+                if worm.rect.x > lib.cts.width:
+                    random_enemies_group.remove(worm)
+                if worm.rect.y > lib.cts.height:
+                    random_enemies_group.remove(worm)
 
-                random_collide = pg.sprite.spritecollide(player, random_enemies_group, False)
+            # Generated enemies
 
-                for random_enemies in random_collide:
-                    random_enemies_group.remove(random_enemies)
-                    player.live -= 1
+            random_collide = pg.sprite.spritecollide(player, random_enemies_group, False)
 
-                # Buffs
+            for random_enemies in random_collide:
+                random_enemies_group.remove(random_enemies)
+                player.live -= 1
 
-                buff_collide = pg.sprite.spritecollide(player, buffs_group, True)
+            # Buffs
 
-                for buffs in buff_collide:
-                    if buffs.buff == 1:
-                        player.extra_live += 1
-                    elif buffs.buff == 2:
-                        player.extra_energy += 1
-                    elif buffs.buff == 3:
-                        player.drake_smash += 1
-                    elif buffs.buff == 4:
-                        player.wings_buff += 1
+            buff_collide = pg.sprite.spritecollide(player, buffs_group, True)
 
-                    buffs_group.remove(buffs)
+            for buffs in buff_collide:
+                if buffs.buff == 1:
+                    player.extra_live += 1
+                elif buffs.buff == 2:
+                    player.extra_energy += 1
+                elif buffs.buff == 3:
+                    player.drake_smash += 1
+                elif buffs.buff == 4:
+                    player.wings_buff += 1
 
-                # Death by worms
+                buffs_group.remove(buffs)
 
-                if player.live <= 0:
-                    in_combat = False
-                    field_2 = False
-                    death = True
-                    run = False
+            # Death by worms
+
+            if player.live <= 0:
+                in_combat = False
+                field_2 = False
+                death = True
+                run = False
 
             # Drawing
             lib.fill(window)
@@ -2663,7 +2663,7 @@ if __name__ == '__main__':
                     lvl_info = Texts([730, 570], window, lib.cts.lvl_info[7], 25, 2, lib.cts.RED)
                     lvl_info.velocity = [0, 0]
 
-                if cont >= 230:
+                if cont > 230:
                     current_attack = 1
 
                 if cont > 1030:
@@ -2671,6 +2671,16 @@ if __name__ == '__main__':
 
                 if cont > 2050:
                     current_attack = 2
+
+                if cont > 2500:
+                    boss.live -= 1
+                    cont = 231
+
+                if boss.live == 0:
+                    lvl_info = Texts([730, 570], window, lib.cts.lvl_info[8], 25, 2, lib.cts.RED)
+                    lvl_info.velocity = [0, 0]
+                    enemy_Balzar = SimpleEnemy(boss.get_position(), 3)
+                    enemies_group.add(enemy_Balzar)
 
                 if cont > 230:
                     distance = [0, 0]
